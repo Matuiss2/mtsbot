@@ -65,32 +65,11 @@ class DistanceCalculation:
             positions_array: np.ndarray = np.fromiter(
                 flat_positions, dtype=np.float, count=2 * self._units_count
             ).reshape((self._units_count, 2))
-            assert len(positions_array) == self._units_count
+            if len(positions_array) != self._units_count:
+                raise AssertionError()
             self._generated_frame2 = self.state.game_loop
             # See performance benchmarks
             self._cached_pdist = pdist(positions_array, "sqeuclidean")
-
-            # # Distance check of all units
-            # for unit1 in self.all_units:
-            #     for unit2 in self.all_units:
-            #         if unit1.tag == unit2.tag:
-            #             # Is zero
-            #             continue
-            #         try:
-            #             index1 = self._unit_index_dict[unit1.tag]
-            #             index2 = self._unit_index_dict[unit2.tag]
-            #             condensed_index = self.square_to_condensed(index1, index2)
-            #             assert condensed_index < len(self._pdist)
-            #             pdist_distance = self._pdist[condensed_index]
-            #             correct_dist = self._distance_pos_to_pos(unit1.position_tuple, unit2.position_tuple) ** 2
-            #             error_margin = 1e-5
-            #             assert (abs(pdist_distance - correct_dist) < error_margin), f"Actual distance is {correct_dist} but calculated pdist distance is {pdist_distance}"
-            #         except:
-            #             print(
-            #                 f"Error caused by unit1 {unit1} and unit2 {unit2} with positions {unit1.position_tuple} and {unit2.position_tuple}"
-            #             )
-            #             raise
-
         return self._cached_pdist
 
     def _calculate_distances_method2(self) -> np.ndarray:
@@ -101,7 +80,8 @@ class DistanceCalculation:
             positions_array: np.ndarray = np.fromiter(
                 flat_positions, dtype=np.float, count=2 * self._units_count
             ).reshape((self._units_count, 2))
-            assert len(positions_array) == self._units_count
+            if len(positions_array) != self._units_count:
+                raise AssertionError()
             self._generated_frame2 = self.state.game_loop
             # See performance benchmarks
             self._cached_cdist = cdist(positions_array, positions_array, "sqeuclidean")
@@ -122,23 +102,43 @@ class DistanceCalculation:
         return self._cached_cdist
 
     def _get_index_of_two_units_method1(self, unit1: Unit, unit2: Unit) -> int:
-        assert (
-            unit1.tag in self._unit_index_dict
-        ), f"Unit1 {unit1} is not in index dict for distance calculation. Make sure the unit is alive in the current frame. Ideally take units from 'self.units' or 'self.structures' as these contain unit data from the current frame. Do not try to save 'Units' objects over several iterations."
-        assert (
-            unit2.tag in self._unit_index_dict
-        ), f"Unit2 {unit2} is not in index dict for distance calculation. Make sure the unit is alive in the current frame. Ideally take units from 'self.units' or 'self.structures' as these contain unit data from the current frame. Do not try to save 'Units' objects over several iterations."
+        if unit1.tag not in self._unit_index_dict:
+            raise AssertionError(
+                f"Unit1 {unit1} is not in index dict for distance calculation."
+                f" Make sure the unit is alive in the current frame. Ideally take units"
+                f" from 'self.units' or 'self.structures'"
+                f" as these contain unit data from the current frame. Do not try to save"
+                f" 'Units' objects over several iterations."
+            )
+        if unit2.tag not in self._unit_index_dict:
+            raise AssertionError(
+                f"Unit2 {unit2} is not in index dict for distance calculation."
+                f" Make sure the unit is alive in the current frame. Ideally take units"
+                f" from 'self.units' or 'self.structures'"
+                f" as these contain unit data from the current frame."
+                f" Do not try to save 'Units' objects over several iterations."
+            )
         # index1 = self._unit_index_dict[unit1.tag]
         # index2 = self._unit_index_dict[unit2.tag]
         return self.square_to_condensed(self._unit_index_dict[unit1.tag], self._unit_index_dict[unit2.tag])
 
     def _get_index_of_two_units_method2(self, unit1: Unit, unit2: Unit) -> Tuple[int, int]:
-        assert (
-            unit1.tag in self._unit_index_dict
-        ), f"Unit1 {unit1} is not in index dict for distance calculation. Make sure the unit is alive in the current frame. Ideally take units from 'self.units' or 'self.structures' as these contain unit data from the current frame. Do not try to save 'Units' objects over several iterations."
-        assert (
-            unit2.tag in self._unit_index_dict
-        ), f"Unit2 {unit2} is not in index dict for distance calculation. Make sure the unit is alive in the current frame. Ideally take units from 'self.units' or 'self.structures' as these contain unit data from the current frame. Do not try to save 'Units' objects over several iterations."
+        if unit1.tag not in self._unit_index_dict:
+            raise AssertionError(
+                f"Unit1 {unit1} is not in index dict for distance calculation."
+                f" Make sure the unit is alive in the current frame."
+                f" Ideally take units from 'self.units' or 'self.structures'"
+                f" as these contain unit data from the current frame."
+                f" Do not try to save 'Units' objects over several iterations."
+            )
+        if unit2.tag not in self._unit_index_dict:
+            raise AssertionError(
+                f"Unit2 {unit2} is not in index dict for distance calculation."
+                f" Make sure the unit is alive in the current frame."
+                f" Ideally take units from 'self.units' or 'self.structures'"
+                f" as these contain unit data from the current frame."
+                f" Do not try to save 'Units' objects over several iterations."
+            )
         return self._unit_index_dict[unit1.tag], self._unit_index_dict[unit2.tag]
 
     def _get_index_of_two_units_method3(self, unit1: Unit, unit2: Unit) -> Tuple[int, int]:
@@ -150,7 +150,8 @@ class DistanceCalculation:
     def square_to_condensed(self, i, j) -> int:
         # Converts indices of a square matrix to condensed matrix
         # https://stackoverflow.com/a/36867493/10882657
-        assert i != j, "No diagonal elements in condensed matrix! Diagonal elements are zero"
+        if i == j:
+            raise AssertionError("No diagonal elements in condensed matrix! Diagonal elements are zero")
         if i < j:
             i, j = j, i
         return self._units_count * j - j * (j + 1) // 2 + i - 1 - j
@@ -178,9 +179,12 @@ class DistanceCalculation:
             return 0
         # Calculate index, needs to be after pdist has been calculated and cached
         condensed_index = self._get_index_of_two_units(unit1, unit2)
-        assert condensed_index < len(
-            self._cached_pdist
-        ), f"Condensed index is larger than amount of calculated distances: {condensed_index} < {len(self._cached_pdist)}, units that caused the assert error: {unit1} and {unit2}"
+        if condensed_index >= len(self._cached_pdist):
+            raise AssertionError(
+                f"Condensed index is larger than amount of calculated distances:"
+                f" {condensed_index} < {len(self._cached_pdist)},"
+                f" units that caused the assert error: {unit1} and {unit2}"
+            )
         distance = self._pdist[condensed_index]
         return distance
 
@@ -214,7 +218,8 @@ class DistanceCalculation:
         method 1: Use scipy's pdist condensed matrix (1d array)
         method 2: Use scipy's cidst square matrix (2d array)
         method 3: Use scipy's cidst square matrix (2d array) without asserts (careful: very weird error messages, but maybe slightly faster) """
-        assert 0 <= method <= 3, f"Selected method was: {method}"
+        if not 0 <= method <= 3:
+            raise AssertionError(f"Selected method was: {method}")
         if method == 0:
             self._distance_squared_unit_to_unit = self._distance_squared_unit_to_unit_method0
         elif method == 1:
