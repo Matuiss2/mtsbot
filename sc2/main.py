@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 class SlidingTimeWindow:
     def __init__(self, size: int):
-        assert size > 0
+        if size <= 0:
+            raise AssertionError()
 
         self.window_size = size
         self.window = []
@@ -61,7 +62,8 @@ async def _play_game_human(client, player_id, realtime, game_time_limit):
 
 async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_time_limit):
     if realtime:
-        assert step_time_limit is None
+        if step_time_limit is not None:
+            raise AssertionError()
 
     # step_time_limit works like this:
     # * If None, then step time is not limited
@@ -89,7 +91,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         time_window = SlidingTimeWindow(1)
         time_penalty = "resign"
     else:
-        assert isinstance(step_time_limit, dict)
+        if not isinstance(step_time_limit, dict):
+            raise AssertionError()
         time_penalty = step_time_limit.get("penalty", None)
         time_window = SlidingTimeWindow(int(step_time_limit.get("window_size", 1)))
         time_limit = float(step_time_limit.get("time_limit", None))
@@ -237,7 +240,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 async def _play_game(
     player, client, realtime, portconfig, step_time_limit=None, game_time_limit=None, rgb_render_config=None
 ):
-    assert isinstance(realtime, bool), repr(realtime)
+    if not isinstance(realtime, bool):
+        raise AssertionError(repr(realtime))
 
     player_id = await client.join_game(
         player.name, player.race, portconfig=portconfig, rgb_render_config=rgb_render_config
@@ -377,9 +381,11 @@ async def _host_game(
     sc2_version=None,
 ):
 
-    assert players, "Can't create a game without players"
+    if not players:
+        raise AssertionError("Can't create a game without players")
 
-    assert any(isinstance(p, (Human, Bot)) for p in players)
+    if not any(isinstance(p, (Human, Bot)) for p in players):
+        raise AssertionError()
 
     async with SC2Process(
         fullscreen=players[0].fullscreen, render=rgb_render_config is not None, sc2_version=sc2_version
@@ -409,9 +415,11 @@ async def _host_game(
 async def _host_game_aiter(
     map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None, game_time_limit=None,
 ):
-    assert players, "Can't create a game without players"
+    if not players:
+        raise AssertionError("Can't create a game without players")
 
-    assert any(isinstance(p, (Human, Bot)) for p in players)
+    if not any(isinstance(p, (Human, Bot)) for p in players):
+        raise AssertionError()
 
     async with SC2Process() as server:
         while True:
@@ -511,10 +519,13 @@ def run_game(map_settings, players, **kwargs):
 
 def run_replay(ai, replay_path, realtime=False, observed_id=0):
     portconfig = Portconfig()
-    assert os.path.isfile(replay_path), f"Replay does not exist at the given path: {replay_path}"
-    assert os.path.isabs(
-        replay_path
-    ), f'Replay path has to be an absolute path, e.g. "C:/replays/my_replay.SC2Replay" but given path was "{replay_path}"'
+    if not os.path.isfile(replay_path):
+        raise AssertionError(f"Replay does not exist at the given path: {replay_path}")
+    if not os.path.isabs(replay_path):
+        raise AssertionError(
+            f"Replay path has to be an absolute path,"
+            f' e.g. "C:/replays/my_replay.SC2Replay" but given path was "{replay_path}"'
+        )
     base_build, data_version = get_replay_version(replay_path)
     result = asyncio.get_event_loop().run_until_complete(
         _host_replay(replay_path, ai, realtime, portconfig, base_build, data_version, observed_id)
