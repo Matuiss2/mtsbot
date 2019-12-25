@@ -214,10 +214,7 @@ RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool,
     },
     UnitTypeId.INFESTATIONPIT: {
         UpgradeId.INFESTORENERGYUPGRADE: {"ability": AbilityId.RESEARCH_PATHOGENGLANDS},
-        UpgradeId.MICROBIALSHROUD: {
-            "ability": AbilityId.INFESTATIONPITRESEARCH_EVOLVEAMORPHOUSARMORCLOUD,
-            "required_building": UnitTypeId.HIVE,
-        },
+        UpgradeId.MICROBIALSHROUD: {"ability": AbilityId.INFESTATIONPITRESEARCH_EVOLVEAMORPHOUSARMORCLOUD,},
         UpgradeId.NEURALPARASITE: {"ability": AbilityId.RESEARCH_NEURALPARASITE},
     },
     UnitTypeId.LAIR: {
@@ -226,6 +223,13 @@ RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool,
     },
     UnitTypeId.LURKERDENMP: {
         UpgradeId.DIGGINGCLAWS: {"ability": AbilityId.RESEARCH_ADAPTIVETALONS, "required_building": UnitTypeId.HIVE,}
+    },
+    UnitTypeId.ROACHWARREN: {
+        UpgradeId.GLIALRECONSTITUTION: {
+            "ability": AbilityId.RESEARCH_GLIALREGENERATION,
+            "required_building": UnitTypeId.LAIR,
+        },
+        UpgradeId.TUNNELINGCLAWS: {"ability": AbilityId.RESEARCH_TUNNELINGCLAWS, "required_building": UnitTypeId.LAIR,},
     },
     UnitTypeId.ROBOTICSBAY: {
         UpgradeId.EXTENDEDTHERMALLANCE: {"ability": AbilityId.RESEARCH_EXTENDEDTHERMALLANCE, "requires_power": True,},

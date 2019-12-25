@@ -118,6 +118,11 @@ class Unit:
         """ Provides the unit type data. """
         return self._bot_object._game_data.units[self._proto.unit_type]
 
+    @property_immutable_cache
+    def _creation_ability(self) -> AbilityData:
+        """ Provides the AbilityData of the creation ability of this unit. """
+        return self._bot_object._game_data.units[self._proto.unit_type].creation_ability
+
     @property
     def name(self) -> str:
         """ Returns the name of the unit. """
@@ -199,11 +204,7 @@ class Unit:
     @property_immutable_cache
     def can_attack_both(self) -> bool:
         """ Checks if the unit can attack both ground and air units. """
-        if self.type_id == UNIT_BATTLECRUISER:
-            return True
-        if self._weapons:
-            return any(weapon.type in TARGET_BOTH for weapon in self._weapons)
-        return False
+        return self.can_attack_ground and self.can_attack_air
 
     @property_immutable_cache
     def can_attack_ground(self) -> bool:
@@ -737,6 +738,15 @@ class Unit:
             angle += math.pi * 2
         angle_difference = math.fabs(angle - self.facing)
         return angle_difference < angle_error
+
+    @property
+    def footprint_radius(self) -> float:
+        """ For structures only.
+        For townhalls this returns 2.5
+        For barracks, spawning pool, gateway, this returns 1.5
+        For supply depot, this returns 1
+        For sensor tower, creep tumor, this return 0.5 """
+        return self._bot_object._game_data.units[self._proto.unit_type].creation_ability._proto.footprint_radius
 
     @property
     def radius(self) -> float:
