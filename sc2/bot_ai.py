@@ -936,9 +936,7 @@ class BotAI(DistanceCalculation):
 
         :param structure_type:
         """
-        if not isinstance(
-            structure_type, (int, UnitTypeId)
-        ):
+        if not isinstance(structure_type, (int, UnitTypeId)):
             raise AssertionError(f"Needs to be int or UnitTypeId, but was: {type(structure_type)}")
         if isinstance(structure_type, int):
             structure_type_value: int = structure_type
@@ -1272,9 +1270,7 @@ class BotAI(DistanceCalculation):
 
         :param upgrade_type:
         """
-        if (
-            upgrade_type not in UPGRADE_RESEARCHED_FROM
-        ):
+        if upgrade_type not in UPGRADE_RESEARCHED_FROM:
             raise AssertionError(f"Could not find upgrade {upgrade_type} in 'research from'-dictionary")
 
         # Not affordable
@@ -1360,9 +1356,7 @@ class BotAI(DistanceCalculation):
         :param subtract_supply:
         :param can_afford_check:
         """
-        if not isinstance(
-            action, UnitCommand
-        ):
+        if not isinstance(action, UnitCommand):
             raise AssertionError(f"Given unit command is not a command, but instead of type {type(action)}")
         if subtract_cost:
             cost: Cost = self._game_data.calculate_ability_cost(action.ability)
@@ -1389,10 +1383,8 @@ class BotAI(DistanceCalculation):
         This function is only useful for realtime=True in the first frame of the game to instantly produce a worker
         and split workers on the mineral patches.
         """
-        if not isinstance(
-            action, UnitCommand
-        ):
-            raise AssertionError( f"Given unit command is not a command, but instead of type {type(action)}")
+        if not isinstance(action, UnitCommand):
+            raise AssertionError(f"Given unit command is not a command, but instead of type {type(action)}")
         if not self.can_afford(action.ability):
             logger.warning(f"Cannot afford action {action}")
             return ActionResult.Error
