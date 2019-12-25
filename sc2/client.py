@@ -58,8 +58,10 @@ class Client(Protocol):
         )
 
         if rgb_render_config:
-            assert isinstance(rgb_render_config, dict)
-            assert "window_size" in rgb_render_config and "minimap_size" in rgb_render_config
+            if not isinstance(rgb_render_config, dict):
+                raise AssertionError()
+            if "window_size" not in rgb_render_config and "minimap_size" not in rgb_render_config:
+                raise AssertionError()
             window_size = rgb_render_config["window_size"]
             minimap_size = rgb_render_config["minimap_size"]
             self._renderer = Renderer(self, window_size, minimap_size)
@@ -72,11 +74,13 @@ class Client(Protocol):
             ifopts.render.minimap_resolution.y = minimap_height
 
         if race is None:
-            assert isinstance(observed_player_id, int), f"observed_player_id is of type {type(observed_player_id)}"
+            if not isinstance(observed_player_id, int):
+                raise AssertionError(f"observed_player_id is of type {type(observed_player_id)}")
             # join as observer
             req = sc_pb.RequestJoinGame(observed_player_id=observed_player_id, options=ifopts)
         else:
-            assert isinstance(race, Race)
+            if not isinstance(race, Race):
+                raise AssertionError()
             req = sc_pb.RequestJoinGame(race=race.value, options=ifopts)
 
         if portconfig:
@@ -90,7 +94,8 @@ class Client(Protocol):
                 p.base_port = ppc[1]
 
         if name is not None:
-            assert isinstance(name, str), f"name is of type {type(name)}"
+            if not isinstance(name, str):
+                raise AssertionError(f"name is of type {type(name)}")
             req.player_name = name
 
         result = await self._execute(join_game=req)
@@ -125,13 +130,15 @@ class Client(Protocol):
             result = await self._execute(observation=sc_pb.RequestObservation(game_loop=game_loop))
         else:
             result = await self._execute(observation=sc_pb.RequestObservation())
-        assert result.HasField("observation")
+        if not result.HasField("observation"):
+            raise AssertionError()
 
         if not self.in_game or result.observation.player_result:
             # Sometimes game ends one step before results are available
             if not result.observation.player_result:
                 result = await self._execute(observation=sc_pb.RequestObservation())
-                assert result.observation.player_result
+                if not result.observation.player_result:
+                    raise AssertionError()
 
             player_id_to_result = {}
             for pr in result.observation.player_result:
@@ -200,8 +207,10 @@ class Client(Protocol):
 
         :param start:
         :param end: """
-        assert isinstance(start, (Point2, Unit))
-        assert isinstance(end, Point2)
+        if not isinstance(start, (Point2, Unit)):
+            raise AssertionError()
+        if not isinstance(end, Point2):
+            raise AssertionError()
         if isinstance(start, Point2):
             result = await self._execute(
                 query=query_pb.RequestQuery(
@@ -233,12 +242,18 @@ class Client(Protocol):
 
         :param zipped_list:
         """
-        assert zipped_list, "No zipped_list"
-        assert isinstance(zipped_list, list), f"{type(zipped_list)}"
-        assert isinstance(zipped_list[0], list), f"{type(zipped_list[0])}"
-        assert len(zipped_list[0]) == 2, f"{len(zipped_list[0])}"
-        assert isinstance(zipped_list[0][0], (Point2, Unit)), f"{type(zipped_list[0][0])}"
-        assert isinstance(zipped_list[0][1], Point2), f"{type(zipped_list[0][1])}"
+        if not zipped_list:
+            raise AssertionError("No zipped_list")
+        if not isinstance(zipped_list, list):
+            raise AssertionError(f"{type(zipped_list)}")
+        if not isinstance(zipped_list[0], list):
+            raise AssertionError(f"{type(zipped_list[0])}")
+        if len(zipped_list[0]) != 2:
+            raise AssertionError(f"{len(zipped_list[0])}")
+        if not isinstance(zipped_list[0][0], (Point2, Unit)):
+            raise AssertionError(f"{type(zipped_list[0][0])}")
+        if not isinstance(zipped_list[0][1], Point2):
+            raise AssertionError(f"{type(zipped_list[0][1])}")
         if isinstance(zipped_list[0][0], Point2):
             results = await self._execute(
                 query=query_pb.RequestQuery(
@@ -264,7 +279,8 @@ class Client(Protocol):
     async def query_building_placement(
         self, ability: AbilityData, positions: List[Union[Point2, Point3]], ignore_resources: bool = True
     ) -> List[ActionResult]:
-        assert isinstance(ability, AbilityData)
+        if not isinstance(ability, AbilityData):
+            raise AssertionError()
         result = await self._execute(
             query=query_pb.RequestQuery(
                 placements=(
@@ -285,10 +301,12 @@ class Client(Protocol):
         input_was_a_list = True
         if not isinstance(units, list):
             """ Deprecated, accepting a single unit may be removed in the future, query a list of units instead """
-            assert isinstance(units, Unit)
+            if not isinstance(units, Unit):
+                raise AssertionError()
             units = [units]
             input_was_a_list = False
-        assert units
+        if not units:
+            raise AssertionError()
         result = await self._execute(
             query=query_pb.RequestQuery(
                 abilities=(query_pb.RequestQueryAvailableAbilities(unit_tag=unit.tag) for unit in units),
@@ -314,10 +332,14 @@ class Client(Protocol):
 
         :param units:
         :param ability: """
-        assert units
-        assert isinstance(units, list)
-        assert all(isinstance(u, Unit) for u in units)
-        assert isinstance(ability, AbilityId)
+        if not units:
+            raise AssertionError()
+        if not isinstance(units, list):
+            raise AssertionError()
+        if not all(isinstance(u, Unit) for u in units):
+            raise AssertionError()
+        if not isinstance(ability, AbilityId):
+            raise AssertionError()
 
         await self._execute(
             action=sc_pb.RequestAction(
@@ -338,14 +360,22 @@ class Client(Protocol):
         await self._client.debug_create_unit([[UnitTypeId.MARINE, 5, self._game_info.map_center, 1]])
 
         :param unit_spawn_commands: """
-        assert isinstance(unit_spawn_commands, list)
-        assert unit_spawn_commands
-        assert isinstance(unit_spawn_commands[0], list)
-        assert len(unit_spawn_commands[0]) == 4
-        assert isinstance(unit_spawn_commands[0][0], UnitTypeId)
-        assert unit_spawn_commands[0][1] > 0  # careful, in realtime=True this function may create more units
-        assert isinstance(unit_spawn_commands[0][2], (Point2, Point3))
-        assert 1 <= unit_spawn_commands[0][3] <= 2
+        if not isinstance(unit_spawn_commands, list):
+            raise AssertionError()
+        if not unit_spawn_commands:
+            raise AssertionError()
+        if not isinstance(unit_spawn_commands[0], list):
+            raise AssertionError()
+        if not len(unit_spawn_commands[0]) != 4:
+            raise AssertionError()
+        if not isinstance(unit_spawn_commands[0][0], UnitTypeId):
+            raise AssertionError()
+        if unit_spawn_commands[0][1] <= 0:
+            raise AssertionError()
+        if not isinstance(unit_spawn_commands[0][2], (Point2, Point3)):
+            raise AssertionError()
+        if not 1 <= unit_spawn_commands[0][3] <= 2:
+            raise AssertionError()
 
         await self._execute(
             debug=sc_pb.RequestDebug(
@@ -371,7 +401,8 @@ class Client(Protocol):
             unit_tags = unit_tags.tags
         if isinstance(unit_tags, Unit):
             unit_tags = [unit_tags.tag]
-        assert unit_tags
+        if not unit_tags:
+            raise AssertionError()
 
         await self._execute(
             debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(kill_unit=debug_pb.DebugKillUnit(tag=unit_tags))])
@@ -379,7 +410,8 @@ class Client(Protocol):
 
     async def move_camera(self, position: Union[Unit, Units, Point2, Point3]):
         """ Moves camera to the target position """
-        assert isinstance(position, (Unit, Units, Point2, Point3))
+        if not isinstance(position, (Unit, Units, Point2, Point3)):
+            raise AssertionError()
         if isinstance(position, Units):
             position = position.center
         if isinstance(position, Unit):
@@ -400,7 +432,8 @@ class Client(Protocol):
 
     async def obs_move_camera(self, position: Union[Unit, Units, Point2, Point3]):
         """ Moves observer camera to the target position """
-        assert isinstance(position, (Unit, Units, Point2, Point3))
+        if not isinstance(position, (Unit, Units, Point2, Point3)):
+            raise AssertionError()
         if isinstance(position, Units):
             position = position.center
         if isinstance(position, Unit):
@@ -423,7 +456,8 @@ class Client(Protocol):
         :param position: """
         from s2clientprotocol import spatial_pb2 as spatial_pb
 
-        assert isinstance(position, (Point2, Point3))
+        if not isinstance(position, (Point2, Point3)):
+            raise AssertionError()
         action = sc_pb.Action(
             action_render=spatial_pb.ActionSpatial(
                 camera_move=spatial_pb.ActionSpatialCameraMove(
@@ -445,9 +479,12 @@ class Client(Protocol):
         size: int = 8,
     ):
         """ Draws a text on the screen (monitor / game window) with coordinates 0 <= x, y <= 1. """
-        assert len(pos) >= 2
-        assert 0 <= pos[0] <= 1
-        assert 0 <= pos[1] <= 1
+        if len(pos) < 2:
+            raise AssertionError()
+        if not 0 <= pos[0] <= 1:
+            raise AssertionError()
+        if not 0 <= pos[1] <= 1:
+            raise AssertionError()
         pos = Point2((pos[0], pos[1]))
         self._debug_texts.append(DrawItemScreenText(text=text, color=color, start_point=pos, font_size=size))
 
@@ -573,15 +610,22 @@ class Client(Protocol):
             unit_tags = unit_tags.tags
         if isinstance(unit_tags, Unit):
             unit_tags = [unit_tags.tag]
-        assert hasattr(
-            unit_tags, "__iter__"
-        ), f"unit_tags argument needs to be an iterable (list, dict, set, Units), given argument is {type(unit_tags).__name__}"
-        assert (
-            1 <= unit_value <= 3
-        ), f"unit_value needs to be between 1 and 3 (1 for energy, 2 for life, 3 for shields), given argument is {unit_value}"
-        assert all(tag > 0 for tag in unit_tags), f"Unit tags have invalid value: {unit_tags}"
-        assert isinstance(value, (int, float)), "Value needs to be of type int or float"
-        assert value >= 0, "Value can't be negative"
+        if not hasattr(unit_tags, "__iter__"):
+            raise AssertionError(
+                f"unit_tags argument needs to be an iterable (list, dict, set, Units),"
+                f" given argument is {type(unit_tags).__name__}"
+            )
+        if not (1 <= unit_value <= 3):
+            raise AssertionError(
+                f"unit_value needs to be between 1 and 3 (1 for energy, 2 for life, 3 for shields),"
+                f" given argument is {unit_value}"
+            )
+        if not all(tag > 0 for tag in unit_tags):
+            raise AssertionError(f"Unit tags have invalid value: {unit_tags}")
+        if not isinstance(value, (int, float)):
+            raise AssertionError("Value needs to be of type int or float")
+        if value < 0:
+            raise AssertionError("Value can't be negative")
         await self._execute(
             debug=sc_pb.RequestDebug(
                 debug=(
