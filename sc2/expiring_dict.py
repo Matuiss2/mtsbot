@@ -28,9 +28,12 @@ class ExpiringDict(OrderedDict):
     """
 
     def __init__(self, bot: "BotAI", max_len: int = 1, max_age_frames: int = 1):
-        assert max_age_frames > 0
-        assert max_len > 0
-        assert bot
+        if max_age_frames <= 0:
+            raise AssertionError()
+        if max_len <= 0:
+            raise AssertionError()
+        if not bot:
+            raise AssertionError()
 
         OrderedDict.__init__(self)
         self.bot: BotAI = bot

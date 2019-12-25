@@ -34,7 +34,8 @@ class GameData:
         elif isinstance(ability, UnitCommand):
             ability = self.abilities[ability.ability.value]
 
-        assert isinstance(ability, AbilityData), f"C: {ability}"
+        if not isinstance(ability, AbilityData):
+            raise AssertionError(f"C: {ability}")
 
         for unit in self.units.values():
             if unit.creation_ability is None:
@@ -70,7 +71,8 @@ class AbilityData:
 
     @classmethod
     def id_exists(cls, ability_id):
-        assert isinstance(ability_id, int), f"Wrong type: {ability_id} is not int"
+        if not isinstance(ability_id, int):
+            raise AssertionError(f"Wrong type: {ability_id} is not int")
         if ability_id == 0:
             return False
         i = bisect_left(cls.ability_ids, ability_id)  # quick binary search
@@ -81,7 +83,8 @@ class AbilityData:
         self._proto = proto
 
         # What happens if we comment this out? Should this not be commented out? What is its purpose?
-        assert self.id != 0
+        if self.id == 0:
+            raise AssertionError()
 
     def __repr__(self) -> str:
         return f"AbilityData(name={self._proto.button_name})"
@@ -163,7 +166,8 @@ class UnitTypeData:
         return self._proto.attributes
 
     def has_attribute(self, attr) -> bool:
-        assert isinstance(attr, Attribute)
+        if not isinstance(attr, Attribute):
+            raise AssertionError()
         return attr in self.attributes
 
     @property
@@ -314,7 +318,8 @@ class Cost:
         return self.__class__(self.minerals + other.minerals, self.vespene + other.vespene, time=time)
 
     def __sub__(self, other) -> Cost:
-        assert isinstance(other, Cost)
+        if not isinstance(other, Cost):
+            raise AssertionError()
         if self.time is None:
             time = other.time
         elif other.time is None:
