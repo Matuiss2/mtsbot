@@ -4,8 +4,10 @@ from .data import AIBuild, Difficulty, PlayerType, Race
 
 class AbstractPlayer:
     def __init__(self, p_type, race=None, name=None, difficulty=None, ai_build=None, fullscreen=False):
-        assert isinstance(p_type, PlayerType), f"p_type is of type {type(p_type)}"
-        assert name is None or isinstance(name, str), f"name is of type {type(name)}"
+        if not isinstance(p_type, PlayerType):
+            raise AssertionError(f"p_type is of type {type(p_type)}")
+        if not (name is None or isinstance(name, str)):
+            raise AssertionError(f"name is of type {type(name)}")
 
         self.name = name
         self.type = p_type
@@ -13,22 +15,30 @@ class AbstractPlayer:
         if race is not None:
             self.race = race
         if p_type == PlayerType.Computer:
-            assert isinstance(difficulty, Difficulty), f"difficulty is of type {type(difficulty)}"
+            if not isinstance(difficulty, Difficulty):
+                raise AssertionError(f"difficulty is of type {type(difficulty)}")
             # Workaround, proto information does not carry ai_build info
             # We cant set that in the Player classmethod
-            assert ai_build is None or isinstance(ai_build, AIBuild), f"ai_build is of type {type(ai_build)}"
+            if not (ai_build is None or isinstance(ai_build, AIBuild)):
+                raise AssertionError(f"ai_build is of type {type(ai_build)}")
             self.difficulty = difficulty
             self.ai_build = ai_build
 
         elif p_type == PlayerType.Observer:
-            assert race is None
-            assert difficulty is None
-            assert ai_build is None
+            if race is not None:
+                raise AssertionError()
+            if difficulty is not None:
+                raise AssertionError()
+            if ai_build is not None:
+                raise AssertionError()
 
         else:
-            assert isinstance(race, Race), f"race is of type {type(race)}"
-            assert difficulty is None
-            assert ai_build is None
+            if not isinstance(race, Race):
+                raise AssertionError(f"race is of type {type(race)}")
+            if difficulty is not None:
+                raise AssertionError()
+            if ai_build is not None:
+                raise AssertionError()
 
 
 class Human(AbstractPlayer):

@@ -69,13 +69,15 @@ class Pointlike(tuple):
         """ This function assumes the 2d distance is meant
 
         :param ps: """
-        assert ps, f"ps is empty"
+        if not ps:
+            raise AssertionError(f"ps is empty")
         return min(ps, key=lambda p: self.distance_to(p))
 
     def distance_to_closest(self, ps: Union[Units, Iterable[Point2]]) -> Union[int, float]:
         """ This function assumes the 2d distance is meant
         :param ps: """
-        assert ps, f"ps is empty"
+        if not ps:
+            raise AssertionError(f"ps is empty")
         closest_distance = math.inf
         for p2 in ps:
             p2 = p2.position
@@ -88,14 +90,16 @@ class Pointlike(tuple):
         """ This function assumes the 2d distance is meant
 
         :param ps: Units object, or iterable of Unit or Point2 """
-        assert ps, f"ps is empty"
+        if not ps:
+            raise AssertionError(f"ps is empty")
         return max(ps, key=lambda p: self.distance_to(p))
 
     def distance_to_furthest(self, ps: Union[Units, Iterable[Point2]]) -> Union[int, float]:
         """ This function assumes the 2d distance is meant
 
         :param ps: """
-        assert ps, f"ps is empty"
+        if not ps:
+            raise AssertionError(f"ps is empty")
         furthest_distance = -math.inf
         for p2 in ps:
             p2 = p2.position
@@ -170,7 +174,8 @@ class Point2(Pointlike):
         """ This property exists in case Point2 is used as a vector. """
         length = self.length
         # Cannot normalize if length is zero
-        assert length
+        if not length:
+            raise AssertionError()
         return self.__class__((self[0] / length, self[1] / length))
 
     @property
@@ -196,7 +201,8 @@ class Point2(Pointlike):
         if isinstance(distance, (tuple, list)):  # interval
             distance = distance[0] + random.random() * (distance[1] - distance[0])
 
-        assert distance > 0, f"Distance is not greater than 0"
+        if distance <= 0:
+            raise AssertionError("Distance is not greater than 0")
         angle = random.random() * 2 * math.pi
 
         dx, dy = math.cos(angle), math.sin(angle)
@@ -219,9 +225,11 @@ class Point2(Pointlike):
 
         :param p:
         :param r: """
-        assert self != p, f"self is equal to p"
+        if self == p:
+            raise AssertionError(f"self is equal to p")
         distanceBetweenPoints = self.distance_to(p)
-        assert r >= distanceBetweenPoints / 2
+        if r < distanceBetweenPoints / 2:
+            raise AssertionError()
         # remaining distance from center towards the intersection, using pythagoras
         remainingDistanceFromCenter = (r ** 2 - (distanceBetweenPoints / 2) ** 2) ** 0.5
         # center of both points
@@ -356,7 +364,8 @@ class Rect(tuple):
         """
         :param data:
         """
-        assert data.p0.x < data.p1.x and data.p0.y < data.p1.y
+        if data.p0.x >= data.p1.x and data.p0.y >= data.p1.y:
+            raise AssertionError()
         return cls((data.p0.x, data.p0.y, data.p1.x - data.p0.x, data.p1.y - data.p0.y))
 
     @property
