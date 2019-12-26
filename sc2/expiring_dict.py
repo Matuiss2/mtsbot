@@ -122,7 +122,7 @@ class ExpiringDict(OrderedDict):
                 del self[key]
             if default is None:
                 raise KeyError(key)
-            elif with_age:
+            if with_age:
                 return default, self.frame
             return default
 
@@ -137,7 +137,7 @@ class ExpiringDict(OrderedDict):
                     return item[0]
             if default is None:
                 raise KeyError(key)
-            elif with_age:
+            if with_age:
                 return default, self.frame
             return None
 
