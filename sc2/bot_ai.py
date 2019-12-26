@@ -941,32 +941,6 @@ class BotAI(DistanceCalculation):
         ability = self.game_data_local.units[unit_type.value].creation_ability
         return self._worker_orders[ability]
 
-    @property_cache_once_per_frame
-    def structures_without_construction_scv(self) -> Units:
-        """ Returns all structures that do not have an SCV constructing it.
-        Warning: this function may move to become a Units filter.
-        New function. Please report any bugs! """
-        worker_targets: Set[Union[int, Point2]] = set()
-        for worker in self.workers:
-            # Ignore repairing workers
-            if not worker.is_constructing_scv:
-                continue
-            for order in worker.orders:
-                # When a construction is resumed, the worker.orders[0].target is the tag of the structure, else it is
-                # a Point2
-                target = order.target
-                if isinstance(target, int):
-                    worker_targets.add(target)
-                else:
-                    worker_targets.add(Point2.from_proto(target))
-        return self.structures.filter(
-            lambda structure: structure.build_progress < 1
-            and structure.position not in worker_targets
-            and structure.tag not in worker_targets
-            # Redundant check?
-            and structure.type_id in TERRAN_STRUCTURES_REQUIRE_SCV
-        )
-
     async def build(
         self,
         building: UnitTypeId,
@@ -1765,7 +1739,6 @@ class BotAI(DistanceCalculation):
 
         This may be called frequently for terran structures that are burning down, or zerg buildings that are off creep,
         or terran bio units that just used stimpack ability.
-        TODO: If there is a demand for it, then I can add a similar event for when enemy units took damage
 
         Examples::
 
