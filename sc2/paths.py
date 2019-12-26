@@ -42,7 +42,7 @@ def get_runner_args(cwd):
         runner_dir = os.path.dirname(os.environ.get("WINE"))
         # translate cwd from Unix to Windows path
         win_cwd = subprocess.run(
-            [os.path.join(runner_dir, "winepath"), "-w", cwd], capture_output=True, text=True
+            [os.path.join(runner_dir, "winepath"), "-w", cwd], capture_output=True, text=True, check=True
         ).stdout.rstrip()
         return [os.environ.get("WINE"), "start", "/d", win_cwd, "/unix"]
 
