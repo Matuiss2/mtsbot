@@ -38,7 +38,7 @@ class Controller(Protocol):
         result = await self.execute(create_game=req)
         return result
 
-    async def start_replay(self, replay_path, realtime, observed_id=0):  # Added
+    async def start_replay(self, replay_path, observed_id=0):  # Added
         interface_options = sc_pb.InterfaceOptions(
             raw=True, score=True, show_cloaked=True, raw_affects_selection=False, raw_crop_to_playable_area=False
         )

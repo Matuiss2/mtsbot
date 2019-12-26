@@ -69,6 +69,7 @@ class SC2Process:
     async def __aenter__(self):
         KillSwitch.add(self)
 
+        # noinspection PyUnusedLocal
         def signal_handler(*args):
             # unused arguments: signal handling library expects all signal
             # callback handlers to accept two positional arguments

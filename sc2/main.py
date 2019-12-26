@@ -480,7 +480,7 @@ async def _setup_replay(server, replay_path, realtime, observed_id):
     return Client(server.ws)
 
 
-async def _host_replay(replay_path, ai, realtime, portconfig, base_build, data_version, observed_id):
+async def _host_replay(replay_path, ai, realtime, base_build, data_version, observed_id):
     async with SC2Process(fullscreen=False, base_build=base_build, data_hash=data_version) as server:
         await server.ping()
         client = await _setup_replay(server, replay_path, realtime, observed_id)
@@ -517,7 +517,6 @@ def run_game(map_settings, players, **kwargs):
 
 
 def run_replay(ai, replay_path, realtime=False, observed_id=0):
-    portconfig = Portconfig()
     if not os.path.isfile(replay_path):
         raise AssertionError(f"Replay does not exist at the given path: {replay_path}")
     if not os.path.isabs(replay_path):
@@ -527,6 +526,6 @@ def run_replay(ai, replay_path, realtime=False, observed_id=0):
         )
     base_build, data_version = get_replay_version(replay_path)
     result = asyncio.get_event_loop().run_until_complete(
-        _host_replay(replay_path, ai, realtime, portconfig, base_build, data_version, observed_id)
+        _host_replay(replay_path, ai, realtime, base_build, data_version, observed_id)
     )
     return result

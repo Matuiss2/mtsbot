@@ -255,10 +255,9 @@ class ObserverAI(DistanceCalculation):
             self._game_info.player_start_location = self.townhalls[0].position
         self._game_info.map_ramps, self._game_info.vision_blockers = self._game_info.find_ramps_and_vision_blockers()
 
-    def prepare_step(self, state, proto_game_info):
+    def prepare_step(self, state):
         """
         :param state:
-        :param proto_game_info:
         """
         # Set attributes from new state before on_step."""
         self.state: GameState = state  # See game_state.py
