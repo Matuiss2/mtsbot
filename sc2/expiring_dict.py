@@ -1,7 +1,7 @@
 from collections import OrderedDict
-from threading import RLock
-from typing import Dict, Iterable, List, Union, TYPE_CHECKING
 from contextlib import suppress
+from threading import RLock
+from typing import Iterable, Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from sc2.bot_ai import BotAI

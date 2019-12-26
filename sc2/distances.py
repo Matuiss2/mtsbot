@@ -1,4 +1,3 @@
-from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
 from sc2.game_state import GameState

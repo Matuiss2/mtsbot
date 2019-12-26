@@ -1,5 +1,5 @@
 import enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
+from typing import Dict, Set  # mypy type checking
 
 from s2clientprotocol import common_pb2 as common_pb
 from s2clientprotocol import data_pb2 as data_pb

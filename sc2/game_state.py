@@ -1,10 +1,10 @@
 from __future__ import annotations
-from typing import Any, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
+
+from typing import Set, Union
 
 from .constants import FakeEffectID, FakeEffectRadii
 from .data import Alliance, DisplayType
 from .ids.effect_id import EffectId
-from .ids.unit_typeid import UnitTypeId
 from .ids.upgrade_id import UpgradeId
 from .pixel_map import PixelMap
 from .position import Point2, Point3
