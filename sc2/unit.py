@@ -567,9 +567,6 @@ class Unit:
                     # Expect fully loaded bunker with marines
                     return (24, 0.854, 6)
                 return (0, 0, 0)
-            else:
-                # TODO if bunker belongs to us, use passengers and upgrade level to calculate damage
-                pass
 
         required_target_type: Set[
             int

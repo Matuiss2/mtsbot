@@ -5,6 +5,7 @@ import math
 import random
 import time
 import warnings
+from contextlib import suppress
 from collections import Counter
 from typing import Any, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
 from s2clientprotocol import sc2api_pb2 as sc_pb
@@ -525,10 +526,6 @@ class BotAI(DistanceCalculation):
             elif worker.is_idle and all_minerals_near_base:
                 target_mineral = min(all_minerals_near_base, key=lambda mineral: mineral.distance_to(worker))
                 self.do(worker.gather(target_mineral))
-            else:
-                # there are no deficit mining places and worker is not idle
-                # so dont move him
-                pass
 
     @property
     def owned_expansions(self) -> Dict[Point2, Unit]:
@@ -1424,18 +1421,14 @@ class BotAI(DistanceCalculation):
             if current_action.ability.id != action.ability:
                 # Different action, return True
                 return True
-            try:
+            with suppress(AttributeError):
                 if current_action.target == action.target.tag:
                     # Same action, remove action if same target unit
                     return False
-            except AttributeError:
-                pass
-            try:
+            with suppress(AttributeError):
                 if action.target.x == current_action.target.x and action.target.y == current_action.target.y:
                     # Same action, remove action if same target position
                     return False
-            except AttributeError:
-                pass
             return True
         return True
 

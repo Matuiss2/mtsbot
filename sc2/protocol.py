@@ -2,7 +2,7 @@ import asyncio
 
 import logging
 import sys
-
+from contextlib import suppress
 from s2clientprotocol import sc2api_pb2 as sc_pb
 
 from .data import Status
@@ -84,7 +84,5 @@ class Protocol:
         return result
 
     async def quit(self):
-        try:
+        with suppress(ConnectionAlreadyClosed):
             await self._execute(quit=sc_pb.RequestQuit())
-        except ConnectionAlreadyClosed:
-            pass
