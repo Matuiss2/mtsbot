@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from threading import RLock
 from typing import Dict, Iterable, List, Union, TYPE_CHECKING
-
+from contextlib import suppress
 if TYPE_CHECKING:
     from sc2.bot_ai import BotAI
 
@@ -60,7 +60,7 @@ class ExpiringDict(OrderedDict):
     def __getitem__(self, key, with_age=False) -> any:
         """ Return the item of the dict using d[key] """
         with self.lock:
-            try:
+            with suppress(Exception):
                 # Each item is a list of [value, frame time]
                 item = OrderedDict.__getitem__(self, key)
                 if self.frame - item[1] < self.max_age:
@@ -69,19 +69,15 @@ class ExpiringDict(OrderedDict):
                     return item[0]
                 else:
                     del self[key]
-            except:
-                pass
         raise KeyError(key)
 
     def __setitem__(self, key, value):
         """ Set d[key] = value """
         with self.lock:
             if len(self) == self.max_len:
-                try:
+                with suppress(KeyError):
                     # Remove the first element as this is going to be the oldest
                     OrderedDict.popitem(self, last=False)
-                except KeyError:
-                    pass
             OrderedDict.__setitem__(self, key, (value, self.frame))
 
     def __repr__(self):

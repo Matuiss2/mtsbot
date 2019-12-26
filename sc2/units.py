@@ -113,10 +113,10 @@ class Units(list):
     def random(self) -> Unit:
         if not self:
             raise AssertionError("Units object is empty")
-        return random.choice(self)
+        return random.SystemRandom().choice(self)
 
     def random_or(self, other: any) -> Unit:
-        return random.choice(self) if self else other
+        return random.SystemRandom().choice(self) if self else other
 
     def random_group_of(self, n: int) -> Units:
         """ Returns self if n >= self.amount. """
