@@ -56,7 +56,7 @@ class PixelMap:
             raise AssertionError(f"x is {pos[0]}, self.width is {self.width}")
         if not 0 <= pos[1] < self.height:
             raise AssertionError(f"y is {pos[1]}, self.height is {self.height}")
-        if not (0 <= value <= 254 * self._in_bits + 1):
+        if not 0 <= value <= 254 * self._in_bits + 1:
             raise AssertionError(f"value is {value}, it should be between 0 and {254 * self._in_bits + 1}")
         if not isinstance(value, int):
             raise AssertionError(f"value is of type {type(value)}, it should be an integer")

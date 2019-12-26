@@ -619,7 +619,7 @@ class Client(Protocol):
                 f"unit_tags argument needs to be an iterable (list, dict, set, Units),"
                 f" given argument is {type(unit_tags).__name__}"
             )
-        if not (1 <= unit_value <= 3):
+        if not 1 <= unit_value <= 3:
             raise AssertionError(
                 f"unit_value needs to be between 1 and 3 (1 for energy, 2 for life, 3 for shields),"
                 f" given argument is {unit_value}"
