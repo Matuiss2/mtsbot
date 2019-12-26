@@ -9,7 +9,7 @@ def is_submodule(path):
     if path.is_file():
         return path.suffix == ".py" and path.stem != "__init__"
     if path.is_dir():
-        return (path / "__init__.py").exists()
+        return bool(path / "__init__.py")
     return False
 
 

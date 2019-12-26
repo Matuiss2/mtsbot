@@ -67,7 +67,6 @@ class Common:
         "idle_worker_count",
         "army_count",
         "warp_gate_count",
-        "larva_count",
     ]
 
     def __init__(self, proto):

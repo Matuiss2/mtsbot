@@ -74,10 +74,6 @@ class Units(list):
     def __hash__(self):
         return hash(unit.tag for unit in self)
 
-    @property
-    def exists(self) -> bool:
-        return bool(self)
-
     def find_by_tag(self, tag) -> Optional[Unit]:
         for unit in self:
             if unit.tag == tag:
@@ -89,12 +85,6 @@ class Units(list):
         if unit is None:
             raise KeyError("Unit not found")
         return unit
-
-    @property
-    def first(self) -> Unit:
-        if not self:
-            raise AssertionError("Units object is empty")
-        return self[0]
 
     def take(self, n: int) -> Units:
         if n >= len(self):
@@ -698,8 +688,7 @@ class Units(list):
 
     @property
     def visible(self) -> Units:
-        """ Returns all units or structures that are visible.
-        TODO: add proper description on which units are exactly visible (not snapshots?) """
+        """ Returns all units or structures that are visible."""
         return self.filter(lambda unit: unit.is_visible)
 
     @property

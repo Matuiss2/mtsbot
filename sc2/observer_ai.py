@@ -209,7 +209,7 @@ class ObserverAI(DistanceCalculation):
     def prepare_first_step(self):
         """First step extra preparations. Must not be called before prepare_step."""
         if self.townhalls:
-            self._game_info.player_start_location = self.townhalls.first.position
+            self._game_info.player_start_location = self.townhalls[0].position
         self._game_info.map_ramps, self._game_info.vision_blockers = self._game_info.find_ramps_and_vision_blockers()
 
     def prepare_step(self, state, proto_game_info):

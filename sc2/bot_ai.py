@@ -1414,7 +1414,7 @@ class BotAI(DistanceCalculation):
     def prepare_first_step(self):
         """First step extra preparations. Must not be called before prepare_step."""
         if self.townhalls:
-            self._game_info.player_start_location = self.townhalls.first.position
+            self._game_info.player_start_location = self.townhalls[0].position
             # Calculate and cache expansion locations forever inside 'self._cache_expansion_locations',
             # this is done to prevent a bug when this is run and cached later in the game
             _ = self.expansion_locations
