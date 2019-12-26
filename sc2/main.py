@@ -116,7 +116,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     ai._prepare_first_step()
     try:
         await ai.on_start()
-    except Exception as e:
+    except Exception:
         logger.exception(f"AI on_start threw an error")
         logger.error(f"resigning due to previous error")
         await ai.on_end(Result.Defeat)
@@ -134,7 +134,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
             if client._game_result:
                 try:
                     await ai.on_end(client._game_result[player_id])
-                except TypeError as error:
+                except TypeError:
                     # print(f"caught type error {error}")
                     # print(f"return {client._game_result[player_id]}")
                     return client._game_result[player_id]
@@ -219,7 +219,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
             logger.error(f"Resigning due to previous error")
             try:
                 await ai.on_end(Result.Defeat)
-            except TypeError as error:
+            except TypeError:
                 # print(f"caught type error {error}")
                 # print(f"return {Result.Defeat}")
                 return Result.Defeat
@@ -277,7 +277,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     ai._prepare_first_step()
     try:
         await ai.on_start()
-    except Exception as e:
+    except Exception:
         logger.exception(f"AI on_start threw an error")
         logger.error(f"resigning due to previous error")
         await ai.on_end(Result.Defeat)
@@ -296,7 +296,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
             if client._game_result:
                 try:
                     await ai.on_end(client._game_result[player_id])
-                except TypeError as error:
+                except TypeError:
                     # print(f"caught type error {error}")
                     # print(f"return {client._game_result[player_id]}")
                     return client._game_result[player_id]
@@ -338,7 +338,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
             logger.error(f"Resigning due to previous error")
             try:
                 await ai.on_end(Result.Defeat)
-            except TypeError as error:
+            except TypeError:
                 # print(f"caught type error {error}")
                 # print(f"return {Result.Defeat}")
                 return Result.Defeat
@@ -484,8 +484,7 @@ async def _setup_replay(server, replay_path, realtime, observed_id):
 
 async def _host_replay(replay_path, ai, realtime, portconfig, base_build, data_version, observed_id):
     async with SC2Process(fullscreen=False, base_build=base_build, data_hash=data_version) as server:
-        response = await server.ping()
-
+        await server.ping()
         client = await _setup_replay(server, replay_path, realtime, observed_id)
         result = await _play_replay(client, ai, realtime)
         return result

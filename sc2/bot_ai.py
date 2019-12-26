@@ -492,8 +492,6 @@ class BotAI(DistanceCalculation):
                 else:
                     possible_mining_places = [place for place in deficit_mining_places if place.vespene_contents]
                 # if preferred type is not available any more, get all other places
-                if not possible_mining_places:
-                    possible_mining_places = deficit_mining_places
                 # find closest mining place
                 current_place = min(deficit_mining_places, key=lambda place: place.distance_to(worker))
                 # remove it from the list

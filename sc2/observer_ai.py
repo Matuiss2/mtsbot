@@ -266,7 +266,6 @@ class ObserverAI(DistanceCalculation):
             if unit.is_blip:
                 self.blips.add(Blip(unit))
             else:
-                unit_type: int = unit.unit_type
                 # Convert these units to effects: reaper grenade, parasitic bomb dummy, forcefield
                 unit_obj = Unit(unit, self)
                 self.units.append(unit_obj)
