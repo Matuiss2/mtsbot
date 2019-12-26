@@ -93,7 +93,7 @@ class Unit:
         :param bot_object:
         """
         self.proto = proto_data
-        self._bot_object: BotAI = bot_object
+        self.bot_object: BotAI = bot_object
         # Used by property_immutable_cache
         self.cache = {}
         self.game_loop: int = bot_object.state.game_loop
@@ -107,29 +107,29 @@ class Unit:
         """ UnitTypeId found in sc2/ids/unit_typeid.
         Caches all type_ids of the same unit type. """
         unit_type = self.proto.unit_type
-        if unit_type not in self._bot_object.game_data_local.unit_types:
-            self._bot_object.game_data_local.unit_types[unit_type] = UnitTypeId(unit_type)
-        return self._bot_object.game_data_local.unit_types[unit_type]
+        if unit_type not in self.bot_object.game_data_local.unit_types:
+            self.bot_object.game_data_local.unit_types[unit_type] = UnitTypeId(unit_type)
+        return self.bot_object.game_data_local.unit_types[unit_type]
 
     @property_immutable_cache
-    def _type_data(self) -> UnitTypeData:
+    def type_data(self) -> UnitTypeData:
         """ Provides the unit type data. """
-        return self._bot_object.game_data_local.units[self.proto.unit_type]
+        return self.bot_object.game_data_local.units[self.proto.unit_type]
 
     @property_immutable_cache
     def _creation_ability(self) -> AbilityData:
         """ Provides the AbilityData of the creation ability of this unit. """
-        return self._bot_object.game_data_local.units[self.proto.unit_type].creation_ability
+        return self.bot_object.game_data_local.units[self.proto.unit_type].creation_ability
 
     @property
     def name(self) -> str:
         """ Returns the name of the unit. """
-        return self._type_data.name
+        return self.type_data.name
 
     @property
     def race(self) -> Race:
         """ Returns the race of the unit """
-        return Race(self._type_data.proto.race)
+        return Race(self.type_data.proto.race)
 
     @property
     def tag(self) -> int:
@@ -139,57 +139,57 @@ class Unit:
     @property
     def is_structure(self) -> bool:
         """ Checks if the unit is a structure. """
-        return IS_STRUCTURE in self._type_data.attributes
+        return IS_STRUCTURE in self.type_data.attributes
 
     @property
     def is_light(self) -> bool:
         """ Checks if the unit has the 'light' attribute. """
-        return IS_LIGHT in self._type_data.attributes
+        return IS_LIGHT in self.type_data.attributes
 
     @property
     def is_armored(self) -> bool:
         """ Checks if the unit has the 'armored' attribute. """
-        return IS_ARMORED in self._type_data.attributes
+        return IS_ARMORED in self.type_data.attributes
 
     @property
     def is_biological(self) -> bool:
         """ Checks if the unit has the 'biological' attribute. """
-        return IS_BIOLOGICAL in self._type_data.attributes
+        return IS_BIOLOGICAL in self.type_data.attributes
 
     @property
     def is_mechanical(self) -> bool:
         """ Checks if the unit has the 'mechanical' attribute. """
-        return IS_MECHANICAL in self._type_data.attributes
+        return IS_MECHANICAL in self.type_data.attributes
 
     @property
     def is_massive(self) -> bool:
         """ Checks if the unit has the 'massive' attribute. """
-        return IS_MASSIVE in self._type_data.attributes
+        return IS_MASSIVE in self.type_data.attributes
 
     @property
     def is_psionic(self) -> bool:
         """ Checks if the unit has the 'psionic' attribute. """
-        return IS_PSIONIC in self._type_data.attributes
+        return IS_PSIONIC in self.type_data.attributes
 
     @property
     def tech_alias(self) -> Optional[List[UnitTypeId]]:
         """ Building tech equality, e.g. OrbitalCommand is the same as CommandCenter
         For Hive, this returns [UnitTypeId.Hatchery, UnitTypeId.Lair]
         For SCV, this returns None """
-        return self._type_data.tech_alias
+        return self.type_data.tech_alias
 
     @property
     def unit_alias(self) -> Optional[UnitTypeId]:
         """ Building type equality, e.g. FlyingOrbitalCommand is the same as OrbitalCommand
         For flying OrbitalCommand, this returns UnitTypeId.OrbitalCommand
         For SCV, this returns None """
-        return self._type_data.unit_alias
+        return self.type_data.unit_alias
 
     @property_immutable_cache
     def _weapons(self):
         """ Returns the weapons of the unit. """
         try:
-            return self._type_data.proto.weapons
+            return self.type_data.proto.weapons
         except:
             return None
 
@@ -280,27 +280,27 @@ class Unit:
     @property
     def armor(self) -> float:
         """ Returns the armor of the unit. Does not include upgrades """
-        return self._type_data.proto.armor
+        return self.type_data.proto.armor
 
     @property
     def sight_range(self) -> float:
         """ Returns the sight range of the unit. """
-        return self._type_data.proto.sight_range
+        return self.type_data.proto.sight_range
 
     @property
     def movement_speed(self) -> float:
         """ Returns the movement speed of the unit. Does not include upgrades or buffs. """
-        return self._type_data.proto.movement_speed
+        return self.type_data.proto.movement_speed
 
     @property
     def is_mineral_field(self) -> bool:
         """ Checks if the unit is a mineral field. """
-        return self._type_data.has_minerals
+        return self.type_data.has_minerals
 
     @property
     def is_vespene_geyser(self) -> bool:
         """ Checks if the unit is a non-empty vespene geyser or gas extraction building. """
-        return self._type_data.has_vespene
+        return self.type_data.has_vespene
 
     @property
     def health(self) -> float:
@@ -366,18 +366,18 @@ class Unit:
     def age_in_frames(self) -> int:
         """ Returns how old the unit object data is (in game frames).
         This age does not reflect the unit was created / trained / morphed! """
-        return self._bot_object.state.game_loop - self.game_loop
+        return self.bot_object.state.game_loop - self.game_loop
 
     @property
     def age(self) -> float:
         """ Returns how old the unit object data is (in game seconds).
         This age does not reflect when the unit was created / trained / morphed! """
-        return (self._bot_object.state.game_loop - self.game_loop) / 22.4
+        return (self.bot_object.state.game_loop - self.game_loop) / 22.4
 
     @property
     def is_memory(self) -> bool:
         """ Returns True if this Unit object is referenced from the future and is outdated. """
-        return self.game_loop != self._bot_object.state.game_loop
+        return self.game_loop != self.bot_object.state.game_loop
 
     @property_immutable_cache
     def is_snapshot(self) -> bool:
@@ -387,7 +387,7 @@ class Unit:
         if self.proto.display_type == IS_SNAPSHOT:
             return True
         position = self.position.rounded
-        return self._bot_object.state.visibility.data_numpy[position[1], position[0]] != 2
+        return self.bot_object.state.visibility.data_numpy[position[1], position[0]] != 2
 
     @property_immutable_cache
     def is_visible(self) -> bool:
@@ -437,8 +437,8 @@ class Unit:
 
         :param p: """
         if isinstance(p, Unit):
-            return self._bot_object.distance_squared_unit_to_unit(self, p) ** 0.5
-        return self._bot_object.distance_math_hypot(self.position_tuple, p)
+            return self.bot_object.distance_squared_unit_to_unit(self, p) ** 0.5
+        return self.bot_object.distance_math_hypot(self.position_tuple, p)
 
     def distance_to_squared(self, p: Union[Unit, Point2, Point3]) -> float:
         """ Using the 2d distance squared between self and p. Slightly faster than distance_to, so when filtering a
@@ -447,8 +447,8 @@ class Unit:
 
         :param p: """
         if isinstance(p, Unit):
-            return self._bot_object.distance_squared_unit_to_unit(self, p)
-        return self._bot_object.distance_math_hypot_squared(self.position_tuple, p)
+            return self.bot_object.distance_squared_unit_to_unit(self, p)
+        return self.bot_object.distance_math_hypot_squared(self.position_tuple, p)
 
     def target_in_range(self, target: Unit, bonus_distance: float = 0) -> bool:
         """ Checks if the target is in range.
@@ -463,7 +463,7 @@ class Unit:
         else:
             return False
         return (
-            self._bot_object.distance_squared_unit_to_unit(self, target)
+            self.bot_object.distance_squared_unit_to_unit(self, target)
             <= (self.radius + target.radius + unit_attack_range + bonus_distance) ** 2
         )
 
@@ -476,14 +476,14 @@ class Unit:
         :param ability_id:
         :param target:
         :param bonus_distance: """
-        cast_range = self._bot_object.game_data_local.abilities[ability_id.value].proto.cast_range
+        cast_range = self.bot_object.game_data_local.abilities[ability_id.value].proto.cast_range
         if cast_range <= 0:
             raise AssertionError(f"Checking for an ability ({ability_id}) that has no cast range")
-        ability_target_type = self._bot_object.game_data_local.abilities[ability_id.value].proto.target
+        ability_target_type = self.bot_object.game_data_local.abilities[ability_id.value].proto.target
         # For casting abilities that target other units, like transfuse, feedback, snipe, yamato
         if ability_target_type in {Target.Unit.value, Target.PointOrUnit.value} and isinstance(target, Unit):
             return (
-                self._bot_object.distance_squared_unit_to_unit(self, target)
+                self.bot_object.distance_squared_unit_to_unit(self, target)
                 <= (cast_range + self.radius + target.radius + bonus_distance) ** 2
             )
         # For casting abilities on the ground, like queen creep tumor, ravager bile, HT storm
@@ -491,7 +491,7 @@ class Unit:
             target, (Point2, tuple)
         ):
             return (
-                self._bot_object._distance_pos_to_pos(self.position_tuple, target)
+                self.bot_object.distance_pos_to_pos(self.position_tuple, target)
                 <= cast_range + self.radius + bonus_distance
             )
         return False
@@ -539,7 +539,7 @@ class Unit:
             if (
                 target.type_id in {UnitTypeId.ULTRALISK, UnitTypeId.ULTRALISKBURROWED}
                 and target.is_mine
-                and UpgradeId.CHITINOUSPLATING in target._bot_object.state.upgrades
+                and UpgradeId.CHITINOUSPLATING in target.bot_object.state.upgrades
             ):
                 enemy_armor += 2
             # Guardian shield adds 2 armor
@@ -597,7 +597,7 @@ class Unit:
             bonuses: List[float] = []
             # TODO: hardcode hellbats when they have blueflame or attack upgrades
             for bonus in weapon.damage_bonus:
-                if bonus.attribute in target._type_data.attributes:
+                if bonus.attribute in target.type_data.attributes:
                     bonus_damage_per_upgrade = (
                         0
                         if not self.attack_upgrade_level
@@ -607,7 +607,7 @@ class Unit:
                     if (
                         bonus.attribute == IS_LIGHT
                         and self.type_id == UnitTypeId.HELLION
-                        and UpgradeId.HIGHCAPACITYBARRELS in self._bot_object.state.upgrades
+                        and UpgradeId.HIGHCAPACITYBARRELS in self.bot_object.state.upgrades
                     ):
                         bonus_damage_per_upgrade += 5
                     # TODO buffs e.g. void ray charge beam vs armored
@@ -662,7 +662,7 @@ class Unit:
                     self.type_id == UnitTypeId.ZERGLING
                     # Attack speed calculation only works for our unit
                     and self.is_mine
-                    and UpgradeId.ZERGLINGATTACKSPEED in self._bot_object.state.upgrades
+                    and UpgradeId.ZERGLINGATTACKSPEED in self.bot_object.state.upgrades
                 ):
                     # 0.696 for zerglings divided through 1.4 equals (+40% attack speed bonus from the upgrade):
                     weapon_speed /= 1.4
@@ -670,7 +670,7 @@ class Unit:
                     # Adept receives 45% attack speed bonus from glaives
                     self.type_id == UnitTypeId.ADEPT
                     and self.is_mine
-                    and UpgradeId.ADEPTPIERCINGATTACK in self._bot_object.state.upgrades
+                    and UpgradeId.ADEPTPIERCINGATTACK in self.bot_object.state.upgrades
                 ):
                     weapon_speed /= 1.45
                 elif self.type_id == UnitTypeId.MARINE and BuffId.STIMPACK in self.buffs:
@@ -682,19 +682,19 @@ class Unit:
                     # TODO always assume that the enemy has the range upgrade researched
                     self.type_id == UnitTypeId.HYDRALISK
                     and self.is_mine
-                    and UpgradeId.EVOLVEGROOVEDSPINES in self._bot_object.state.upgrades
+                    and UpgradeId.EVOLVEGROOVEDSPINES in self.bot_object.state.upgrades
                 ):
                     weapon_range += 1
                 elif (
                     self.type_id == UnitTypeId.PHOENIX
                     and self.is_mine
-                    and UpgradeId.PHOENIXRANGEUPGRADE in self._bot_object.state.upgrades
+                    and UpgradeId.PHOENIXRANGEUPGRADE in self.bot_object.state.upgrades
                 ):
                     weapon_range += 2
                 elif (
                     self.type_id in {UnitTypeId.PLANETARYFORTRESS, UnitTypeId.MISSILETURRET, UnitTypeId.AUTOTURRET}
                     and self.is_mine
-                    and UpgradeId.HISECAUTOTRACKING in self._bot_object.state.upgrades
+                    and UpgradeId.HISECAUTOTRACKING in self.bot_object.state.upgrades
                 ):
                     weapon_range += 1
 
@@ -745,7 +745,7 @@ class Unit:
         For barracks, spawning pool, gateway, this returns 1.5
         For supply depot, this returns 1
         For sensor tower, creep tumor, this return 0.5 """
-        return self._bot_object.game_data_local.units[self.proto.unit_type].creation_ability.proto.footprint_radius
+        return self.bot_object.game_data_local.units[self.proto.unit_type].creation_ability.proto.footprint_radius
 
     @property
     def radius(self) -> float:
@@ -911,7 +911,7 @@ class Unit:
     def orders(self) -> List[UnitOrder]:
         """ Returns the a list of the current orders. """
         # TODO: add examples on how to use unit orders
-        return [UnitOrder.from_proto(order, self._bot_object) for order in self.proto.orders]
+        return [UnitOrder.from_proto(order, self.bot_object) for order in self.proto.orders]
 
     @property_immutable_cache
     def order_target(self) -> Optional[Union[int, Point2]]:
@@ -1007,13 +1007,13 @@ class Unit:
     def has_techlab(self) -> bool:
         """ Check if a structure is connected to a techlab addon.
         This should only ever return True for BARRACKS, FACTORY, STARPORT. """
-        return self.add_on_tag in self._bot_object.techlab_tags
+        return self.add_on_tag in self.bot_object.techlab_tags
 
     @property_immutable_cache
     def has_reactor(self) -> bool:
         """ Check if a structure is connected to a reactor addon.
         This should only ever return True for BARRACKS, FACTORY, STARPORT. """
-        return self.add_on_tag in self._bot_object.reactor_tags
+        return self.add_on_tag in self.bot_object.reactor_tags
 
     @property_immutable_cache
     def add_on_land_position(self) -> Point2:
@@ -1031,7 +1031,7 @@ class Unit:
     def passengers(self) -> Set[Unit]:
         """ Returns the units inside a Bunker, CommandCenter, PlanetaryFortress, Medivac, Nydus, Overlord or
         WarpPrism. """
-        return {Unit(unit, self._bot_object) for unit in self.proto.passengers}
+        return {Unit(unit, self.bot_object) for unit in self.proto.passengers}
 
     @property_mutable_cache
     def passengers_tags(self) -> Set[int]:
@@ -1053,7 +1053,7 @@ class Unit:
     @property
     def cargo_size(self) -> Union[float, int]:
         """ Returns the amount of cargo space the unit needs. """
-        return self._type_data.cargo_size
+        return self.type_data.cargo_size
 
     @property
     def cargo_max(self) -> Union[float, int]:
@@ -1116,7 +1116,7 @@ class Unit:
 
         :param unit:
         :param queue: """
-        return self(self._bot_object.game_data_local.units[unit.value].creation_ability.id, queue=queue)
+        return self(self.bot_object.game_data_local.units[unit.value].creation_ability.id, queue=queue)
 
     def build(self, unit: UnitTypeId, position: Union[Point2, Point3] = None, queue: bool = False) -> UnitCommand:
         """ Orders unit to build another 'unit' at 'position'.
@@ -1136,7 +1136,7 @@ class Unit:
                     f"When building the gas structure, the target needs to be a unit"
                     f" (the vespene geysir) not the position of the vespene geysir."
                 )
-        return self(self._bot_object.game_data_local.units[unit.value].creation_ability.id, target=position, queue=queue)
+        return self(self.bot_object.game_data_local.units[unit.value].creation_ability.id, target=position, queue=queue)
 
     def build_gas(self, target_geysir: Unit, queue: bool = False) -> UnitCommand:
         """ Orders unit to build another 'unit' at 'position'.
@@ -1148,14 +1148,14 @@ class Unit:
         :param target_geysir:
         :param queue:
         """
-        gas_structure_type_id: UnitTypeId = race_gas[self._bot_object.race]
+        gas_structure_type_id: UnitTypeId = race_gas[self.bot_object.race]
         if not isinstance(target_geysir, Unit):
             raise AssertionError(
                 f"When building the gas structure, the target needs to be a unit (the vespene geysir) "
                 f"not the position of the vespene geysir."
             )
         return self(
-            self._bot_object.game_data_local.units[gas_structure_type_id.value].creation_ability.id,
+            self.bot_object.game_data_local.units[gas_structure_type_id.value].creation_ability.id,
             target=target_geysir,
             queue=queue,
         )
@@ -1167,7 +1167,7 @@ class Unit:
         :param upgrade:
         :param queue:
         """
-        return self(self._bot_object.game_data_local.upgrades[upgrade.value].research_ability.exact_id, queue=queue)
+        return self(self.bot_object.game_data_local.upgrades[upgrade.value].research_ability.exact_id, queue=queue)
 
     def warp_in(self, unit: UnitTypeId, position: Union[Point2, Point3]) -> UnitCommand:
         """ Orders Warpgate to warp in 'unit' at 'position'. 
@@ -1177,7 +1177,7 @@ class Unit:
         unit
         position
         """
-        normal_creation_ability = self._bot_object.game_data_local.units[unit.value].creation_ability.id
+        normal_creation_ability = self.bot_object.game_data_local.units[unit.value].creation_ability.id
         return self(warpgate_abilities[normal_creation_ability], target=position)
 
     def attack(self, target: Union[Unit, Point2, Point3], queue: bool = False) -> UnitCommand:

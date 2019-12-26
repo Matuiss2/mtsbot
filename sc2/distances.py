@@ -200,7 +200,7 @@ class DistanceCalculation:
 
     # Distance calculation using the fastest distance calculation functions
 
-    def _distance_pos_to_pos(self, pos1: Tuple[float, float], pos2: Tuple[float, float]) -> float:
+    def distance_pos_to_pos(self, pos1: Tuple[float, float], pos2: Tuple[float, float]) -> float:
         return self.distance_math_hypot(pos1, pos2)
 
     def distance_units_to_pos(self, units: Units, pos: Tuple[float, float]) -> Generator[float, None, None]:

@@ -15,7 +15,7 @@ class Controller(Protocol):
 
     @property
     def running(self):
-        return self.__process._process is not None
+        return self.__process.process is not None
 
     async def create_game(self, game_map, players, realtime, random_seed=None):
         if not isinstance(realtime, bool):

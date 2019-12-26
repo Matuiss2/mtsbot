@@ -53,6 +53,7 @@ class Human(AbstractPlayer):
             return f"Human({self.race._name_})"
 
 
+# noinspection PyProtectedMember
 class Bot(AbstractPlayer):
     def __init__(self, race, ai, name=None, fullscreen=False):
         """
@@ -64,6 +65,7 @@ class Bot(AbstractPlayer):
         super().__init__(PlayerType.Participant, race, name=name, fullscreen=fullscreen)
         self.ai = ai
 
+    # noinspection PyProtectedMember
     def __str__(self):
         if self.name is not None:
             return f"Bot {self.ai.__class__.__name__}({self.race._name_}), name={self.name !r})"
@@ -76,6 +78,7 @@ class Computer(AbstractPlayer):
         super().__init__(PlayerType.Computer, race, difficulty=difficulty, ai_build=ai_build)
 
     def __str__(self):
+        # noinspection PyProtectedMember,PyProtectedMember
         return f"Computer {self.difficulty._name_}({self.race._name_}, {self.ai_build.name})"
 
 

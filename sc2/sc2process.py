@@ -59,7 +59,7 @@ class SC2Process:
         else:
             self._port = port
         self._tmp_dir = tempfile.mkdtemp(prefix="SC2_")
-        self._process = None
+        self.process = None
         self._session = None
         self.ws = None
         self._sc2_version = sc2_version
@@ -77,7 +77,7 @@ class SC2Process:
         signal.signal(signal.SIGINT, signal_handler)
 
         try:
-            self._process = self._launch()
+            self.process = self._launch()
             self.ws = await self._connect()
         except:
             await self._close_connection()
@@ -167,7 +167,7 @@ class SC2Process:
 
     async def _connect(self):
         for i in range(60):
-            if self._process is None:
+            if self.process is None:
                 # The .clean() was called, clearing the process
                 logger.debug("Process cleanup complete, exit")
                 sys.exit()
@@ -202,21 +202,21 @@ class SC2Process:
     def clean(self):
         logger.info("Cleaning up...")
 
-        if self._process is not None:
-            if self._process.poll() is None:
+        if self.process is not None:
+            if self.process.poll() is None:
                 for _ in range(3):
-                    self._process.terminate()
+                    self.process.terminate()
                     time.sleep(0.5)
-                    if not self._process or self._process.poll() is not None:
+                    if not self.process or self.process.poll() is not None:
                         break
                 else:
-                    self._process.kill()
-                    self._process.wait()
+                    self.process.kill()
+                    self.process.wait()
                     logger.error("KILLED")
 
         if os.path.exists(self._tmp_dir):
             shutil.rmtree(self._tmp_dir)
 
-        self._process = None
+        self.process = None
         self.ws = None
         logger.info("Cleanup complete")

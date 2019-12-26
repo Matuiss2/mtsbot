@@ -30,7 +30,7 @@ class Units(list):
         :param bot_object:
         """
         super().__init__(units)
-        self._bot_object = bot_object
+        self.bot_object = bot_object
 
     def __call__(self, *args, **kwargs):
         return UnitSelection(self, *args, **kwargs)
@@ -47,7 +47,7 @@ class Units(list):
                 iter(self),
                 (other_unit for other_unit in other if other_unit.tag not in (self_unit.tag for self_unit in self)),
             ),
-            self._bot_object,
+            self.bot_object,
         )
 
     def __add__(self, other: Units) -> Units:
@@ -56,19 +56,19 @@ class Units(list):
                 iter(self),
                 (other_unit for other_unit in other if other_unit.tag not in (self_unit.tag for self_unit in self)),
             ),
-            self._bot_object,
+            self.bot_object,
         )
 
     def __and__(self, other: Units) -> Units:
         return Units(
             (other_unit for other_unit in other if other_unit.tag in (self_unit.tag for self_unit in self)),
-            self._bot_object,
+            self.bot_object,
         )
 
     def __sub__(self, other: Units) -> Units:
         return Units(
             (self_unit for self_unit in self if self_unit.tag not in (other_unit.tag for other_unit in other)),
-            self._bot_object,
+            self.bot_object,
         )
 
     def __hash__(self):
@@ -122,7 +122,7 @@ class Units(list):
     def random_group_of(self, n: int) -> Units:
         """ Returns self if n >= self.amount. """
         if n < 1:
-            return Units([], self._bot_object)
+            return Units([], self.bot_object)
         elif n >= self.amount:
             return self
         else:
@@ -177,8 +177,8 @@ class Units(list):
         if not self:
             raise AssertionError("Units object is empty")
         if isinstance(position, Unit):
-            return min(self._bot_object.distance_squared_unit_to_unit(unit, position) for unit in self) ** 0.5
-        return min(self._bot_object.distance_units_to_pos(self, position))
+            return min(self.bot_object.distance_squared_unit_to_unit(unit, position) for unit in self) ** 0.5
+        return min(self.bot_object.distance_units_to_pos(self, position))
 
     def furthest_distance_to(self, position: Union[Unit, Point2, Point3]) -> float:
         """
@@ -197,8 +197,8 @@ class Units(list):
         if not self:
             raise AssertionError("Units object is empty")
         if isinstance(position, Unit):
-            return max(self._bot_object.distance_squared_unit_to_unit(unit, position) for unit in self) ** 0.5
-        return max(self._bot_object.distance_units_to_pos(self, position))
+            return max(self.bot_object.distance_squared_unit_to_unit(unit, position) for unit in self) ** 0.5
+        return max(self.bot_object.distance_units_to_pos(self, position))
 
     def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         """
@@ -218,10 +218,10 @@ class Units(list):
         if isinstance(position, Unit):
             return min(
                 (unit1 for unit1 in self),
-                key=lambda unit2: self._bot_object.distance_squared_unit_to_unit(unit2, position),
+                key=lambda unit2: self.bot_object.distance_squared_unit_to_unit(unit2, position),
             )
 
-        distances = self._bot_object.distance_units_to_pos(self, position)
+        distances = self.bot_object.distance_units_to_pos(self, position)
         return min(((unit, dist) for unit, dist in zip(self, distances)), key=lambda my_tuple: my_tuple[1])[0]
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
@@ -242,9 +242,9 @@ class Units(list):
         if isinstance(position, Unit):
             return max(
                 (unit1 for unit1 in self),
-                key=lambda unit2: self._bot_object.distance_squared_unit_to_unit(unit2, position),
+                key=lambda unit2: self.bot_object.distance_squared_unit_to_unit(unit2, position),
             )
-        distances = self._bot_object.distance_units_to_pos(self, position)
+        distances = self.bot_object.distance_units_to_pos(self, position)
         return max(((unit, dist) for unit, dist in zip(self, distances)), key=lambda my_tuple: my_tuple[1])[0]
 
     def closer_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> Units:
@@ -268,9 +268,9 @@ class Units(list):
             return self.subgroup(
                 unit
                 for unit in self
-                if self._bot_object.distance_squared_unit_to_unit(unit, position) < distance_squared
+                if self.bot_object.distance_squared_unit_to_unit(unit, position) < distance_squared
             )
-        distances = self._bot_object.distance_units_to_pos(self, position)
+        distances = self.bot_object.distance_units_to_pos(self, position)
         return self.subgroup(unit for unit, dist in zip(self, distances) if dist < distance)
 
     def further_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> Units:
@@ -295,9 +295,9 @@ class Units(list):
             return self.subgroup(
                 unit
                 for unit in self
-                if distance_squared < self._bot_object.distance_squared_unit_to_unit(unit, position)
+                if distance_squared < self.bot_object.distance_squared_unit_to_unit(unit, position)
             )
-        distances = self._bot_object.distance_units_to_pos(self, position)
+        distances = self.bot_object.distance_units_to_pos(self, position)
         return self.subgroup(unit for unit, dist in zip(self, distances) if distance < dist)
 
     def in_distance_between(
@@ -327,10 +327,10 @@ class Units(list):
                 unit
                 for unit in self
                 if distance1_squared
-                < self._bot_object.distance_squared_unit_to_unit(unit, position)
+                < self.bot_object.distance_squared_unit_to_unit(unit, position)
                 < distance2_squared
             )
-        distances = self._bot_object.distance_units_to_pos(self, position)
+        distances = self.bot_object.distance_units_to_pos(self, position)
         return self.subgroup(unit for unit, dist in zip(self, distances) if distance1 < dist < distance2)
 
     def closest_n_units(self, position: Union[Unit, Point2], n: int) -> Units:
@@ -385,7 +385,7 @@ class Units(list):
         distance_squared = distance ** 2
         if len(self) == 1:
             if any(
-                    self._bot_object.distance_squared_unit_to_unit(self[0], target) < distance_squared
+                    self.bot_object.distance_squared_unit_to_unit(self[0], target) < distance_squared
                 for target in other_units
             ):
                 return self
@@ -396,7 +396,7 @@ class Units(list):
             self_unit
             for self_unit in self
             if any(
-                self._bot_object.distance_squared_unit_to_unit(self_unit, other_unit) < distance_squared
+                self.bot_object.distance_squared_unit_to_unit(self_unit, other_unit) < distance_squared
                 for other_unit in other_units
             )
         )
@@ -416,7 +416,7 @@ class Units(list):
         return min(
             self,
             key=lambda self_unit: min(
-                self._bot_object.distance_squared_unit_to_unit(self_unit, other_unit) for other_unit in other_units
+                self.bot_object.distance_squared_unit_to_unit(self_unit, other_unit) for other_unit in other_units
             ),
         )
 
@@ -425,10 +425,10 @@ class Units(list):
         if isinstance(position, Unit):
             return sorted(
                 self,
-                key=lambda unit: abs(self._bot_object.distance_squared_unit_to_unit(unit, position) - distance),
+                key=lambda unit: abs(self.bot_object.distance_squared_unit_to_unit(unit, position) - distance),
                 reverse=True,
             )
-        distances = self._bot_object.distance_units_to_pos(self, position)
+        distances = self.bot_object.distance_units_to_pos(self, position)
         unit_dist_dict = {unit.tag: dist for unit, dist in zip(self, distances)}
         return sorted(self, key=lambda unit2: abs(unit_dist_dict[unit2.tag] - distance), reverse=True)
 
@@ -448,7 +448,7 @@ class Units(list):
         Creates a new mutable Units object from Units or list object.
 
         :param units: """
-        return Units(units, self._bot_object)
+        return Units(units, self.bot_object)
 
     def filter(self, pred: callable) -> Units:
         """
@@ -479,9 +479,9 @@ class Units(list):
         """ This function should be a bit faster than using units.sorted(key=lambda u: u.distance_to(position)) """
         if isinstance(position, Unit):
             return sorted(
-                self, key=lambda unit: self._bot_object.distance_squared_unit_to_unit(unit, position), reverse=reverse
+                self, key=lambda unit: self.bot_object.distance_squared_unit_to_unit(unit, position), reverse=reverse
             )
-        distances = self._bot_object.distance_units_to_pos(self, position)
+        distances = self.bot_object.distance_units_to_pos(self, position)
         unit_dist_dict = {unit.tag: dist for unit, dist in zip(self, distances)}
         return sorted(self, key=lambda unit2: unit_dist_dict[unit2.tag], reverse=reverse)
 
@@ -586,13 +586,13 @@ class Units(list):
                 )
             )
         tech_alias_types: Set[int] = {u.value for u in other}
-        unit_data = self._bot_object.game_data_local.units
+        unit_data = self.bot_object.game_data_local.units
         for unitType in other:
             for same in unit_data[unitType.value].proto.tech_alias:
                 tech_alias_types.add(same)
         return self.filter(
             lambda unit: unit.proto.unit_type in tech_alias_types
-            or any(same in tech_alias_types for same in unit._type_data.proto.tech_alias)
+            or any(same in tech_alias_types for same in unit.type_data.proto.tech_alias)
         )
 
     def same_unit(self, other: Union[UnitTypeId, Set[UnitTypeId], List[UnitTypeId], Dict[UnitTypeId, Any]]) -> Units:
@@ -620,13 +620,13 @@ class Units(list):
         if isinstance(other, UnitTypeId):
             other = {other}
         unit_alias_types: Set[int] = {u.value for u in other}
-        unit_data = self._bot_object.game_data_local.units
+        unit_data = self.bot_object.game_data_local.units
         for unitType in other:
             unit_alias_types.add(unit_data[unitType.value].proto.unit_alias)
         unit_alias_types.discard(0)
         return self.filter(
             lambda unit: unit.proto.unit_type in unit_alias_types
-            or unit._type_data.proto.unit_alias in unit_alias_types
+                         or unit.type_data.proto.unit_alias in unit_alias_types
         )
 
     @property
@@ -735,13 +735,13 @@ class Units(list):
 class UnitSelection(Units):
     def __init__(self, parent, selection=None):
         if isinstance(selection, UnitTypeId):
-            super().__init__((unit for unit in parent if unit.type_id == selection), parent._bot_object)
+            super().__init__((unit for unit in parent if unit.type_id == selection), parent.bot_object)
         elif isinstance(selection, set):
             if not all(isinstance(t, UnitTypeId) for t in selection):
                 raise AssertionError(f"Not all ids in selection are of type UnitTypeId")
-            super().__init__((unit for unit in parent if unit.type_id in selection), parent._bot_object)
+            super().__init__((unit for unit in parent if unit.type_id in selection), parent.bot_object)
         elif selection is None:
-            super().__init__((unit for unit in parent), parent._bot_object)
+            super().__init__((unit for unit in parent), parent.bot_object)
         else:
             if not isinstance(selection, (UnitTypeId, set)):
                 raise AssertionError(f"selection is not None or of type UnitTypeId or Set[UnitTypeId]")
