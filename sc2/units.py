@@ -1,14 +1,15 @@
 from __future__ import annotations
+
 import random
 import warnings
-import math
 from itertools import chain
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
+
+import numpy as np
 
 from .ids.unit_typeid import UnitTypeId
 from .position import Point2, Point3
 from .unit import Unit
-import numpy as np
 
 warnings.simplefilter("once")
 
