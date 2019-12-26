@@ -210,7 +210,7 @@ class ObserverAI(DistanceCalculation):
         """First step extra preparations. Must not be called before _prepare_step."""
         if self.townhalls:
             self._game_info.player_start_location = self.townhalls.first.position
-        self._game_info.map_ramps, self._game_info.vision_blockers = self._game_info._find_ramps_and_vision_blockers()
+        self._game_info.map_ramps, self._game_info.vision_blockers = self._game_info.find_ramps_and_vision_blockers()
 
     def _prepare_step(self, state, proto_game_info):
         """
@@ -257,7 +257,7 @@ class ObserverAI(DistanceCalculation):
         """ Executed by main.py after each on_step function. """
         self.unit_tags_received_action.clear()
         # Commit debug queries
-        await self._client._send_debug()
+        await self._client.send_debug()
         return self.state.game_loop
 
     async def issue_events(self):

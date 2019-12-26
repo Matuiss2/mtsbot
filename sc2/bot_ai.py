@@ -1446,7 +1446,7 @@ class BotAI(DistanceCalculation):
             # Calculate and cache expansion locations forever inside 'self._cache_expansion_locations',
             # this is done to prevent a bug when this is run and cached later in the game
             _ = self.expansion_locations
-        self._game_info.map_ramps, self._game_info.vision_blockers = self._game_info._find_ramps_and_vision_blockers()
+        self._game_info.map_ramps, self._game_info.vision_blockers = self._game_info.find_ramps_and_vision_blockers()
         self._time_before_step: float = time.perf_counter()
 
     def _prepare_step(self, state, proto_game_info):
@@ -1598,7 +1598,7 @@ class BotAI(DistanceCalculation):
         # Clear set of unit tags that were given an order this frame by self.do()
         self.unit_tags_received_action.clear()
         # Commit debug queries
-        await self._client._send_debug()
+        await self._client.send_debug()
 
         return self.state.game_loop
 
@@ -1611,7 +1611,7 @@ class BotAI(DistanceCalculation):
         await self.client.step(steps)
         state = await self.client.observation()
         gs = GameState(state.observation)
-        proto_game_info = await self.client._execute(game_info=sc_pb.RequestGameInfo())
+        proto_game_info = await self.client.execute(game_info=sc_pb.RequestGameInfo())
         self._prepare_step(gs, proto_game_info)
         await self.issue_events()
         # await self.on_step(-1)

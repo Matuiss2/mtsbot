@@ -35,7 +35,7 @@ class Controller(Protocol):
         logger.info("Creating new game")
         logger.info(f"Map:     {game_map.name}")
         logger.info(f"Players: {', '.join(str(p) for p in players)}")
-        result = await self._execute(create_game=req)
+        result = await self.execute(create_game=req)
         return result
 
     async def start_replay(self, replay_path, realtime, observed_id=0):  # Added
@@ -46,6 +46,6 @@ class Controller(Protocol):
             replay_path=replay_path, observed_player_id=observed_id, options=interface_options
         )
 
-        result = await self._execute(start_replay=req)
+        result = await self.execute(start_replay=req)
 
         return result

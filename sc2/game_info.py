@@ -249,7 +249,7 @@ class GameInfo:
         self.start_locations: List[Point2] = [Point2.from_proto(sl) for sl in self._proto.start_raw.start_locations]
         self.player_start_location: Point2 = None  # Filled later by BotAI._prepare_first_step
 
-    def _find_ramps_and_vision_blockers(self) -> Tuple[List[Ramp], Set[Point2]]:
+    def find_ramps_and_vision_blockers(self) -> Tuple[List[Ramp], Set[Point2]]:
         """ Calculate points that are passable but not placeable.
         Then divide them into ramp points if not all points around the points are equal height
         and into vision blockers if they are. """

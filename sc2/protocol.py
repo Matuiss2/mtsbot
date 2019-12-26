@@ -60,7 +60,7 @@ class Protocol:
         logger.debug(f"Response received")
         return response
 
-    async def _execute(self, **kwargs):
+    async def execute(self, **kwargs):
         if len(kwargs) != 1:
             raise AssertionError("Only one request allowed")
 
@@ -80,9 +80,9 @@ class Protocol:
         return response
 
     async def ping(self):
-        result = await self._execute(ping=sc_pb.RequestPing())
+        result = await self.execute(ping=sc_pb.RequestPing())
         return result
 
     async def quit(self):
         with suppress(ConnectionAlreadyClosed):
-            await self._execute(quit=sc_pb.RequestQuit())
+            await self.execute(quit=sc_pb.RequestQuit())
