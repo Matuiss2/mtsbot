@@ -1,12 +1,12 @@
 from __future__ import annotations
-from typing import Any, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
+
+from typing import TYPE_CHECKING
+from typing import Union
 
 from . import unit as unit_module
+from .constants import COMBINABLE_ABILITIES
 from .ids.ability_id import AbilityId
 from .position import Point2
-from .constants import COMBINABLE_ABILITIES
-
-from typing import Union
 
 if TYPE_CHECKING:
     from .unit import Unit

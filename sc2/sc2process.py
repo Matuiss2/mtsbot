@@ -7,18 +7,15 @@ import subprocess
 import sys
 import tempfile
 import time
-import json
-import re
 from typing import Any, List, Optional
 
 import aiohttp
 import portpicker
 
+from sc2 import paths
+from sc2.versions import VERSIONS
 from .controller import Controller
 from .paths import Paths
-from sc2 import paths
-
-from sc2.versions import VERSIONS
 
 logger = logging.getLogger(__name__)
 

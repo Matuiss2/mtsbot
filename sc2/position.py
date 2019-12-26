@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 import itertools
 import math
 import random
-from typing import Any, Dict, List, Optional, Set, Tuple, Union, Iterable, TYPE_CHECKING
+from typing import List, Set, Tuple, Union, Iterable, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .unit import Unit

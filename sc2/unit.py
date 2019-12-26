@@ -1,7 +1,7 @@
 from __future__ import annotations
-import warnings
+
 import math
-from typing import Any, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
+from typing import List, Optional, Set, Tuple, Union, TYPE_CHECKING
 
 from .cache import property_immutable_cache, property_mutable_cache
 from .constants import (
@@ -44,18 +44,15 @@ from .data import (
     Alliance,
     Attribute,
     CloakState,
-    DisplayType,
     Race,
-    TargetType,
     warpgate_abilities,
-    TargetType,
     Target,
     race_gas,
 )
 from .ids.ability_id import AbilityId
 from .ids.buff_id import BuffId
-from .ids.upgrade_id import UpgradeId
 from .ids.unit_typeid import UnitTypeId
+from .ids.upgrade_id import UpgradeId
 from .position import Point2, Point3
 from .unit_command import UnitCommand
 
