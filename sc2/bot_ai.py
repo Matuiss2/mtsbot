@@ -336,7 +336,6 @@ class BotAI(DistanceCalculation):
             https://github.com/Blizzard/s2client-proto/issues/123), so self.supply_used
             and friends return the wrong value when there are an odd number of zerglings
             and banelings. This function corrects the bad values. """
-        # TODO: remove when Blizzard/sc2client-proto#123 gets fixed.
         half_supply_units = {
             UnitTypeId.ZERGLING,
             UnitTypeId.ZERGLINGBURROWED,
@@ -756,7 +755,6 @@ class BotAI(DistanceCalculation):
             return min(possible, key=lambda p: p.distance_to_point2(near))
         return None
 
-    # TODO: improve using cache per frame
     def already_pending_upgrade(self, upgrade_type: UpgradeId) -> float:
         """ Check if an upgrade is being researched
 
@@ -1108,7 +1106,6 @@ class BotAI(DistanceCalculation):
                 and (not requires_techlab or structure.add_on_tag in self.techlab_tags)
             ):
                 # Warp in at location
-                # TODO: find out which pylons have fast warp in by checking distance to nexus.ready and warp gates
                 if structure.type_id == UnitTypeId.WARPGATE:
                     pylons = self.structures(UnitTypeId.PYLON)
                     location = pylons.random.position.random_on_distance(4)
@@ -1558,7 +1555,6 @@ class BotAI(DistanceCalculation):
                             self.reactor_tags.add(unit_obj.tag)
                     else:
                         self.units.append(unit_obj)
-                        # TODO add burrowed drones
                         if unit_id == race_worker[self.race]:
                             self.workers.append(unit_obj)
                         elif unit_id == UnitTypeId.LARVA:

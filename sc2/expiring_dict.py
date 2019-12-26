@@ -104,7 +104,6 @@ class ExpiringDict(OrderedDict):
         with self.lock:
             return self.keys()
 
-    # TODO: removed expired entries before returning len(self)
     # def __len__(self):
     #     """ Override len method as key value pairs aren't instantly being deleted """
     #     with self.lock:

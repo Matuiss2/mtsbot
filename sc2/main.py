@@ -287,8 +287,6 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     while True:
         if iteration != 0:
             if realtime:
-                # TODO: check what happens if a bot takes too long to respond, so that the requested
-                #  game_loop might already be in the past
                 state = await client.observation(gs.game_loop + client.game_step)
             else:
                 state = await client.observation()
