@@ -672,6 +672,7 @@ class BotAI(DistanceCalculation):
                     return worker
 
             return workers.random if force else None
+        return None
 
     async def can_place(self, building: Union[AbilityData, AbilityId, UnitTypeId], position: Point2) -> bool:
         """ Tests if a building can be placed in the given location.

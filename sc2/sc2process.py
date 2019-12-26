@@ -106,6 +106,7 @@ class SC2Process:
         for version in self.versions:
             if version["label"] == target_sc2_version:
                 return version["data-hash"]
+        return None
 
     def _launch(self):
         if self._base_build:

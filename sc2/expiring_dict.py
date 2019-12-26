@@ -139,7 +139,7 @@ class ExpiringDict(OrderedDict):
                 raise KeyError(key)
             elif with_age:
                 return default, self.frame
-            return
+            return None
 
     def update(self, other_dict: dict):
         with self.lock:

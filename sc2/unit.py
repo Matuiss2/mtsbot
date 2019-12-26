@@ -272,8 +272,8 @@ class Unit:
                 if weapon.damage_bonus:
                     b = weapon.damage_bonus[0]
                     return b.bonus, Attribute(b.attribute).name
-        else:
             return None
+        return None
 
     @property
     def armor(self) -> float:
