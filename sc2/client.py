@@ -20,7 +20,7 @@ from .renderer import Renderer
 from .unit import Unit
 from .units import Units
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class Client(Protocol):
@@ -120,11 +120,11 @@ class Client(Protocol):
                 raise
 
     async def save_replay(self, path):
-        logger.debug(f"Requesting replay from server")
+        LOGGER.debug(f"Requesting replay from server")
         result = await self.execute(save_replay=sc_pb.RequestSaveReplay())
         with open(path, "wb") as f:
             f.write(result.save_replay.data)
-        logger.info(f"Saved replay to {path}")
+        LOGGER.info(f"Saved replay to {path}")
 
     async def observation(self, game_loop=None):
         if game_loop is not None:

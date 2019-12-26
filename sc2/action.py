@@ -66,28 +66,28 @@ def combine_actions(action_iter):
 
         else:
 
-            u: UnitCommand
+            item: UnitCommand
             if target is None:
-                for u in items:
+                for item in items:
                     cmd = raw_pb.ActionRawUnitCommand(
-                        ability_id=ability.value, unit_tags={u.unit.tag}, queue_command=queue
+                        ability_id=ability.value, unit_tags={item.unit.tag}, queue_command=queue
                     )
                     yield raw_pb.ActionRaw(unit_command=cmd)
             elif isinstance(target, Point2):
-                for u in items:
+                for item in items:
                     cmd = raw_pb.ActionRawUnitCommand(
                         ability_id=ability.value,
-                        unit_tags={u.unit.tag},
+                        unit_tags={item.unit.tag},
                         queue_command=queue,
                         target_world_space_pos=common_pb.Point2D(x=target.x, y=target.y),
                     )
                     yield raw_pb.ActionRaw(unit_command=cmd)
 
             elif isinstance(target, Unit):
-                for u in items:
+                for item in items:
                     cmd = raw_pb.ActionRawUnitCommand(
                         ability_id=ability.value,
-                        unit_tags={u.unit.tag},
+                        unit_tags={item.unit.tag},
                         queue_command=queue,
                         target_unit_tag=target.tag,
                     )

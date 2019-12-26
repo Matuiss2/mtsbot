@@ -17,7 +17,7 @@ from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from sc2.game_info import GameInfo

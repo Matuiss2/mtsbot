@@ -1,32 +1,32 @@
 from functools import wraps
 
 
-def property_cache_forever(f):
-    @wraps(f)
+def property_cache_forever(function):
+    @wraps(function)
     def inner(self):
-        property_cache = "_cache_" + f.__name__
+        property_cache = "_cache_" + function.__name__
         cache_updated = hasattr(self, property_cache)
         if not cache_updated:
-            setattr(self, property_cache, f(self))
+            setattr(self, property_cache, function(self))
         cache = getattr(self, property_cache)
         return cache
 
     return property(inner)
 
 
-def property_cache_once_per_frame(f):
+def property_cache_once_per_frame(function):
     """ This decorator caches the return value for one game loop,
     then clears it if it is accessed in a different game loop.
     Only works on properties of the bot object, because it requires
     access to self.state.game_loop """
 
-    @wraps(f)
+    @wraps(function)
     def inner(self):
-        property_cache = "_cache_" + f.__name__
-        state_cache = "_frame_" + f.__name__
+        property_cache = "_cache_" + function.__name__
+        state_cache = "_frame_" + function.__name__
         cache_updated = getattr(self, state_cache, -1) == self.state.game_loop
         if not cache_updated:
-            setattr(self, property_cache, f(self))
+            setattr(self, property_cache, function(self))
             setattr(self, state_cache, self.state.game_loop)
 
         cache = getattr(self, property_cache)
@@ -38,7 +38,7 @@ def property_cache_once_per_frame(f):
     return property(inner)
 
 
-def property_cache_once_per_frame_no_copy(f):
+def property_cache_once_per_frame_no_copy(function):
     """ This decorator caches the return value for one game loop,
     then clears it if it is accessed in a different game loop.
     Only works on properties of the bot object, because it requires
@@ -47,13 +47,13 @@ def property_cache_once_per_frame_no_copy(f):
     This decorator compared to the above runs a little faster, however you should only use this decorator if you are
     sure that you do not modify the mutable once it is calculated and cached. """
 
-    @wraps(f)
+    @wraps(function)
     def inner(self):
-        property_cache = "_cache_" + f.__name__
-        state_cache = "_frame_" + f.__name__
+        property_cache = "_cache_" + function.__name__
+        state_cache = "_frame_" + function.__name__
         cache_updated = getattr(self, state_cache, -1) == self.state.game_loop
         if not cache_updated:
-            setattr(self, property_cache, f(self))
+            setattr(self, property_cache, function(self))
             setattr(self, state_cache, self.state.game_loop)
 
         cache = getattr(self, property_cache)
@@ -62,26 +62,26 @@ def property_cache_once_per_frame_no_copy(f):
     return property(inner)
 
 
-def property_immutable_cache(f):
+def property_immutable_cache(function):
     """ This cache should only be used on properties that return an immutable object
     (bool, str, int, float, tuple, Unit, Point2, Point3) """
 
-    @wraps(f)
+    @wraps(function)
     def inner(self):
-        if f.__name__ not in self.cache:
-            self.cache[f.__name__] = f(self)
-        return self.cache[f.__name__]
+        if function.__name__ not in self.cache:
+            self.cache[function.__name__] = function(self)
+        return self.cache[function.__name__]
 
     return property(inner)
 
 
-def property_mutable_cache(f):
+def property_mutable_cache(function):
     """ This cache should only be used on properties that return a mutable object (Units, list, set, dict, Counter) """
 
-    @wraps(f)
+    @wraps(function)
     def inner(self):
-        if f.__name__ not in self.cache:
-            self.cache[f.__name__] = f(self)
-        return self.cache[f.__name__].copy()
+        if function.__name__ not in self.cache:
+            self.cache[function.__name__] = function(self)
+        return self.cache[function.__name__].copy()
 
     return property(inner)

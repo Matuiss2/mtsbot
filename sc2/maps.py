@@ -2,7 +2,7 @@ import logging
 
 from .paths import Paths
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def get(name=None):

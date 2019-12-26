@@ -7,7 +7,7 @@ from s2clientprotocol import sc2api_pb2 as sc_pb
 
 from .data import Status
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class ProtocolError(Exception):
@@ -31,33 +31,33 @@ class Protocol:
         self._status = None
 
     async def __request(self, request):
-        logger.debug(f"Sending request: {request !r}")
+        LOGGER.debug(f"Sending request: {request !r}")
         try:
             await self.ws.send_bytes(request.SerializeToString())
         except TypeError:
-            logger.exception("Cannot send: Connection already closed.")
+            LOGGER.exception("Cannot send: Connection already closed.")
             raise ConnectionAlreadyClosed("Connection already closed.")
-        logger.debug(f"Request sent")
+        LOGGER.debug(f"Request sent")
 
         response = sc_pb.Response()
         try:
             response_bytes = await self.ws.receive_bytes()
         except TypeError:
-            # logger.exception("Cannot receive: Connection already closed.")
+            # LOGGER.exception("Cannot receive: Connection already closed.")
             # raise ConnectionAlreadyClosed("Connection already closed.")
-            logger.info("Cannot receive: Connection already closed.")
+            LOGGER.info("Cannot receive: Connection already closed.")
             sys.exit(2)
         except asyncio.CancelledError:
             # If request is sent, the response must be received before re-raising cancel
             try:
                 await self.ws.receive_bytes()
             except asyncio.CancelledError:
-                logger.critical("Requests must not be cancelled multiple times")
+                LOGGER.critical("Requests must not be cancelled multiple times")
                 sys.exit(2)
             raise
 
         response.ParseFromString(response_bytes)
-        logger.debug(f"Response received")
+        LOGGER.debug(f"Response received")
         return response
 
     async def execute(self, **kwargs):
@@ -70,11 +70,11 @@ class Protocol:
 
         new_status = Status(response.status)
         if new_status != self._status:
-            logger.info(f"Client status changed to {new_status} (was {self._status})")
+            LOGGER.info(f"Client status changed to {new_status} (was {self._status})")
         self._status = new_status
 
         if response.error:
-            logger.debug(f"Response contained an error: {response.error}")
+            LOGGER.debug(f"Response contained an error: {response.error}")
             raise ProtocolError(f"{response.error}")
 
         return response

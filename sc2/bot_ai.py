@@ -43,7 +43,7 @@ from .units import Units
 from .game_data import Cost
 from .unit_command import UnitCommand
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from .game_info import GameInfo, Ramp
@@ -392,7 +392,7 @@ class BotAI(DistanceCalculation):
             location = await self.get_next_expansion()
         if not location:
             # All expansions are used up or mined out
-            logger.warning("Trying to expand_now() but bot is out of locations to expand to")
+            LOGGER.warning("Trying to expand_now() but bot is out of locations to expand to")
             return
         await self.build(building, near=location, max_distance=max_distance, random_alternative=False, placement_step=1)
 
@@ -1047,7 +1047,7 @@ class BotAI(DistanceCalculation):
                 Race.Zerg: ZERG_TECH_REQUIREMENT,
             }
             unit_info_id = race_dict[self.race][unit_type]
-            logger.warning(
+            LOGGER.warning(
                 "{} Trying to produce unit {} in self.train() but tech requirement is not met: {}".format(
                     self.time_formatted, unit_type, unit_info_id
                 )
@@ -1282,7 +1282,7 @@ class BotAI(DistanceCalculation):
         if not isinstance(action, UnitCommand):
             raise AssertionError(f"Given unit command is not a command, but instead of type {type(action)}")
         if not self.can_afford(action.ability):
-            logger.warning(f"Cannot afford action {action}")
+            LOGGER.warning(f"Cannot afford action {action}")
             return ActionResult.Error
         r = await self._client.actions(action)
         if not r:  # success
@@ -1291,7 +1291,7 @@ class BotAI(DistanceCalculation):
             self.vespene -= cost.vespene
             self.unit_tags_received_action.add(action.unit.tag)
         else:
-            logger.error(f"Error: {r} (action: {action})")
+            LOGGER.error(f"Error: {r} (action: {action})")
         return r
 
     async def _do_actions(self, actions: List[UnitCommand], prevent_double: bool = True):

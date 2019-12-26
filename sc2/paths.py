@@ -5,7 +5,7 @@ import re
 import subprocess
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 BASEDIR = {
     "Windows": "C:/Program Files (x86)/StarCraft II",
@@ -61,7 +61,7 @@ def latest_executable(versions_dir, base_build=None):
     version, path = latest
 
     if version < 55958:
-        logger.critical(f"Your SC2 binary is too old. Upgrade to 3.16.1 or newer.")
+        LOGGER.critical(f"Your SC2 binary is too old. Upgrade to 3.16.1 or newer.")
         exit(1)
     return path / BINPATH[PF]
 
@@ -71,7 +71,7 @@ class _MetaPaths(type):
 
     def __setup(self):
         if PF not in BASEDIR:
-            logger.critical(f"Unsupported platform '{PF}'")
+            LOGGER.critical(f"Unsupported platform '{PF}'")
             exit(1)
 
         try:
@@ -98,7 +98,7 @@ class _MetaPaths(type):
             else:
                 self.MAPS = self.BASE / "Maps"
         except FileNotFoundError as e:
-            logger.critical(f"SC2 installation not found: File '{e.filename}' does not exist.")
+            LOGGER.critical(f"SC2 installation not found: File '{e.filename}' does not exist.")
             exit(1)
 
     def __getattr__(self, attr):

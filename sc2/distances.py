@@ -9,7 +9,7 @@ from sc2.game_state import GameState
 from sc2.unit import Unit
 from sc2.units import Units
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class DistanceCalculation:
