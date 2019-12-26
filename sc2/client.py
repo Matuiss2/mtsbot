@@ -1,6 +1,6 @@
 from __future__ import annotations
 import logging
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union, TYPE_CHECKING
+from typing import Iterable, List, Optional, Set, Tuple, Union
 
 from s2clientprotocol import common_pb2 as common_pb
 from s2clientprotocol import debug_pb2 as debug_pb

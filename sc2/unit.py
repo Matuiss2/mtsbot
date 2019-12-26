@@ -570,9 +570,13 @@ class Unit:
                     return 24, 0.854, 6
                 return 0, 0, 0
 
-        required_target_type: Set[
-            int
-        ] = TARGET_BOTH if target.type_id == UnitTypeId.COLOSSUS else TARGET_GROUND if not target.is_flying else TARGET_AIR
+        required_target_type = (
+            TARGET_BOTH
+            if target.type_id == UnitTypeId.COLOSSUS
+            else TARGET_GROUND
+            if not target.is_flying
+            else TARGET_AIR
+        )
         # Contains total damage, attack speed and attack range
         damages: List[Tuple[float, float, float]] = []
         for weapon in self._weapons:

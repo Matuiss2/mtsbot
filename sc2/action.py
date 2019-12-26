@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
+from typing import Union, TYPE_CHECKING
 from itertools import groupby
 
 from s2clientprotocol import common_pb2 as common_pb
