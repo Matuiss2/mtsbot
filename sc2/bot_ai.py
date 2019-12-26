@@ -62,13 +62,14 @@ class BotAI(DistanceCalculation):
         # Specific opponent bot ID used in sc2ai ladder games http://sc2ai.net/ and on ai arena https://ai-arena.net
         # The bot ID will stay the same each game so your bot can "adapt" to the opponent
         if not hasattr(self, "opponent_id"):
-            # Prevent overwriting the opponent_id which is set here https://github.com/Hannessa/python-sc2-ladderbot/blob/master/__init__.py#L40
-            # otherwise set it to None
+            # Prevent overwriting the opponent_id which is set here
+            # https://github.com/Hannessa/python-sc2-ladderbot/blob/master/__init__.py#L40 otherwise set it to None
             self.opponent_id: str = None
         # Select distance calculation method, see distances.py: _distances_override_functions function
         if not hasattr(self, "distance_calculation_method"):
             self.distance_calculation_method: int = 2
-        # This value will be set to True by main.py in self._prepare_start if game is played in realtime (if true, the bot will have limited time per step)
+        # This value will be set to True by main.py in self._prepare_start if game is played in realtime
+        # (if true, the bot will have limited time per step)
         self.realtime: bool = False
         self.all_units: Units = Units([], self)
         self.units: Units = Units([], self)
@@ -112,7 +113,8 @@ class BotAI(DistanceCalculation):
         self._last_step_step_time: float = 0
         self._total_time_in_on_step: float = 0
         self._total_steps_iterations: int = 0
-        # Internally used to keep track which units received an action in this frame, so that self.train() function does not give the same larva two orders - cleared every frame
+        # Internally used to keep track which units received an action in this frame, so that self.train() function
+        # does not give the same larva two orders - cleared every frame
         self.unit_tags_received_action: Set[int] = set()
 
     @property
@@ -161,8 +163,9 @@ class BotAI(DistanceCalculation):
 
     def alert(self, alert_code: Alert) -> bool:
         """
-        Check if alert is triggered in the current step.
-        Possible alerts are listed here https://github.com/Blizzard/s2client-proto/blob/e38efed74c03bec90f74b330ea1adda9215e655f/s2clientprotocol/sc2api.proto#L679-L702
+        Check if alert is triggered in the current step. Possible alerts are listed here
+        https://github.com/Blizzard/s2client-proto/blob/e38efed74c03bec90f74b330ea1adda9215e655f/s2clientprotocol
+        /sc2api.proto#L679-L702
 
         Example use:
 
@@ -313,8 +316,10 @@ class BotAI(DistanceCalculation):
 
         This may be used for statistics (at the end of the game) or for strategic decision making.
 
-        CAUTION: This does not properly work at the moment for morphing units and structures. Please use the 'on_unit_type_changed' event to add these morphing unit types manually to 'self._units_created'.
-        Issues would arise in e.g. siege tank morphing to sieged tank, and then morphing back (suddenly the counter counts 2 tanks have been created).
+        CAUTION: This does not properly work at the moment for morphing units and structures. Please use the
+        'on_unit_type_changed' event to add these morphing unit types manually to 'self._units_created'. Issues would
+        arise in e.g. siege tank morphing to sieged tank, and then morphing back (suddenly the counter counts 2 tanks
+        have been created).
 
         Examples::
 
@@ -348,7 +353,8 @@ class BotAI(DistanceCalculation):
     async def get_available_abilities(
         self, units: Union[List[Unit], Units], ignore_resource_requirements: bool = False
     ) -> List[List[AbilityId]]:
-        """ Returns available abilities of one or more units. Right now only checks cooldown, energy cost, and whether the ability has been researched.
+        """ Returns available abilities of one or more units. Right now only checks cooldown, energy cost,
+        and whether the ability has been researched.
 
         Examples::
 
@@ -365,7 +371,8 @@ class BotAI(DistanceCalculation):
     async def expand_now(
         self, building: UnitTypeId = None, max_distance: float = 10, location: Optional[Point2] = None
     ):
-        """ Finds the next possible expansion via 'self.get_next_expansion()'. If the target expansion is blocked (e.g. an enemy unit), it will misplace the expansion.
+        """ Finds the next possible expansion via 'self.get_next_expansion()'. If the target expansion is blocked (
+        e.g. an enemy unit), it will misplace the expansion.
 
         :param building:
         :param max_distance:
@@ -531,10 +538,11 @@ class BotAI(DistanceCalculation):
 
     def calculate_supply_cost(self, unit_type: UnitTypeId) -> float:
         """
-        This function calculates the required supply to train or morph a unit.
-        The total supply of a baneling is 0.5, but a zergling already uses up 0.5 supply, so the morph supply cost is 0.
-        The total supply of a ravager is 3, but a roach already uses up 2 supply, so the morph supply cost is 1.
-        The required supply to build zerglings is 1 because they pop in pairs, so this function returns 1 because the larva morph command requires 1 free supply.
+        This function calculates the required supply to train or morph a unit. The total supply of a baneling is 0.5,
+        but a zergling already uses up 0.5 supply, so the morph supply cost is 0. The total supply of a ravager is 3,
+        but a roach already uses up 2 supply, so the morph supply cost is 1. The required supply to build zerglings
+        is 1 because they pop in pairs, so this function returns 1 because the larva morph command requires 1 free
+        supply.
 
         Example::
 
@@ -586,8 +594,9 @@ class BotAI(DistanceCalculation):
 
     def calculate_cost(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId]) -> Cost:
         """
-        Calculate the required build, train or morph cost of a unit. It is recommended to use the UnitTypeId instead of the ability to create the unit.
-        The total cost to create a ravager is 100/100, but the actual morph cost from roach to ravager is only 25/75, so this function returns 25/75.
+        Calculate the required build, train or morph cost of a unit. It is recommended to use the UnitTypeId instead
+        of the ability to create the unit. The total cost to create a ravager is 100/100, but the actual morph cost
+        from roach to ravager is only 25/75, so this function returns 25/75.
 
         It is advised to use the UnitTypeId instead of the AbilityId. Instead of::
 
