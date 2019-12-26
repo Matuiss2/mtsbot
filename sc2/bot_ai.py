@@ -124,8 +124,8 @@ class BotAI(DistanceCalculation):
     @property
     def time_formatted(self) -> str:
         """ Returns time as string in min:sec format """
-        t = self.time
-        return f"{int(t // 60):02}:{int(t % 60):02}"
+        seconds = self.time
+        return f"{int(seconds // 60):02}:{int(seconds % 60):02}"
 
     @property
     def step_time(self) -> Tuple[float, float, float, float]:
@@ -401,23 +401,23 @@ class BotAI(DistanceCalculation):
 
         closest = None
         distance = math.inf
-        for el in self.expansion_locations:
+        for expansion_location in self.expansion_locations:
 
-            def is_near_to_expansion(t):
-                return t.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
+            def is_near_to_expansion(townhall):
+                return townhall.distance_to(expansion_location) < self.EXPANSION_GAP_THRESHOLD
 
             if any(map(is_near_to_expansion, self.townhalls)):
                 # already taken
                 continue
 
             start_position = self._game_info.player_start_location
-            d = await self._client.query_pathway(start_position, el)
-            if d is None:
+            distance_to_starting_base = await self._client.query_pathway(start_position, expansion_location)
+            if distance_to_starting_base is None:
                 continue
 
-            if d < distance:
-                distance = d
-                closest = el
+            if distance_to_starting_base < distance:
+                distance = distance_to_starting_base
+                closest = expansion_location
 
         return closest
 
@@ -425,14 +425,14 @@ class BotAI(DistanceCalculation):
     def owned_expansions(self) -> Dict[Point2, Unit]:
         """List of expansions owned by the player."""
         owned = {}
-        for el in self.expansion_locations:
+        for expansion_location in self.expansion_locations:
 
-            def is_near_to_expansion(t):
-                return t.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
+            def is_near_to_expansion(townhall):
+                return townhall.distance_to(expansion_location) < self.EXPANSION_GAP_THRESHOLD
 
-            th = next((x for x in self.townhalls if is_near_to_expansion(x)), None)
-            if th:
-                owned[el] = th
+            owned_townhall_location = next((x for x in self.townhalls if is_near_to_expansion(x)), None)
+            if owned_townhall_location:
+                owned[expansion_location] = owned_townhall_location
         return owned
 
     def calculate_supply_cost(self, unit_type: UnitTypeId) -> float:
@@ -695,8 +695,8 @@ class BotAI(DistanceCalculation):
         elif building_type == AbilityId:
             building = self.game_data_local.abilities[building.value]
 
-        r = await self._client.query_building_placement(building, [position])
-        return r[0] == ActionResult.Success
+        action_result = await self._client.query_building_placement(building, [position])
+        return action_result[0] == ActionResult.Success
 
     async def find_placement(
         self,
@@ -987,7 +987,7 @@ class BotAI(DistanceCalculation):
         :param random_alternative:
         :param placement_step: """
 
-        p = None
+        placement = None
         if not isinstance(near, (Unit, Point2, Point3)):
             raise AssertionError()
         gas_buildings = {UnitTypeId.EXTRACTOR, UnitTypeId.ASSIMILATOR, UnitTypeId.REFINERY}
@@ -998,8 +998,8 @@ class BotAI(DistanceCalculation):
         if not self.can_afford(building):
             return False
         if isinstance(near, (Point2, Point3)):
-            p = await self.find_placement(building, near, max_distance, random_alternative, placement_step)
-            if p is None:
+            placement = await self.find_placement(building, near, max_distance, random_alternative, placement_step)
+            if placement is None:
                 return False
         builder = build_worker or self.select_build_worker(near)
         if builder is None:
@@ -1007,7 +1007,7 @@ class BotAI(DistanceCalculation):
         if building in gas_buildings:
             self.do(builder.build_gas(near))
             return True
-        self.do(builder.build(building, p), subtract_cost=True)
+        self.do(builder.build(building, placement), subtract_cost=True)
         return True
 
     def train(
@@ -1455,7 +1455,7 @@ class BotAI(DistanceCalculation):
         # Set attributes from new state before on_step."""
         self.state: GameState = state  # See game_state.py
         # update pathway grid
-        self._game_info.pathway_grid: PixelMap = PixelMap(
+        self._game_info.pathway_grid = PixelMap(
             proto_game_info.game_info.start_raw.pathing_grid, in_bits=True, mirrored=False
         )
         # Required for events, needs to be before self.units are initialized so the old units are stored
@@ -1607,9 +1607,9 @@ class BotAI(DistanceCalculation):
         # Advance simulation by exactly "steps" frames
         await self.client.step(steps)
         state = await self.client.observation()
-        gs = GameState(state.observation)
+        game_state = GameState(state.observation)
         proto_game_info = await self.client.execute(game_info=sc_pb.RequestGameInfo())
-        self.prepare_step(gs, proto_game_info)
+        self.prepare_step(game_state, proto_game_info)
         await self.issue_events()
         # await self.on_step(-1)
 

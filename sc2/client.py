@@ -89,10 +89,10 @@ class Client(Protocol):
             req.server_ports.game_port = portconfig.server[0]
             req.server_ports.base_port = portconfig.server[1]
 
-            for ppc in portconfig.players:
-                p = req.client_ports.add()
-                p.game_port = ppc[0]
-                p.base_port = ppc[1]
+            for ports in portconfig.players:
+                port_request = req.client_ports.add()
+                port_request.game_port = ports[0]
+                port_request.base_port = ports[1]
 
         if name is not None:
             if not isinstance(name, str):
@@ -122,8 +122,8 @@ class Client(Protocol):
     async def save_replay(self, path):
         LOGGER.debug(f"Requesting replay from server")
         result = await self.execute(save_replay=sc_pb.RequestSaveReplay())
-        with open(path, "wb") as f:
-            f.write(result.save_replay.data)
+        with open(path, "wb") as file:
+            file.write(result.save_replay.data)
         LOGGER.info(f"Saved replay to {path}")
 
     async def observation(self, game_loop=None):
@@ -142,8 +142,8 @@ class Client(Protocol):
                     raise AssertionError()
 
             player_id_to_result = {}
-            for pr in result.observation.player_result:
-                player_id_to_result[pr.player_id] = Result(pr.result)
+            for player in result.observation.player_result:
+                player_id_to_result[player.player_id] = Result(player.result)
             self.game_result = player_id_to_result
 
         # if render_data is available, then RGB rendering was requested
@@ -321,10 +321,10 @@ class Client(Protocol):
 
     async def chat_send(self, message: str, team_only: bool):
         """ Writes a message to the chat """
-        ch = ChatChannel.Team if team_only else ChatChannel.Broadcast
+        chat = ChatChannel.Team if team_only else ChatChannel.Broadcast
         await self.execute(
             action=sc_pb.RequestAction(
-                actions=[sc_pb.Action(action_chat=sc_pb.ActionChat(channel=ch.value, message=message))]
+                actions=[sc_pb.Action(action_chat=sc_pb.ActionChat(channel=chat.value, message=message))]
             )
         )
 
@@ -735,15 +735,15 @@ class DrawItem:
         if isinstance(color, (tuple, list)) and not isinstance(color, Point3) and len(color) == 3:
             return debug_pb.Color(r=color[0], g=color[1], b=color[2])
         # In case color is of type Point3
-        r = getattr(color, "r", getattr(color, "x", 255))
-        g = getattr(color, "g", getattr(color, "y", 255))
-        b = getattr(color, "b", getattr(color, "z", 255))
-        if max(r, g, b) <= 1:
-            r *= 255
-            g *= 255
-            b *= 255
+        red = getattr(color, "r", getattr(color, "x", 255))
+        green = getattr(color, "g", getattr(color, "y", 255))
+        blue = getattr(color, "b", getattr(color, "z", 255))
+        if max(red, green, blue) <= 1:
+            red *= 255
+            green *= 255
+            blue *= 255
 
-        return debug_pb.Color(r=int(r), g=int(g), b=int(b))
+        return debug_pb.Color(r=int(red), g=int(green), b=int(blue))
 
 
 class DrawItemScreenText(DrawItem):
