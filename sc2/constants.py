@@ -281,7 +281,8 @@ def return_not_an_unit():
     return NOTAUNIT
 
 
-# Hotfix for structures and units as the API does not seem to return the correct values, e.g. ghost and thor have None in the requirements
+# Hotfix for structures and units as the API does not seem to return the correct values,
+# e.g. ghost and thor have None in the requirements
 TERRAN_TECH_REQUIREMENT: Dict[UnitTypeId, UnitTypeId] = defaultdict(
     return_not_an_unit,
     {
@@ -382,11 +383,10 @@ ALL_GAS: Set[UnitTypeId] = {
     UnitTypeId.EXTRACTOR,
     UnitTypeId.EXTRACTORRICH,
 }
-"""
-How much damage a unit gains per weapon upgrade per attack
-E.g. marauder receives +1 normal damage and +1 vs armored, so we have to list +1 vs armored here - the +1 normal damage is assumed
-E.g. stalker receives +1 normal damage but does not increment at all vs armored, so we don't list it here
-Updated using unit stats: https://liquipedia.net/starcraft2/Unit_Statistics_(Legacy_of_the_Void)
+"""How much damage a unit gains per weapon upgrade per attack E.g. marauder receives +1 normal damage and +1 vs 
+armored, so we have to list +1 vs armored here - the +1 normal damage is assumed E.g. stalker receives +1 normal 
+damage but does not increment at all vs armored, so we don't list it here Updated using unit stats: 
+https://liquipedia.net/starcraft2/Unit_Statistics_(Legacy_of_the_Void) 
 
 Default will be assumed as 1, or 0 against specific armor tags, if it is not listed:
 MyUnitType: {

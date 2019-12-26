@@ -46,7 +46,8 @@ def property_cache_once_per_frame_no_copy(f):
     Only works on properties of the bot object, because it requires
     access to self.state.game_loop
 
-    This decorator compared to the above runs a little faster, however you should only use this decorator if you are sure that you do not modify the mutable once it is calculated and cached. """
+    This decorator compared to the above runs a little faster, however you should only use this decorator if you are
+    sure that you do not modify the mutable once it is calculated and cached. """
 
     @wraps(f)
     def inner(self):
@@ -64,7 +65,8 @@ def property_cache_once_per_frame_no_copy(f):
 
 
 def property_immutable_cache(f):
-    """ This cache should only be used on properties that return an immutable object (bool, str, int, float, tuple, Unit, Point2, Point3) """
+    """ This cache should only be used on properties that return an immutable object
+    (bool, str, int, float, tuple, Unit, Point2, Point3) """
 
     @wraps(f)
     def inner(self):

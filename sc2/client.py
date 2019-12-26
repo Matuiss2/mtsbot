@@ -33,7 +33,8 @@ class Client(Protocol):
         self.game_step = 8
         self._player_id = None
         self._game_result = None
-        # Store a hash value of all the debug requests to prevent sending the same ones again if they haven't changed last frame
+        # Store a hash value of all the debug requests to prevent sending the same ones again if they haven't changed
+        # last frame
         self._debug_hash_tuple_last_iteration: Tuple[int, int, int, int] = (0, 0, 0, 0)
         self._debug_draw_last_frame = False
         self._debug_texts = []
@@ -152,7 +153,8 @@ class Client(Protocol):
         return result
 
     async def step(self, step_size: int = None):
-        """ EXPERIMENTAL: Change self._client.game_step during the step function to increase or decrease steps per second """
+        """ EXPERIMENTAL: Change self._client.game_step during the step function to increase or decrease steps per
+        second """
         step_size = step_size or self.game_step
         return await self._execute(step=sc_pb.RequestStep(count=step_size))
 
@@ -500,9 +502,9 @@ class Client(Protocol):
     def debug_text_world(
         self, text: str, pos: Union[Unit, Point2, Point3], color: Union[tuple, list, Point3] = None, size: int = 8
     ):
-        """ Draws a text at Point3 position in the game world.
-        To grab a unit's 3d position, use unit.position3d
-        Usually the Z value of a Point3 is between 8 and 14 (except for flying units). Use self.get_terrain_z_height() from bot_ai.py to get the Z value (height) of the terrain at a 2D position.
+        """ Draws a text at Point3 position in the game world. To grab a unit's 3d position, use unit.position3d
+        Usually the Z value of a Point3 is between 8 and 14 (except for flying units). Use self.get_terrain_z_height()
+        from bot_ai.py to get the Z value (height) of the terrain at a 2D position.
         """
         if isinstance(pos, Point2) and not isinstance(pos, Point3):  # a Point3 is also a Point2
             pos = Point3((pos.x, pos.y, 0))
@@ -550,8 +552,9 @@ class Client(Protocol):
         self._debug_spheres.append(DrawItemSphere(start_point=p, radius=r, color=color))
 
     async def _send_debug(self):
-        """ Sends the debug draw execution. This is run by main.py now automatically, if there is any items in the list. You do not need to run this manually any longer.
-        Check examples/terran/ramp_wall.py for example drawing. Each draw request needs to be sent again in every single on_step iteration.
+        """ Sends the debug draw execution. This is run by main.py now automatically, if there is any items in the
+        list. You do not need to run this manually any longer. Check examples/terran/ramp_wall.py for example
+        drawing. Each draw request needs to be sent again in every single on_step iteration.
         """
         debug_hash = (
             sum(hash(item) for item in self._debug_texts),
@@ -561,7 +564,8 @@ class Client(Protocol):
         )
         if debug_hash != (0, 0, 0, 0):
             if debug_hash != self._debug_hash_tuple_last_iteration:
-                # Something has changed, either more or less is to be drawn, or a position of a drawing changed (e.g. when drawing on a moving unit)
+                # Something has changed, either more or less is to be drawn, or a position of a drawing changed
+                # (e.g. when drawing on a moving unit)
                 self._debug_hash_tuple_last_iteration = debug_hash
                 await self._execute(
                     debug=sc_pb.RequestDebug(
@@ -602,10 +606,10 @@ class Client(Protocol):
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(end_game=debug_pb.DebugEndGame())]))
 
     async def debug_set_unit_value(self, unit_tags: Union[Iterable[int], Units, Unit], unit_value: int, value: float):
-        """ Sets a "unit value" (Energy, Life or Shields) of the given units to the given value.
-        Can't set the life of a unit to 0, use "debug_kill_unit" for that. Also can't set the life above the unit's maximum.
-        The following example sets the health of all your workers to 1:
-        await self.debug_set_unit_value(self.workers, 2, value=1) """
+        """ Sets a "unit value" (Energy, Life or Shields) of the given units to the given value. Can't set the life
+        of a unit to 0, use "debug_kill_unit" for that. Also can't set the life above the unit's maximum. The
+        following example sets the health of all your workers to 1: await self.debug_set_unit_value(self.workers, 2,
+        value=1) """
         if isinstance(unit_tags, Units):
             unit_tags = unit_tags.tags
         if isinstance(unit_tags, Unit):
@@ -653,7 +657,8 @@ class Client(Protocol):
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=1)]))
 
     async def debug_control_enemy(self):
-        """ Allows control over enemy units and structures similar to team games control - does not allow the bot to spend the opponent's resources. Using it a second time disables it again.  """
+        """ Allows control over enemy units and structures similar to team games control - does not allow the bot to
+        spend the opponent's resources. Using it a second time disables it again. """
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=2)]))
 
     async def debug_food(self):
@@ -661,7 +666,8 @@ class Client(Protocol):
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=3)]))
 
     async def debug_free(self):
-        """ Units, structures and upgrades are free of mineral and gas cost. Using it a second time disables it again.  """
+        """ Units, structures and upgrades are free of mineral and gas cost. Using it a second time disables it
+        again. """
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=4)]))
 
     async def debug_all_resources(self):
@@ -685,20 +691,22 @@ class Client(Protocol):
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=9)]))
 
     async def debug_tech_tree(self):
-        """ Removes all tech requirements (e.g. can build a factory without having a barracks). Using it a second time disables it again. """
+        """ Removes all tech requirements (e.g. can build a factory without having a barracks).
+        Using it a second time disables it again. """
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=10)]))
 
     async def debug_upgrade(self):
-        """ Researches all currently available upgrades. E.g. using it once unlocks combat shield, stimpack and 1-1. Using it a second time unlocks 2-2 and all other upgrades stay researched. """
+        """ Researches all currently available upgrades. E.g. using it once unlocks combat shield, stimpack and 1-1.
+         Using it a second time unlocks 2-2 and all other upgrades stay researched. """
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=11)]))
 
     async def debug_fast_build(self):
-        """ Sets the build time of units and structures and upgrades to zero. Using it a second time disables it again. """
+        """ Sets the build time of units and structures and upgrades to zero. Using it a second time disables it
+        again. """
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=12)]))
 
     async def quick_save(self):
-        """ Saves the current game state to an in-memory bookmark.
-        See: https://github.com/Blizzard/s2client-proto/blob/eeaf5efaea2259d7b70247211dff98da0a2685a2/s2clientprotocol/sc2api.proto#L93 """
+        """ Saves the current game state to an in-memory bookmark."""
         await self._execute(quick_save=sc_pb.RequestQuickSave())
 
     async def quick_load(self):
