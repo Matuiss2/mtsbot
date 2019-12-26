@@ -582,12 +582,12 @@ class Units(list):
             )
         tech_alias_types: Set[int] = {u.value for u in other}
         unit_data = self.bot_object.game_data_local.units
-        for unitType in other:
-            for same in unit_data[unitType.value].proto.tech_alias:
+        for unit_type in other:
+            for same in unit_data[unit_type.value].proto.tech_alias:
                 tech_alias_types.add(same)
         return self.filter(
             lambda unit: unit.proto.unit_type in tech_alias_types
-            or any(same in tech_alias_types for same in unit.type_data.proto.tech_alias)
+            or any(alias in tech_alias_types for alias in unit.type_data.proto.tech_alias)
         )
 
     def same_unit(self, other: Union[UnitTypeId, Set[UnitTypeId], List[UnitTypeId], Dict[UnitTypeId, Any]]) -> Units:
