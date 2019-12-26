@@ -75,14 +75,6 @@ class Units(list):
         return hash(unit.tag for unit in self)
 
     @property
-    def amount(self) -> int:
-        return len(self)
-
-    @property
-    def empty(self) -> bool:
-        return not bool(self)
-
-    @property
     def exists(self) -> bool:
         return bool(self)
 
@@ -105,7 +97,7 @@ class Units(list):
         return self[0]
 
     def take(self, n: int) -> Units:
-        if n >= self.amount:
+        if n >= len(self):
             return self
         return self.subgroup(self[:n])
 
@@ -122,7 +114,7 @@ class Units(list):
         """ Returns self if n >= self.amount. """
         if n < 1:
             return Units([], self.bot_object)
-        if n >= self.amount:
+        if n >= len(self):
             return self
         return self.subgroup(random.sample(self, n))
 
@@ -628,7 +620,7 @@ class Units(list):
         """ Returns the central position of all units. """
         if not self:
             raise AssertionError("Units object is empty")
-        amount = self.amount
+        amount = len(self)
         return Point2(
             (sum(unit.proto.pos.x for unit in self) / amount, sum(unit.proto.pos.y for unit in self) / amount,)
         )

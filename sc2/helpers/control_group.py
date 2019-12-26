@@ -11,14 +11,6 @@ class ControlGroup(set):
     def missing_unit_tags(self, units):
         return {t for t in self if units.find_by_tag(t) is None}
 
-    @property
-    def amount(self) -> int:
-        return len(self)
-
-    @property
-    def empty(self) -> bool:
-        return not self
-
     def add_unit(self, unit):
         self.add(unit.tag)
 

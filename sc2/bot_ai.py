@@ -343,7 +343,7 @@ class BotAI(DistanceCalculation):
             UnitTypeId.BANELINGBURROWED,
             UnitTypeId.BANELINGCOCOON,
         }
-        correction = self.units(half_supply_units).amount % 2
+        correction = len(self.units(half_supply_units)) % 2
         self.supply_used += correction
         self.supply_army += correction
         self.supply_left -= correction
