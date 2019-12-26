@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import deque
-from typing import Deque, Dict, List, Optional, Set, Tuple
+from typing import Deque, Dict, List, Set, Tuple
 
 import numpy as np
 
@@ -97,130 +97,6 @@ class Ramp:
         length = len(lower)
         pos = Point2((sum(p.x for p in lower) / length, sum(p.y for p in lower) / length))
         return pos
-
-    @property_immutable_cache
-    def barracks_in_middle(self) -> Optional[Point2]:
-        """ Barracks position in the middle of the 2 depots """
-        if len(self.upper) not in {2, 5}:
-            return None
-        if len(self.upper2_for_ramp_wall) == 2:
-            points = self.upper2_for_ramp_wall
-            point_1 = points.pop().offset((self.x_offset, self.y_offset))
-            point_2 = points.pop().offset((self.x_offset, self.y_offset))
-            # Offset from top position to barracks center is (2, 1)
-            intersects = point_1.circle_intersection(point_2, 5 ** 0.5)
-            any_lower_point = next(iter(self.lower))
-            return max(intersects, key=lambda p: p.distance_to_point2(any_lower_point))
-        raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
-
-    @property_immutable_cache
-    def depot_in_middle(self) -> Optional[Point2]:
-        """ Depot in the middle of the 3 depots """
-        if len(self.upper) not in {2, 5}:
-            return None
-        if len(self.upper2_for_ramp_wall) == 2:
-            points = self.upper2_for_ramp_wall
-            point1 = points.pop().offset((self.x_offset, self.y_offset))
-            point2 = points.pop().offset((self.x_offset, self.y_offset))
-            # Offset from top position to depot center is (1.5, 0.5)
-            try:
-                intersects = point1.circle_intersection(point2, 2.5 ** 0.5)
-            except AssertionError:
-                # Returns None when no placement was found,
-                # this is the case on the map Honorgrounds LE with an exceptionally large main base ramp
-                return None
-            any_lower_point = next(iter(self.lower))
-            return max(intersects, key=lambda p: p.distance_to_point2(any_lower_point))
-        raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
-
-    @property_mutable_cache
-    def corner_depots(self) -> Set[Point2]:
-        """ Finds the 2 depot positions on the outside """
-        if not self.upper2_for_ramp_wall:
-            return set()
-        if len(self.upper2_for_ramp_wall) == 2:
-            points = self.upper2_for_ramp_wall
-            point1 = points.pop().offset((self.x_offset, self.y_offset))
-            point2 = points.pop().offset((self.x_offset, self.y_offset))
-            center = point1.towards(point2, point1.distance_to_point2(point2) / 2)
-            depot_position = self.depot_in_middle
-            if depot_position is None:
-                return set()
-            # Offset from middle depot to corner depots is (2, 1)
-            intersects = center.circle_intersection(depot_position, 5 ** 0.5)
-            return intersects
-        raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
-
-    @property_immutable_cache
-    def barracks_can_fit_addon(self) -> bool:
-        """ Test if a barracks can fit an addon at natural ramp """
-        # https://i.imgur.com/4b2cXHZ.png
-        if len(self.upper2_for_ramp_wall) == 2:
-            return self.barracks_in_middle.x + 1 > max(self.corner_depots, key=lambda depot: depot.x).x
-        raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
-
-    @property_immutable_cache
-    def barracks_correct_placement(self) -> Optional[Point2]:
-        """ Corrected placement so that an addon can fit """
-        if self.barracks_in_middle is None:
-            return None
-        if len(self.upper2_for_ramp_wall) == 2:
-            if self.barracks_can_fit_addon:
-                return self.barracks_in_middle
-            return self.barracks_in_middle.offset((-2, 0))
-        raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
-
-    @property_immutable_cache
-    def protoss_wall_pylon(self) -> Optional[Point2]:
-        """
-        Pylon position that powers the two wall buildings and the warping position.
-        """
-        if len(self.upper) not in {2, 5}:
-            return None
-        if len(self.upper2_for_ramp_wall) != 2:
-            raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
-        middle = self.depot_in_middle
-        # direction up the ramp
-        direction = self.barracks_in_middle.negative_offset(middle)
-        return middle + 6 * direction
-
-    @property_mutable_cache
-    def protoss_wall_buildings(self) -> List[Point2]:
-        """
-        List of two positions for 3x3 buildings that form a wall with a spot for a one unit block.
-        These buildings can be powered by a pylon on the protoss_wall_pylon position.
-        """
-        if len(self.upper) not in {2, 5}:
-            return []
-        if len(self.upper2_for_ramp_wall) == 2:
-            middle = self.depot_in_middle
-            # direction up the ramp
-            direction = self.barracks_in_middle.negative_offset(middle)
-            # sort depots based on distance to start to get walling orientation
-            sorted_depots = sorted(
-                self.corner_depots, key=lambda depot: depot.distance_to(self.__game_info.player_start_location)
-            )
-            wall1 = sorted_depots[1].offset(direction)
-            wall2 = middle + direction + (middle - wall1) / 1.5
-            return [wall1, wall2]
-        raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
-
-    @property_immutable_cache
-    def protoss_wall_warping(self) -> Optional[Point2]:
-        """
-        Position for a unit to block the wall created by protoss_wall_buildings.
-        Powered by protoss_wall_pylon.
-        """
-        if len(self.upper) not in {2, 5}:
-            return None
-        if len(self.upper2_for_ramp_wall) != 2:
-            raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
-        middle = self.depot_in_middle
-        # direction up the ramp
-        direction = self.barracks_in_middle.negative_offset(middle)
-        # sort depots based on distance to start to get walling orientation
-        sorted_depots = sorted(self.corner_depots, key=lambda x: x.distance_to(self.__game_info.player_start_location))
-        return sorted_depots[0].negative_offset(direction)
 
 
 class GameInfo:
