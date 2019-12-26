@@ -230,8 +230,8 @@ class GameInfo:
         self.local_map_path: str = self._proto.local_map_path
         self.map_size: Size = Size.from_proto(self._proto.start_raw.map_size)
 
-        # self.pathing_grid[point]: if 0, point is not pathable, if 1, point is pathable
-        self.pathing_grid: PixelMap = PixelMap(self._proto.start_raw.pathing_grid, in_bits=True, mirrored=False)
+        # self.pathway_grid[point]: if 0, point is not pathable, if 1, point is pathable
+        self.pathway_grid: PixelMap = PixelMap(self._proto.start_raw.pathing_grid, in_bits=True, mirrored=False)
         # self.terrain_height[point]: returns the height in range of 0 to 255 at that point
         self.terrain_height: PixelMap = PixelMap(self._proto.start_raw.terrain_height, mirrored=False)
         # self.placement_grid[point]: if 0, point is not placeable, if 1, point is pathable
@@ -260,7 +260,7 @@ class GameInfo:
         # all points in the playable area that are pathable but not placable
         points = [
             Point2((a, b))
-            for (b, a), value in np.ndenumerate(self.pathing_grid.data_numpy)
+            for (b, a), value in np.ndenumerate(self.pathway_grid.data_numpy)
             if value == 1
             and map_area.x <= a < map_area.x + map_area.width
             and map_area.y <= b < map_area.y + map_area.height
@@ -280,8 +280,8 @@ class GameInfo:
         """
         # TODO do we actually need colors here? the ramps will never touch anyways.
         NOT_COLORED_YET = -1
-        map_width = self.pathing_grid.width
-        map_height = self.pathing_grid.height
+        map_width = self.pathway_grid.width
+        map_height = self.pathway_grid.height
         currentColor: int = NOT_COLORED_YET
         picture: List[List[int]] = [[-2 for _ in range(map_width)] for _ in range(map_height)]
 

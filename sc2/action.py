@@ -27,11 +27,11 @@ def combine_actions(action_iter):
         ability: AbilityId
         target: Union[None, Point2, Unit]
         queue: bool
-        # See constants.py for combineable abilities
-        combineable: bool
-        ability, target, queue, combineable = key
+        # See constants.py for combinable abilities
+        combinable: bool
+        ability, target, queue, combinable = key
 
-        if combineable:
+        if combinable:
             # Combine actions with no target, e.g. lift, burrowup, burrowdown, siege, unsiege, uproot spines
             if target is None:
                 cmd = raw_pb.ActionRawUnitCommand(
@@ -64,7 +64,7 @@ def combine_actions(action_iter):
             Examples:
             Select 3 hatcheries, build a queen with each hatch - the grouping function would group these unit tags and only issue one train command once to all 3 unit tags - resulting in one total train command
             I imagine the same thing would happen to certain other abilities: Battlecruiser yamato on same target, queen transfuse on same target, ghost snipe on same target, all build commands with the same unit type and also all morphs (zergling to banelings)
-            However, other abilities can and should be grouped, see constants.py 'COMBINEABLE_ABILITIES'
+            However, other abilities can and should be grouped, see constants.py 'COMBINABLE_ABILITIES'
             """
             u: UnitCommand
             if target is None:

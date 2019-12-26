@@ -32,7 +32,7 @@ from .dicts.unit_train_build_abilities import TRAIN_INFO
 from .dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
 from .dicts.unit_research_abilities import RESEARCH_INFO
 
-# Imports for mypy and pycharm autocomplete as well as sphinx autodocumentation
+# Imports for mypy and pycharm autocomplete as well as sphinx auto-documentation
 from .game_state import Blip, EffectData, GameState
 from .ids.ability_id import AbilityId
 from .ids.unit_typeid import UnitTypeId
@@ -79,7 +79,7 @@ class BotAI(DistanceCalculation):
         self.enemy_units: Units = Units([], self)
         self.enemy_structures: Units = Units([], self)
         self.resources: Units = Units([], self)
-        self.destructables: Units = Units([], self)
+        self.destructible: Units = Units([], self)
         self.watchtowers: Units = Units([], self)
         self.mineral_field: Units = Units([], self)
         self.vespene_geyser: Units = Units([], self)
@@ -242,7 +242,7 @@ class BotAI(DistanceCalculation):
                 key=lambda r: self.start_location.distance_to(r.top_center),
             )
         except ValueError:
-            # Hardcoded hotfix for Honorgrounds LE map, as that map has a large main base ramp with inbase natural
+            # Hardcoded hotfix for Honorgrounds LE map, as that map has a large main base ramp with in-base natural
             self.cached_main_base_ramp = min(
                 (ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {4, 9}),
                 key=lambda r: self.start_location.distance_to(r.top_center),
@@ -266,7 +266,7 @@ class BotAI(DistanceCalculation):
         resource_groups = [
             [resource]
             for resource in self.resources
-            if resource.name != "MineralField450"  # dont use low mineral count patches
+            if resource.name != "MineralField450"  # don't use low mineral count patches
         ]
         # Loop the merging process as long as we change something
         merged_group = True
@@ -324,7 +324,7 @@ class BotAI(DistanceCalculation):
         This may be used for statistics (at the end of the game) or for strategic decision making.
 
         CAUTION: This does not properly work at the moment for morphing units and structures. Please use the 'on_unit_type_changed' event to add these morphing unit types manually to 'self._units_created'.
-        Issues would arrise in e.g. siege tank morphing to sieged tank, and then morphing back (suddenly the counter counts 2 tanks have been created).
+        Issues would arise in e.g. siege tank morphing to sieged tank, and then morphing back (suddenly the counter counts 2 tanks have been created).
 
         Examples::
 
@@ -415,8 +415,8 @@ class BotAI(DistanceCalculation):
                 # already taken
                 continue
 
-            startp = self._game_info.player_start_location
-            d = await self._client.query_pathing(startp, el)
+            start_position = self._game_info.player_start_location
+            d = await self._client.query_pathing(start_position, el)
             if d is None:
                 continue
 
@@ -601,7 +601,7 @@ class BotAI(DistanceCalculation):
         Calculate the required build, train or morph cost of a unit. It is recommended to use the UnitTypeId instead of the ability to create the unit.
         The total cost to create a ravager is 100/100, but the actual morph cost from roach to ravager is only 25/75, so this function returns 25/75.
 
-        It is adviced to use the UnitTypeId instead of the AbilityId. Instead of::
+        It is advised to use the UnitTypeId instead of the AbilityId. Instead of::
 
             self.calculate_cost(AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND)
 
@@ -811,7 +811,7 @@ class BotAI(DistanceCalculation):
 
         Example::
 
-            if self.townahlls:
+            if self.townhalls:
                 cc = self.townhalls[0]
                 depot_position = await self.find_placement(UnitTypeId.SUPPLYDEPOT, near=cc)
 
@@ -1242,7 +1242,7 @@ class BotAI(DistanceCalculation):
                         # Target unit train amount reached
                         return trained_amount
                 else:
-                    # Some error occured and we couldn't train the unit
+                    # Some error occurred and we couldn't train the unit
                     return trained_amount
         return trained_amount
 
@@ -1358,7 +1358,7 @@ class BotAI(DistanceCalculation):
         if subtract_cost:
             cost: Cost = self._game_data.calculate_ability_cost(action.ability)
             if can_afford_check and not (self.minerals >= cost.minerals and self.vespene >= cost.vespene):
-                # Dont do action if can't afford
+                # Don't do action if can't afford
                 return False
             self.minerals -= cost.minerals
             self.vespene -= cost.vespene
@@ -1456,7 +1456,7 @@ class BotAI(DistanceCalculation):
             < self._game_info.playable_area.y + self.game_info.playable_area.height
         )
 
-    # For the functions below, make sure you are inside the boundries of the map size.
+    # For the functions below, make sure you are inside the boundaries of the map size.
     def get_terrain_height(self, pos: Union[Point2, Point3, Unit]) -> int:
         """ Returns terrain height at a position.
         Caution: terrain height is different from a unit's z-coordinate.
@@ -1487,14 +1487,14 @@ class BotAI(DistanceCalculation):
         pos = pos.position.to2.rounded
         return self._game_info.placement_grid[pos] == 1
 
-    def in_pathing_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
+    def in_pathway_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if a ground unit can pass through a grid point.
 
         :param pos: """
         if not isinstance(pos, (Point2, Point3, Unit)):
             raise AssertionError(f"pos is not of type Point2, Point3 or Unit")
         pos = pos.position.to2.rounded
-        return self._game_info.pathing_grid[pos] == 1
+        return self._game_info.pathway_grid[pos] == 1
 
     def is_visible(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if you have vision on a grid point.
@@ -1554,8 +1554,8 @@ class BotAI(DistanceCalculation):
         """
         # Set attributes from new state before on_step."""
         self.state: GameState = state  # See game_state.py
-        # update pathing grid
-        self._game_info.pathing_grid: PixelMap = PixelMap(
+        # update pathway grid
+        self._game_info.pathway_grid: PixelMap = PixelMap(
             proto_game_info.game_info.start_raw.pathing_grid, in_bits=True, mirrored=False
         )
         # Required for events, needs to be before self.units are initialized so the old units are stored
@@ -1593,7 +1593,7 @@ class BotAI(DistanceCalculation):
         self.mineral_field: Units = Units([], self)
         self.vespene_geyser: Units = Units([], self)
         self.resources: Units = Units([], self)
-        self.destructables: Units = Units([], self)
+        self.destructible: Units = Units([], self)
         self.watchtowers: Units = Units([], self)
         self.all_units: Units = Units([], self)
         self.workers: Units = Units([], self)
@@ -1628,9 +1628,9 @@ class BotAI(DistanceCalculation):
                     elif unit_type in geyser_ids:
                         self.vespene_geyser.append(unit_obj)
                         self.resources.append(unit_obj)
-                    # all destructable rocks
+                    # all destructible rocks
                     else:
-                        self.destructables.append(unit_obj)
+                        self.destructible.append(unit_obj)
                 # Alliance.Self.value = 1
                 elif alliance == 1:
                     unit_id = unit_obj.type_id
