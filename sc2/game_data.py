@@ -230,8 +230,7 @@ class UnitTypeData:
             # print(a)
             # print(vars(a))
             return Cost(self.proto.mineral_cost - 50, self.proto.vespene_cost, self.proto.build_time)
-        else:
-            return self.cost
+        return self.cost
 
     @property
     def morph_cost(self) -> Optional[Cost]:

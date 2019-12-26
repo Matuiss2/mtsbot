@@ -55,8 +55,7 @@ class ExpiringDict(OrderedDict):
                 item = OrderedDict.__getitem__(self, key)
                 if self.frame - item[1] < self.max_age:
                     return True
-                else:
-                    del self[key]
+                del self[key]
         return False
 
     def __getitem__(self, key, with_age=False) -> any:
@@ -69,8 +68,7 @@ class ExpiringDict(OrderedDict):
                     if with_age:
                         return item[0], item[1]
                     return item[0]
-                else:
-                    del self[key]
+                del self[key]
         raise KeyError(key)
 
     def __setitem__(self, key, value):

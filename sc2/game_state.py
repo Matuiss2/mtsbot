@@ -93,15 +93,13 @@ class EffectData:
         if self.fake:
             # Returns the string from constants.py, e.g. "KD8CHARGE"
             return FakeEffectID[self.proto.unit_type]
-        else:
-            return EffectId(self.proto.effect_id)
+        return EffectId(self.proto.effect_id)
 
     @property
     def positions(self) -> Set[Point2]:
         if self.fake:
             return {Point2.from_proto(self.proto.pos)}
-        else:
-            return {Point2.from_proto(p) for p in self.proto.pos}
+        return {Point2.from_proto(p) for p in self.proto.pos}
 
     @property
     def alliance(self) -> Alliance:
@@ -115,8 +113,7 @@ class EffectData:
     def radius(self) -> float:
         if self.fake:
             return FakeEffectRadii[self.proto.unit_type]
-        else:
-            return self.proto.radius
+        return self.proto.radius
 
     def __repr__(self) -> str:
         return f"{self.id} with radius {self.radius} at {self.positions}"
