@@ -72,7 +72,7 @@ class Pointlike(tuple):
         :param ps: """
         if not ps:
             raise AssertionError(f"ps is empty")
-        return min(ps, key=lambda p: self.distance_to(p))
+        return min(ps, key=self.distance_to)
 
     def distance_to_closest(self, ps: Union[Units, Iterable[Point2]]) -> Union[int, float]:
         """ This function assumes the 2d distance is meant
@@ -93,7 +93,7 @@ class Pointlike(tuple):
         :param ps: Units object, or iterable of Unit or Point2 """
         if not ps:
             raise AssertionError(f"ps is empty")
-        return max(ps, key=lambda p: self.distance_to(p))
+        return max(ps, key=self.distance_to)
 
     def distance_to_furthest(self, ps: Union[Units, Iterable[Point2]]) -> Union[int, float]:
         """ This function assumes the 2d distance is meant
