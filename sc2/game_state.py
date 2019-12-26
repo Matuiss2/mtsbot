@@ -146,7 +146,7 @@ class GameState:
         self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation_raw.player.upgrade_ids}
 
         # Set of unit tags that died this step
-        self.dead_units: Set[int] = {dead_unit_tag for dead_unit_tag in self.observation_raw.event.dead_units}
+        self.dead_units: Set[int] = set(self.observation_raw.event.dead_units)
         # self.visibility[position]: 0=Hidden, 1=Fogged, 2=Visible
         self.visibility: PixelMap = PixelMap(self.observation_raw.map_state.visibility, mirrored=False)
         # self.creep[position]: 0=No creep, 1=creep
