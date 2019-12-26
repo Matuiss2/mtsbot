@@ -667,9 +667,9 @@ class BotAI(DistanceCalculation):
 
         Example::
 
-            # Current state: we have 150 minerals and one command center and a barracks
-            can_afford_morph = self.can_afford(UnitTypeId.ORBITALCOMMAND, check_supply_cost=False)
-            # Will be 'True' although the API reports that an orbital is worth 550 minerals, but the morph cost is only 150 minerals
+            # Current state: we have 150 minerals and one command center and a barracks can_afford_morph =
+            self.can_afford(UnitTypeId.ORBITALCOMMAND, check_supply_cost=False) # Will be 'True' although the API
+            reports that an orbital is worth 550 minerals, but the morph cost is only 150 minerals
 
         :param item_id:
         :param check_supply_cost: """
@@ -1543,7 +1543,8 @@ class BotAI(DistanceCalculation):
         """First step extra preparations. Must not be called before _prepare_step."""
         if self.townhalls:
             self._game_info.player_start_location = self.townhalls.first.position
-            # Calculate and cache expansion locations forever inside 'self._cache_expansion_locations', this is done to prevent a bug when this is run and cached later in the game
+            # Calculate and cache expansion locations forever inside 'self._cache_expansion_locations',
+            # this is done to prevent a bug when this is run and cached later in the game
             _ = self.expansion_locations
         self._game_info.map_ramps, self._game_info.vision_blockers = self._game_info._find_ramps_and_vision_blockers()
         self._time_before_step: float = time.perf_counter()
@@ -1640,7 +1641,6 @@ class BotAI(DistanceCalculation):
                         if unit_id in race_townhalls[self.race]:
                             self.townhalls.append(unit_obj)
                         elif unit_id in ALL_GAS or unit_obj.vespene_contents:
-                            # TODO: remove "or unit_obj.vespene_contents" when a new linux client newer than version 4.10.0 is released
                             self.gas_buildings.append(unit_obj)
                         elif unit_id in {
                             UnitTypeId.TECHLAB,
@@ -1703,8 +1703,9 @@ class BotAI(DistanceCalculation):
         return self.state.game_loop
 
     async def _advance_steps(self, steps: int):
-        """ Advances the game loop by amount of 'steps'. This function is meant to be used as a debugging and testing tool only.
-        If you are using this, please be aware of the consequences, e.g. 'self.units' will be filled with completely new data. """
+        """ Advances the game loop by amount of 'steps'. This function is meant to be used as a debugging and testing
+        tool only. If you are using this, please be aware of the consequences, e.g. 'self.units' will be filled with
+        completely new data. """
         await self._after_step()
         # Advance simulation by exactly "steps" frames
         await self.client.step(steps)
@@ -1822,10 +1823,11 @@ class BotAI(DistanceCalculation):
         :param unit: """
 
     async def on_unit_type_changed(self, unit: Unit, previous_type: UnitTypeId):
-        """ Override this in your bot class. This function is called when a unit type has changed. To get the current UnitTypeId of the unit, use 'unit.type_id'
+        """ Override this in your bot class. This function is called when a unit type has changed. To get the current
+        UnitTypeId of the unit, use 'unit.type_id'
 
-        This may happen when a larva morphed to an egg, siege tank sieged, a zerg unit burrowed, a hatchery morphed to lair,
-        a corruptor morphed to broodlordcocoon, etc..
+        This may happen when a larva morphed to an egg, siege tank sieged, a zerg unit burrowed, a hatchery morphed
+        to lair, a corruptor morphed to broodlordcocoon, etc..
 
         Examples::
 
@@ -1853,7 +1855,8 @@ class BotAI(DistanceCalculation):
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
         """
-        Override this in your bot class. This function is called with the upgrade id of an upgrade that was not finished last step and is now.
+        Override this in your bot class. This function is called with the upgrade id of an upgrade that was not
+        finished last step and is now.
 
         :param upgrade:
         """
@@ -1879,21 +1882,25 @@ class BotAI(DistanceCalculation):
 
     async def on_enemy_unit_entered_vision(self, unit: Unit):
         """
-        Override this in your bot class. This function is called when an enemy unit (unit or structure) entered vision (which was not visible last frame).
+        Override this in your bot class. This function is called when an enemy unit (unit or structure) entered
+        vision (which was not visible last frame).
 
         :param unit:
         """
 
     async def on_enemy_unit_left_vision(self, unit_tag: int):
         """
-        Override this in your bot class. This function is called when an enemy unit (unit or structure) left vision (which was visible last frame).
-        Same as the self.on_unit_destroyed event, this function is called with the unit's tag because the unit is no longer visible anymore.
-        If you want to store a snapshot of the unit, use self._enemy_units_previous_map[unit_tag] for units or self._enemy_structures_previous_map[unit_tag] for structures.
+        Override this in your bot class. This function is called when an enemy unit (unit or structure) left vision (
+        which was visible last frame). Same as the self.on_unit_destroyed event, this function is called with the
+        unit's tag because the unit is no longer visible anymore. If you want to store a snapshot of the unit,
+        use self._enemy_units_previous_map[unit_tag] for units or self._enemy_structures_previous_map[unit_tag] for
+        structures.
 
         Examples::
 
-            last_known_unit = self._enemy_units_previous_map.get(unit_tag, None) or self._enemy_structures_previous_map[unit_tag]
-            print(f"Enemy unit left vision, last known location: {last_known_unit.position}")
+            last_known_unit = self._enemy_units_previous_map.get(unit_tag, None) or
+            self._enemy_structures_previous_map[unit_tag] print(f"Enemy unit left vision, last known location: {
+            last_known_unit.position}")
 
         :param unit_tag:
         """
@@ -1923,7 +1930,7 @@ class BotAI(DistanceCalculation):
         raise NotImplementedError
 
     async def on_end(self, game_result: Result):
-        """ Override this in your bot class. This function is called at the end of a game.
-        Unsure if this function will be called on the laddermanager client as the bot process may forcefully be terminated.
+        """ Override this in your bot class. This function is called at the end of a game. Unsure if this function
+        will be called on the laddermanager client as the bot process may forcefully be terminated.
 
         :param game_result: """
