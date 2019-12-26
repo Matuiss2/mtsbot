@@ -536,7 +536,8 @@ class Client(Protocol):
         half_vertex_length: float = 0.25,
         color: Union[tuple, list, Point3] = None,
     ):
-        """ Draws a box center at a position 'pos', with box side lengths (vertices) of two times 'half_vertex_length'. """
+        """ Draws a box center at a position 'pos',
+        with box side lengths (vertices) of two times 'half_vertex_length'. """
         if isinstance(pos, Unit):
             pos = pos.position3d
         elif not isinstance(pos, Point3):

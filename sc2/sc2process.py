@@ -149,7 +149,8 @@ class SC2Process:
 
             else:
                 logger.warning(
-                    f'The submitted version string in sc2.rungame() function call (sc2_version="{self._sc2_version}") was not found in versions.py. Running latest version instead.'
+                    f'The submitted version string in sc2.rungame() function call (sc2_version="{self._sc2_version}") '
+                    f"was not found in versions.py. Running latest version instead. "
                 )
 
         if self._data_hash:

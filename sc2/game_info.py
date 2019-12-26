@@ -59,7 +59,8 @@ class Ramp:
 
     @property_mutable_cache
     def upper2_for_ramp_wall(self) -> Set[Point2]:
-        """ Returns the 2 upper ramp points of the main base ramp required for the supply depot and barracks placement properties used in this file. """
+        """ Returns the 2 upper ramp points of the main base ramp required for the supply depot and barracks
+        placement properties used in this file. """
         if len(self.upper) > 5:
             # NOTE: this was way too slow on large ramps
             return set()  # HACK: makes this work for now
@@ -125,7 +126,8 @@ class Ramp:
             try:
                 intersects = p1.circle_intersection(p2, 2.5 ** 0.5)
             except AssertionError:
-                # Returns None when no placement was found, this is the case on the map Honorgrounds LE with an exceptionally large main base ramp
+                # Returns None when no placement was found,
+                # this is the case on the map Honorgrounds LE with an exceptionally large main base ramp
                 return None
             any_lower_point = next(iter(self.lower))
             return max(intersects, key=lambda p: p.distance_to_point2(any_lower_point))

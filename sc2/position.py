@@ -302,7 +302,8 @@ class Point2(Pointlike):
         return self.distance_to_point2(other) <= dist
 
     def direction_vector(self, other: Point2) -> Point2:
-        """ Converts a vector to a direction that can face vertically, horizontally or diagonal or be zero, e.g. (0, 0), (1, -1), (1, 0) """
+        """ Converts a vector to a direction that can face vertically, horizontally or diagonal or be zero,
+        e.g. (0, 0), (1, -1), (1, 0) """
         return self.__class__((_sign(other.x - self.x), _sign(other.y - self.y)))
 
     def manhattan_distance(self, other: Point2) -> Union[int, float]:
