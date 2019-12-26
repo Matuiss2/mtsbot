@@ -164,12 +164,12 @@ class DistanceCalculation:
     # Fast and simple calculation functions
 
     @staticmethod
-    def distance_math_hypot(p1: Tuple[float, float], p2: Tuple[float, float]):
-        return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+    def distance_math_hypot(start_point: Tuple[float, float], destiny: Tuple[float, float]):
+        return math.hypot(start_point[0] - destiny[0], start_point[1] - destiny[1])
 
     @staticmethod
-    def distance_math_hypot_squared(p1: Tuple[float, float], p2: Tuple[float, float]):
-        return pow(p1[0] - p2[0], 2) + pow(p1[1] - p2[1], 2)
+    def distance_math_hypot_squared(start_point: Tuple[float, float], destiny: Tuple[float, float]):
+        return pow(start_point[0] - destiny[0], 2) + pow(start_point[1] - destiny[1], 2)
 
     def _distance_squared_unit_to_unit_method0(self, unit1: Unit, unit2: Unit) -> float:
         return self.distance_math_hypot_squared(unit1.position_tuple, unit2.position_tuple)

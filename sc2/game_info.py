@@ -120,11 +120,11 @@ class Ramp:
             return None
         if len(self.upper2_for_ramp_wall) == 2:
             points = self.upper2_for_ramp_wall
-            p1 = points.pop().offset((self.x_offset, self.y_offset))
-            p2 = points.pop().offset((self.x_offset, self.y_offset))
+            point1 = points.pop().offset((self.x_offset, self.y_offset))
+            point2 = points.pop().offset((self.x_offset, self.y_offset))
             # Offset from top position to depot center is (1.5, 0.5)
             try:
-                intersects = p1.circle_intersection(p2, 2.5 ** 0.5)
+                intersects = point1.circle_intersection(point2, 2.5 ** 0.5)
             except AssertionError:
                 # Returns None when no placement was found,
                 # this is the case on the map Honorgrounds LE with an exceptionally large main base ramp
@@ -140,9 +140,9 @@ class Ramp:
             return set()
         if len(self.upper2_for_ramp_wall) == 2:
             points = self.upper2_for_ramp_wall
-            p1 = points.pop().offset((self.x_offset, self.y_offset))
-            p2 = points.pop().offset((self.x_offset, self.y_offset))
-            center = p1.towards(p2, p1.distance_to_point2(p2) / 2)
+            point1 = points.pop().offset((self.x_offset, self.y_offset))
+            point2 = points.pop().offset((self.x_offset, self.y_offset))
+            center = point1.towards(point2, point1.distance_to_point2(point2) / 2)
             depot_position = self.depot_in_middle
             if depot_position is None:
                 return set()

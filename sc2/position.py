@@ -224,7 +224,7 @@ class Point2(Pointlike):
         return Point2((self.x + math.cos(angle) * distance, self.y + math.sin(angle) * distance))
 
     def circle_intersection(self, p: Point2, r: Union[int, float]) -> Set[Point2]:
-        """ self is point1, position is point2, r is the radius for circles originating in both points
+        """ self is point1, position is point2, radius is the radius for circles originating in both points
         Used in ramp finding
 
         :param p:

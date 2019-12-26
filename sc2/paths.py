@@ -79,8 +79,8 @@ class _MetaPaths(type):
             if base is None and USERPATH[PF] is not None:
                 executable_info = str(Path.home().expanduser()) + USERPATH[PF]
                 if os.path.isfile(executable_info):
-                    with open(executable_info) as f:
-                        content = f.read()
+                    with open(executable_info) as sc2_info:
+                        content = sc2_info.read()
                     if content:
                         base = re.search(r" = (.*)Versions", content).group(1)
                         if not os.path.exists(base):
@@ -97,8 +97,8 @@ class _MetaPaths(type):
                 self.MAPS = self.BASE / "maps"
             else:
                 self.MAPS = self.BASE / "Maps"
-        except FileNotFoundError as e:
-            LOGGER.critical(f"SC2 installation not found: File '{e.filename}' does not exist.")
+        except FileNotFoundError as error:
+            LOGGER.critical(f"SC2 installation not found: File '{error.filename}' does not exist.")
             exit(1)
 
     def __getattr__(self, attr):

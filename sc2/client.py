@@ -515,10 +515,10 @@ class Client(Protocol):
         return self.debug_text_world(text, pos, color, size)
 
     def debug_line_out(
-        self, p0: Union[Unit, Point2, Point3], p1: Union[Unit, Point2, Point3], color: Union[tuple, list, Point3] = None
+        self, starting_point: Union[Unit, Point2, Point3], ending_point: Union[Unit, Point2, Point3], color: Union[tuple, list, Point3] = None
     ):
-        """ Draws a line from p0 to p1. """
-        self._debug_lines.append(DrawItemLine(color=color, start_point=p0, end_point=p1))
+        """ Draws a line from starting_point to ending_point. """
+        self._debug_lines.append(DrawItemLine(color=color, start_point=starting_point, end_point=ending_point))
 
     def debug_box_out(
         self,
@@ -541,15 +541,15 @@ class Client(Protocol):
             pos = pos.position3d
         elif not isinstance(pos, Point3):
             pos = Point3((pos.x, pos.y, 0))
-        p0 = pos + Point3((-half_vertex_length, -half_vertex_length, -half_vertex_length))
-        p1 = pos + Point3((half_vertex_length, half_vertex_length, half_vertex_length))
-        self._debug_boxes.append(DrawItemBox(start_point=p0, end_point=p1, color=color))
+        starting_point = pos + Point3((-half_vertex_length, -half_vertex_length, -half_vertex_length))
+        ending_point = pos + Point3((half_vertex_length, half_vertex_length, half_vertex_length))
+        self._debug_boxes.append(DrawItemBox(start_point=starting_point, end_point=ending_point, color=color))
 
     def debug_sphere_out(
-        self, p: Union[Unit, Point2, Point3], r: Union[int, float], color: Union[tuple, list, Point3] = None
+        self, middle_point: Union[Unit, Point2, Point3], radius: Union[int, float], color: Union[tuple, list, Point3] = None
     ):
-        """ Draws a sphere at position position with radius r. """
-        self._debug_spheres.append(DrawItemSphere(start_point=p, radius=r, color=color))
+        """ Draws a sphere at position position with radius radius. """
+        self._debug_spheres.append(DrawItemSphere(start_point=middle_point, radius=radius, color=color))
 
     async def send_debug(self):
         """ Sends the debug draw execution. This is run by main.py now automatically, if there is any items in the
