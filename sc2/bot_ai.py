@@ -55,7 +55,7 @@ class BotAI(DistanceCalculation):
 
     EXPANSION_GAP_THRESHOLD = 15
 
-    def _initialize_variables(self):
+    def initialize_variables(self):
         """ Called from main.py internally """
         DistanceCalculation.__init__(self)
         # Specific opponent bot ID used in sc2ai ladder games http://sc2ai.net/ and on ai arena https://ai-arena.net
@@ -67,7 +67,7 @@ class BotAI(DistanceCalculation):
         # Select distance calculation method, see distances.py: _distances_override_functions function
         if not hasattr(self, "distance_calculation_method"):
             self.distance_calculation_method: int = 2
-        # This value will be set to True by main.py in self._prepare_start if game is played in realtime
+        # This value will be set to True by main.py in self.prepare_start if game is played in realtime
         # (if true, the bot will have limited time per step)
         self.realtime: bool = False
         self.all_units: Units = Units([], self)
@@ -1416,7 +1416,7 @@ class BotAI(DistanceCalculation):
         pos = pos.position.to2.rounded
         return self.state.creep[pos] == 1
 
-    def _prepare_start(self, client, player_id, game_info, game_data, realtime: bool = False):
+    def prepare_start(self, client, player_id, game_info, game_data, realtime: bool = False):
         """
         Ran until game start to set game and player data.
 

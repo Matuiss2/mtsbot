@@ -30,12 +30,12 @@ class ObserverAI(DistanceCalculation):
 
     EXPANSION_GAP_THRESHOLD = 15
 
-    def _initialize_variables(self):
+    def initialize_variables(self):
         DistanceCalculation.__init__(self)
         # Specific opponent bot ID used in sc2ai ladder games http://sc2ai.net/
         # The bot ID will stay the same each game so your bot can "adapt" to the opponent
         self.opponent_id: int = None
-        # This value will be set to True by main.py in self._prepare_start if game is played in realtime
+        # This value will be set to True by main.py in self.prepare_start if game is played in realtime
         # (if true, the bot will have limited time per step)
         self.realtime: bool = False
         self.all_units: Units = Units([], self)
@@ -190,7 +190,7 @@ class ObserverAI(DistanceCalculation):
 
         return abilities_amount
 
-    def _prepare_start(self, client, player_id, game_info, game_data, realtime: bool = False):
+    def prepare_start(self, client, player_id, game_info, game_data, realtime: bool = False):
         """
         Ran until game start to set game and player data.
 

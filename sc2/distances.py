@@ -215,7 +215,7 @@ class DistanceCalculation:
         return (self.distance_math_hypot(p, pos) for p in points)
 
     def _distances_override_functions(self, method: int = 0):
-        """ Overrides the internal distance calculation functions at game start in bot_ai.py self._prepare_start()
+        """ Overrides the internal distance calculation functions at game start in bot_ai.py self.prepare_start()
         function method 0: Use python's math.hypot The following methods calculate the distances between all units
         once:
         method 1: Use scipy's pdist condensed matrix (1d array)

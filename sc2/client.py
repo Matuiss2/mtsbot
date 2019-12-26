@@ -32,7 +32,7 @@ class Client(Protocol):
         # How many frames will be waited between iterations before the next one is called
         self.game_step = 8
         self._player_id = None
-        self._game_result = None
+        self.game_result = None
         # Store a hash value of all the debug requests to prevent sending the same ones again if they haven't changed
         # last frame
         self._debug_hash_tuple_last_iteration: Tuple[int, int, int, int] = (0, 0, 0, 0)
@@ -100,18 +100,18 @@ class Client(Protocol):
             req.player_name = name
 
         result = await self.execute(join_game=req)
-        self._game_result = None
+        self.game_result = None
         self._player_id = result.join_game.player_id
         return result.join_game.player_id
 
     async def leave(self):
         """ You can use 'await self._client.leave()' to surrender midst game. """
-        is_resign = self._game_result is None
+        is_resign = self.game_result is None
 
         if is_resign:
             # For all clients that can leave, result of leaving the game either
             # loss, or the client will ignore the result
-            self._game_result = {self._player_id: Result.Defeat}
+            self.game_result = {self._player_id: Result.Defeat}
 
         try:
             await self.execute(leave_game=sc_pb.RequestLeaveGame())
@@ -144,7 +144,7 @@ class Client(Protocol):
             player_id_to_result = {}
             for pr in result.observation.player_result:
                 player_id_to_result[pr.player_id] = Result(pr.result)
-            self._game_result = player_id_to_result
+            self.game_result = player_id_to_result
 
         # if render_data is available, then RGB rendering was requested
         if self._renderer and result.observation.observation.HasField("render_data"):

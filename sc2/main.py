@@ -49,8 +49,8 @@ class SlidingTimeWindow:
 async def _play_game_human(client, player_id, realtime, game_time_limit):
     while True:
         state = await client.observation()
-        if client._game_result:
-            return client._game_result[player_id]
+        if client.game_result:
+            return client.game_result[player_id]
 
         if game_time_limit and (state.observation.observation.game_loop * 0.725 * (1 / 16)) > game_time_limit:
             print(state.observation.game_loop, state.observation.game_loop * 0.14)
@@ -97,18 +97,18 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         time_window = SlidingTimeWindow(int(step_time_limit.get("window_size", 1)))
         time_limit = float(step_time_limit.get("time_limit", None))
 
-    ai._initialize_variables()
+    ai.initialize_variables()
 
     game_data = await client.get_game_data()
     game_info = await client.get_game_info()
 
     # This game_data will become self._game_data in botAI
-    ai._prepare_start(client, player_id, game_info, game_data, realtime=realtime)
+    ai.prepare_start(client, player_id, game_info, game_data, realtime=realtime)
     state = await client.observation()
     # check game result every time we get the observation
-    if client._game_result:
-        await ai.on_end(client._game_result[player_id])
-        return client._game_result[player_id]
+    if client.game_result:
+        await ai.on_end(client.game_result[player_id])
+        return client.game_result[player_id]
     gs = GameState(state.observation)
     proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
     ai._prepare_step(gs, proto_game_info)
@@ -130,14 +130,14 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
             else:
                 state = await client.observation()
             # check game result every time we get the observation
-            if client._game_result:
+            if client.game_result:
                 try:
-                    await ai.on_end(client._game_result[player_id])
+                    await ai.on_end(client.game_result[player_id])
                 except TypeError:
                     # print(f"caught type error {error}")
-                    # print(f"return {client._game_result[player_id]}")
-                    return client._game_result[player_id]
-                return client._game_result[player_id]
+                    # print(f"return {client.game_result[player_id]}")
+                    return client.game_result[player_id]
+                return client.game_result[player_id]
             gs = GameState(state.observation)
             logger.debug(f"Score: {gs.score.score}")
 
@@ -206,7 +206,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
             if isinstance(e, ProtocolError) and e.is_game_over_error:
                 if realtime:
                     return None
-                result = client._game_result[player_id]
+                result = client.game_result[player_id]
                 if result is None:
                     logger.error("Game over, but no results gathered")
                     raise
@@ -228,8 +228,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
         if not realtime:
             if not client.in_game:  # Client left (resigned) the game
-                await ai.on_end(client._game_result[player_id])
-                return client._game_result[player_id]
+                await ai.on_end(client.game_result[player_id])
+                return client.game_result[player_id]
 
             await client.step()
 
@@ -258,18 +258,18 @@ async def _play_game(
 
 
 async def _play_replay(client, ai, realtime=False, player_id=0):
-    ai._initialize_variables()
+    ai.initialize_variables()
 
     game_data = await client.get_game_data()
     game_info = await client.get_game_info()
     client.game_step = 1
     # This game_data will become self._game_data in botAI
-    ai._prepare_start(client, player_id, game_info, game_data, realtime=realtime)
+    ai.prepare_start(client, player_id, game_info, game_data, realtime=realtime)
     state = await client.observation()
     # Check game result every time we get the observation
-    if client._game_result:
-        await ai.on_end(client._game_result[player_id])
-        return client._game_result[player_id]
+    if client.game_result:
+        await ai.on_end(client.game_result[player_id])
+        return client.game_result[player_id]
     gs = GameState(state.observation)
     proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
     ai._prepare_step(gs, proto_game_info)
@@ -292,14 +292,14 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
             else:
                 state = await client.observation()
             # check game result every time we get the observation
-            if client._game_result:
+            if client.game_result:
                 try:
-                    await ai.on_end(client._game_result[player_id])
+                    await ai.on_end(client.game_result[player_id])
                 except TypeError:
                     # print(f"caught type error {error}")
-                    # print(f"return {client._game_result[player_id]}")
-                    return client._game_result[player_id]
-                return client._game_result[player_id]
+                    # print(f"return {client.game_result[player_id]}")
+                    return client.game_result[player_id]
+                return client.game_result[player_id]
             gs = GameState(state.observation)
             logger.debug(f"Score: {gs.score.score}")
 
@@ -325,7 +325,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
             if isinstance(e, ProtocolError) and e.is_game_over_error:
                 if realtime:
                     return None
-                # result = client._game_result[player_id]
+                # result = client.game_result[player_id]
                 # if result is None:
                 #     logger.error("Game over, but no results gathered")
                 #     raise
