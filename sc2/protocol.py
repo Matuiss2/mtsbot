@@ -69,8 +69,6 @@ class Protocol:
         response = await self.__request(request)
 
         new_status = Status(response.status)
-        if new_status != self._status:
-            LOGGER.info(f"Client status changed to {new_status} (was {self._status})")
         self._status = new_status
 
         if response.error:

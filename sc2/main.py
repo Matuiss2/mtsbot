@@ -245,15 +245,11 @@ async def _play_game(
     player_id = await client.join_game(
         player.name, player.race, portconfig=portconfig, rgb_render_config=rgb_render_config
     )
-    logging.info(f"Player {player_id} - {player.name if player.name else str(player)}")
 
     if isinstance(player, Human):
         result = await _play_game_human(client, player_id, realtime, game_time_limit)
     else:
         result = await _play_game_ai(client, player_id, player.ai, realtime, step_time_limit, game_time_limit)
-
-    # noinspection PyProtectedMember
-    logging.info(f"Result for player {player_id} - {player.name if player.name else str(player)}: {result._name_}")
 
     return result
 

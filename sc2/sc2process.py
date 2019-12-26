@@ -30,7 +30,6 @@ class KillSwitch:
 
     @classmethod
     def kill_all(cls):
-        LOGGER.info("kill_switch: Process cleanup")
         for process in cls._to_kill:
             process.clean()
 
@@ -61,7 +60,7 @@ class SC2Process:
         self._tmp_dir = tempfile.mkdtemp(prefix="SC2_")
         self.process = None
         self._session = None
-        self.web_service = None
+        self.web_socket = None
         self._sc2_version = sc2_version
         self._base_build = base_build
         self._data_hash = data_hash
@@ -79,14 +78,14 @@ class SC2Process:
 
         try:
             self.process = self._launch()
-            self.web_service = await self._connect()
+            self.web_socket = await self._connect()
         except Exception as error:
             print(f"An error occurred while trying to launch the process - {error.__traceback__}")
             await self._close_connection()
             self.clean()
             raise
 
-        return Controller(self.web_service, self)
+        return Controller(self.web_socket, self)
 
     async def __aexit__(self, *args):
         KillSwitch.kill_all()
@@ -178,12 +177,12 @@ class SC2Process:
             await asyncio.sleep(1)
             try:
                 self._session = aiohttp.ClientSession()
-                web_service = await self._session.ws_connect(self.ws_url, timeout=120)
-                # web_service = await self._session.ws_connect(
+                web_socket = await self._session.ws_connect(self.ws_url, timeout=120)
+                # web_socket = await self._session.ws_connect(
                 #     self.ws_url, timeout=aiohttp.client_ws.ClientWSTimeout(ws_close=120)
                 # )
                 LOGGER.debug("Websocket connection ready")
-                return web_service
+                return web_socket
             except aiohttp.ClientConnectorError:
                 await self._session.close()
                 if i > 15:
@@ -195,15 +194,13 @@ class SC2Process:
     async def _close_connection(self):
         LOGGER.info("Closing connection...")
 
-        if self.web_service is not None:
-            await self.web_service.close()
+        if self.web_socket is not None:
+            await self.web_socket.close()
 
         if self._session is not None:
             await self._session.close()
 
     def clean(self):
-        LOGGER.info("Cleaning up...")
-
         if self.process is not None:
             if self.process.poll() is None:
                 for _ in range(3):
@@ -220,5 +217,4 @@ class SC2Process:
             shutil.rmtree(self._tmp_dir)
 
         self.process = None
-        self.web_service = None
-        LOGGER.info("Cleanup complete")
+        self.web_socket = None

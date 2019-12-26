@@ -8,9 +8,12 @@ from sc2.bot_ai import BotAI
 class Mtsbot(BotAI):
     """ mtsbot"""
 
+    async def on_end(self, game_result):
+        print(game_result)
+
     async def build_pool(self):
         """ Build pool logic
-        - improvements possible -> placement can be"""
+        - improvements possible -> placement can be improved """
         pool = UnitTypeId.SPAWNINGPOOL  # to save line breaks
         if not self.structures(pool).ready and not self.already_pending(pool):
             await self.build(pool, self.start_location.towards(self.game_info.map_center, distance=5))

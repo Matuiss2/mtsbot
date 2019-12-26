@@ -31,10 +31,6 @@ class Controller(Protocol):
                 player_info.race = player.race.value
                 player_info.difficulty = player.difficulty.value
                 player_info.ai_build = player.ai_build.value
-
-        LOGGER.info("Creating new game")
-        LOGGER.info(f"Map:     {game_map.name}")
-        LOGGER.info(f"Players: {', '.join(str(p) for p in players)}")
         result = await self.execute(create_game=req)
         return result
 
