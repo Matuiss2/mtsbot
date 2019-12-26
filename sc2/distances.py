@@ -1,12 +1,13 @@
+import logging
+import math
+from typing import Dict, Tuple, Iterable, Generator
+
+import numpy as np
+from scipy.spatial.distance import pdist, cdist
+
+from sc2.game_state import GameState
 from sc2.unit import Unit
 from sc2.units import Units
-from sc2.game_state import GameState
-from scipy.spatial.distance import pdist, cdist
-import math
-from math import pow
-import numpy as np
-import logging
-from typing import Dict, Tuple, Iterable, Generator
 
 logger = logging.getLogger(__name__)
 

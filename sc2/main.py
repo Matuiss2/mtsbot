@@ -1,11 +1,12 @@
 import asyncio
-import logging
-import time
-import six
 import json
+import logging
 import os
-import mpyq
+import time
+
 import async_timeout
+import mpyq
+import six
 from s2clientprotocol import sc2api_pb2 as sc_pb
 
 from .client import Client
