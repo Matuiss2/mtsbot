@@ -1170,7 +1170,7 @@ class Unit:
         return self(self.bot_object.game_data_local.upgrades[upgrade.value].research_ability.exact_id, queue=queue)
 
     def warp_in(self, unit: UnitTypeId, position: Union[Point2, Point3]) -> UnitCommand:
-        """ Orders Warpgate to warp in 'unit' at 'position'. 
+        """ Orders Warpgate to warp in 'unit' at 'position'.
 
         Parameters
         ----------
@@ -1182,7 +1182,7 @@ class Unit:
 
     def attack(self, target: Union[Unit, Point2, Point3], queue: bool = False) -> UnitCommand:
         """ Orders unit to attack. Target can be a Unit or Point2.
-        Attacking a position will make the unit move there and attack everything on its way. 
+        Attacking a position will make the unit move there and attack everything on its way.
 
         :param target:
         :param queue:
@@ -1199,7 +1199,7 @@ class Unit:
 
     def gather(self, target: Unit, queue: bool = False) -> UnitCommand:
         """ Orders a unit to gather minerals or gas.
-        'Target' must be a mineral patch or a gas extraction building. 
+        'Target' must be a mineral patch or a gas extraction building.
 
         :param target:
         :param queue:
@@ -1207,7 +1207,7 @@ class Unit:
         return self(AbilityId.HARVEST_GATHER, target=target, queue=queue)
 
     def return_resource(self, target: Unit = None, queue: bool = False) -> UnitCommand:
-        """ Orders the unit to return resource. Does not need a 'target'. 
+        """ Orders the unit to return resource. Does not need a 'target'.
 
         :param target:
         :param queue:
@@ -1216,7 +1216,7 @@ class Unit:
 
     def move(self, position: Union[Unit, Point2, Point3], queue: bool = False) -> UnitCommand:
         """ Orders the unit to move to 'position'.
-        Target can be a Unit (to follow that unit) or Point2. 
+        Target can be a Unit (to follow that unit) or Point2.
 
         :param position:
         :param queue:
@@ -1228,7 +1228,7 @@ class Unit:
         return self(AbilityId.SCAN_MOVE, *args, **kwargs)
 
     def hold_position(self, queue: bool = False) -> UnitCommand:
-        """ Orders a unit to stop moving. It will not move until it gets new orders. 
+        """ Orders a unit to stop moving. It will not move until it gets new orders.
 
         :param queue:
         """
@@ -1237,7 +1237,7 @@ class Unit:
     def stop(self, queue: bool = False) -> UnitCommand:
         """ Orders a unit to stop, but can start to move on its own
         if it is attacked, enemy unit is in range or other friendly
-        units need the space. 
+        units need the space.
 
         :param queue:
         """
@@ -1246,7 +1246,7 @@ class Unit:
     def patrol(self, position: Union[Point2, Point3], queue: bool = False) -> UnitCommand:
         """ Orders a unit to patrol between position it has when the command starts and the target position.
         Can be queued up to seven patrol points. If the last point is the same as the starting
-        point, the unit will patrol in a circle. 
+        point, the unit will patrol in a circle.
 
         :param position:
         :param queue:
@@ -1254,7 +1254,7 @@ class Unit:
         return self(AbilityId.PATROL, target=position, queue=queue)
 
     def repair(self, repair_target: Unit, queue: bool = False) -> UnitCommand:
-        """ Order an SCV or MULE to repair. 
+        """ Order an SCV or MULE to repair.
 
         :param repair_target:
         :param queue:

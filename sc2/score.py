@@ -13,10 +13,10 @@ class ScoreDetails:
         TODO this is super ugly, how can we improve this summary?
         Print summary to file with:
         In on_step:
-        
+
         with open("stats.txt", "w+") as file:
             for stat in self.state.score.summary:
-                file.write(f"{stat[0]:<35} {float(stat[1]):>35.3f}\n")              
+                file.write(f"{stat[0]:<35} {float(stat[1]):>35.3f}\n")
         """
         values = [
             "score_type",

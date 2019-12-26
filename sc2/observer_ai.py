@@ -344,7 +344,7 @@ class ObserverAI(DistanceCalculation):
 
     async def on_start(self):
         """
-        Override this in your bot class. This function is called after "on_start". 
+        Override this in your bot class. This function is called after "on_start".
         At this point, game_data, game_info and the first iteration of game_state (self.state) are available.
         """
 
