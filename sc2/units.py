@@ -127,18 +127,18 @@ class Units(list):
         else:
             return self.subgroup(random.sample(self, n))
 
-    # TODO: append, insert, remove, pop and extend functions should reset the cache for Units.positions because the number of units in the list has changed
     # @property_immutable_cache
     # def positions(self) -> np.ndarray:
     #     flat_units_positions = (coord for unit in self for coord in unit.position)
-    #     unit_positions_np = np.fromiter(flat_units_positions, dtype=float, count=2 * len(self)).reshape((len(self), 2))
-    #     return unit_positions_np
+    #     unit_position_np = np.fromiter(flat_units_positions, dtype=float, count=2 * len(self)).reshape((len(self), 2))
+    #     return unit_position_np
 
     def in_attack_range_of(self, unit: Unit, bonus_distance: Union[int, float] = 0) -> Units:
         """
-        Filters units that are in attack range of the given unit.
-        This uses the unit and target unit.radius when calculating the distance, so it should be accurate.
-        Caution: This may not work well for static structures (bunker, sieged tank, planetary fortress, photon cannon, spine and spore crawler) because it seems attack ranges differ for static / immovable units.
+        Filters units that are in attack range of the given unit. This uses the unit and target unit.radius when
+        calculating the distance, so it should be accurate. Caution: This may not work well for static structures (
+        bunker, sieged tank, planetary fortress, photon cannon, spine and spore crawler) because it seems attack
+        ranges differ for static / immovable units.
 
         Example::
 
@@ -252,11 +252,10 @@ class Units(list):
 
         Example::
 
-            enemy_zerglings = self.enemy_units(UnitTypeId.ZERGLING)
-            my_marine = next((unit for unit in self.units if unit.type_id == UnitTypeId.MARINE), None)
-            if my_marine:
-                close_zerglings = enemy_zerglings.closer_than(3, my_marine)
-                # Contains all zerglings that are distance 3 or less away from the marine (does not include unit radius in calculation)
+            enemy_zerglings = self.enemy_units(UnitTypeId.ZERGLING) my_marine = next((unit for unit in self.units if
+            unit.type_id == UnitTypeId.MARINE), None) if my_marine: close_zerglings = enemy_zerglings.closer_than(3,
+            my_marine) # Contains all zerglings that are distance 3 or less away from the marine (does not include
+            unit radius in calculation)
 
         :param distance:
         :param position:
@@ -283,7 +282,7 @@ class Units(list):
             my_marine = next((unit for unit in self.units if unit.type_id == UnitTypeId.MARINE), None)
             if my_marine:
                 far_zerglings = enemy_zerglings.further_than(3, my_marine)
-                # Contains all zerglings that are distance 3 or more away from the marine (does not include unit radius in calculation)
+                # Contains all zerglings that are distance 3 or more away from the marine (does not include unit radius)
 
         :param distance:
         :param position:
@@ -312,7 +311,7 @@ class Units(list):
             my_marine = next((unit for unit in self.units if unit.type_id == UnitTypeId.MARINE), None)
             if my_marine:
                 zerglings_filtered = enemy_zerglings.in_distance_between(my_marine, 3, 5)
-                # Contains all zerglings that are between distance 3 and 5 away from the marine (does not include unit radius in calculation)
+                # Contains all zerglings between distance 3 and 5 away from the marine (does not include unit radius)
 
         :param position:
         :param distance1:
@@ -405,7 +404,8 @@ class Units(list):
         """
         Returns unit in shortest distance from any unit in self to any unit in group.
 
-        Loops over all units in self, then loops over all units in other_units and calculates the shortest distance. Returns the units that is closest to any unit of 'other_units'.
+        Loops over all units in self, then loops over all units in other_units and calculates the shortest distance.
+        Returns the units that is closest to any unit of 'other_units'.
 
         :param other_units: """
         if not self:
@@ -433,8 +433,9 @@ class Units(list):
 
     def n_closest_to_distance(self, position: Union[Point2, np.ndarray], distance: Union[int, float], n: int) -> Units:
         """ Returns n units that are the closest to distance away.
-        For example if the distance is set to 5 and you want 3 units, from units with distance [3, 4, 5, 6, 7] to position,
-        the units with distance [4, 5, 6] will be returned """
+        For example if the distance is set to 5 and you
+        want 3 units, from units with distance [3, 4, 5, 6, 7] to position, the units with distance [4, 5,
+        6] will be returned """
         return self.subgroup(self._list_sorted_closest_to_distance(position=position, distance=distance)[:n])
 
     def n_furthest_to_distance(self, position: Union[Point2, np.ndarray], distance: Union[int, float], n: int) -> Units:
@@ -459,11 +460,8 @@ class Units(list):
 
             completed_structures = self.structures.filter(lambda structure: structure.is_ready)
 
-            queens_with_energy_to_inject = self.units.filter(lambda unit: unit.type_id == UnitTypeId.QUEEN and unit.energy >= 25)
+            queens_with_energy = self.units.filter(lambda u: u.type_id == UnitTypeId.QUEEN and u.energy >= 25)
 
-            orbitals_with_energy_to_mule = self.structures.filter(lambda structure: structure.type_id == UnitTypeId.ORBITALCOMMAND and structure.energy >= 50)
-
-            my_units_that_can_shoot_up = self.units.filter(lambda unit: unit.can_attack_air)
 
         See more unit properties in unit.py
 
@@ -497,7 +495,9 @@ class Units(list):
 
             my_inject_queens = self.units.tags_in(self.queen_tags_assigned_to_do_injects)
 
-            # Do not use the following as it is slower because it first loops over all units to filter out if they are queens and loops over those again to check if their tags are in the list/set
+            # Do not use the following as it is slower because it first loops over all units to filter out if they
+            are queens and loops over those again to check if their tags are in the list/set
+
             my_inject_queens_slow = self.units(QUEEN).tags_in(self.queen_tags_assigned_to_do_injects)
 
         :param other:
@@ -512,7 +512,9 @@ class Units(list):
 
             my_non_inject_queens = self.units.tags_not_in(self.queen_tags_assigned_to_do_injects)
 
-            # Do not use the following as it is slower because it first loops over all units to filter out if they are queens and loops over those again to check if their tags are in the list/set
+            # Do not use the following as it is slower because it first loops over all units to filter out if they
+            are queens and loops over those again to check if their tags are in the list/set
+
             my_non_inject_queens_slow = self.units(QUEEN).tags_not_in(self.queen_tags_assigned_to_do_injects)
 
         :param other:
@@ -596,7 +598,8 @@ class Units(list):
         """
         Returns all units that have the same base unit while being in different modes.
 
-        Untested: This should return the equivalents for WarpPrism, Observer, Overseer, SupplyDepot and other units that have different modes but still act as the same unit
+        Untested: This should return the equivalents for WarpPrism, Observer, Overseer, SupplyDepot and other units
+        that have different modes but still act as the same unit
 
         Example::
 
@@ -657,7 +660,8 @@ class Units(list):
 
     @property
     def idle(self) -> Units:
-        """ Returns all units or structures that are doing nothing (unit is standing still, structure is doing nothing). """
+        """ Returns all units or structures that are doing nothing
+        (unit is standing still, structure is doing nothing). """
         return self.filter(lambda unit: unit.is_idle)
 
     @property

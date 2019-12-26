@@ -54,7 +54,8 @@ class ObserverAI(DistanceCalculation):
         # Specific opponent bot ID used in sc2ai ladder games http://sc2ai.net/
         # The bot ID will stay the same each game so your bot can "adapt" to the opponent
         self.opponent_id: int = None
-        # This value will be set to True by main.py in self._prepare_start if game is played in realtime (if true, the bot will have limited time per step)
+        # This value will be set to True by main.py in self._prepare_start if game is played in realtime
+        # (if true, the bot will have limited time per step)
         self.realtime: bool = False
         self.all_units: Units = Units([], self)
         self.units: Units = Units([], self)
@@ -90,7 +91,8 @@ class ObserverAI(DistanceCalculation):
         self._units_previous_map: Dict[int, Unit] = dict()
         self._structures_previous_map: Dict[int, Unit] = dict()
         self._previous_upgrades: Set[UpgradeId] = set()
-        # Internally used to keep track which units received an action in this frame, so that self.train() function does not give the same larva two orders - cleared every frame
+        # Internally used to keep track which units received an action in this frame,
+        # so that self.train() function does not give the same larva two orders - cleared every frame
         self.unit_tags_received_action: Set[int] = set()
 
     @property
@@ -122,7 +124,6 @@ class ObserverAI(DistanceCalculation):
     def alert(self, alert_code: Alert) -> bool:
         """
         Check if alert is triggered in the current step.
-        Possible alerts are listed here https://github.com/Blizzard/s2client-proto/blob/e38efed74c03bec90f74b330ea1adda9215e655f/s2clientprotocol/sc2api.proto#L679-L702
 
         Example use:
 
@@ -177,7 +178,8 @@ class ObserverAI(DistanceCalculation):
     async def get_available_abilities(
         self, units: Union[List[Unit], Units], ignore_resource_requirements: bool = False
     ) -> List[List[AbilityId]]:
-        """ Returns available abilities of one or more units. Right now only checks cooldown, energy cost, and whether the ability has been researched.
+        """ Returns available abilities of one or more units.
+        Right now only checks cooldown, energy cost, and whether the ability has been researched.
 
         Examples::
 
@@ -311,7 +313,8 @@ class ObserverAI(DistanceCalculation):
             # From here on, only check completed structure, so we ignore structures with build_progress < 1
             if structure.build_progress < 1:
                 continue
-            # Using get function in case somehow the previous structure map (from last frame) does not contain this structure
+            # Using get function in case somehow the previous structure map (from last frame)
+            # does not contain this structure
             structure_prev = self._structures_previous_map.get(structure.tag, None)
             if structure_prev and structure_prev.build_progress < 1:
                 await self.on_building_construction_complete(structure)
@@ -352,7 +355,8 @@ class ObserverAI(DistanceCalculation):
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
         """
-        Override this in your bot class. This function is called with the upgrade id of an upgrade that was not finished last step and is now.
+        Override this in your bot class. This function is called with the upgrade id of an upgrade that was not
+        finished last step and is now.
 
         :param upgrade:
         """
