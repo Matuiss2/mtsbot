@@ -12,7 +12,7 @@ from .main import run_game, run_replay
 def is_submodule(path):
     if path.is_file():
         return path.suffix == ".py" and path.stem != "__init__"
-    elif path.is_dir():
+    if path.is_dir():
         return (path / "__init__.py").exists()
     return False
 

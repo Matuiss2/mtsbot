@@ -921,8 +921,7 @@ class Unit:
             target = self.orders[0].target
             if isinstance(target, int):
                 return target
-            else:
-                return Point2.from_proto(target)
+            return Point2.from_proto(target)
         return None
 
     @property

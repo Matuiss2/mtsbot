@@ -49,8 +49,7 @@ class Human(AbstractPlayer):
     def __str__(self):
         if self.name is not None:
             return f"Human({self.race._name_}, name={self.name !r})"
-        else:
-            return f"Human({self.race._name_})"
+        return f"Human({self.race._name_})"
 
 
 # noinspection PyProtectedMember
@@ -69,8 +68,7 @@ class Bot(AbstractPlayer):
     def __str__(self):
         if self.name is not None:
             return f"Bot {self.ai.__class__.__name__}({self.race._name_}), name={self.name !r})"
-        else:
-            return f"Bot {self.ai.__class__.__name__}({self.race._name_})"
+        return f"Bot {self.ai.__class__.__name__}({self.race._name_})"
 
 
 class Computer(AbstractPlayer):

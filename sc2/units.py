@@ -107,8 +107,7 @@ class Units(list):
     def take(self, n: int) -> Units:
         if n >= self.amount:
             return self
-        else:
-            return self.subgroup(self[:n])
+        return self.subgroup(self[:n])
 
     @property
     def random(self) -> Unit:
@@ -123,10 +122,9 @@ class Units(list):
         """ Returns self if n >= self.amount. """
         if n < 1:
             return Units([], self.bot_object)
-        elif n >= self.amount:
+        if n >= self.amount:
             return self
-        else:
-            return self.subgroup(random.sample(self, n))
+        return self.subgroup(random.sample(self, n))
 
     # @property_immutable_cache
     # def positions(self) -> np.ndarray:
@@ -387,8 +385,7 @@ class Units(list):
                 for target in other_units
             ):
                 return self
-            else:
-                return self.subgroup([])
+            return self.subgroup([])
 
         return self.subgroup(
             self_unit
