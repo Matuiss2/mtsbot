@@ -437,7 +437,7 @@ class Unit:
 
         :param p: """
         if isinstance(p, Unit):
-            return self._bot_object._distance_squared_unit_to_unit(self, p) ** 0.5
+            return self._bot_object.distance_squared_unit_to_unit(self, p) ** 0.5
         return self._bot_object.distance_math_hypot(self.position_tuple, p)
 
     def distance_to_squared(self, p: Union[Unit, Point2, Point3]) -> float:
@@ -447,7 +447,7 @@ class Unit:
 
         :param p: """
         if isinstance(p, Unit):
-            return self._bot_object._distance_squared_unit_to_unit(self, p)
+            return self._bot_object.distance_squared_unit_to_unit(self, p)
         return self._bot_object.distance_math_hypot_squared(self.position_tuple, p)
 
     def target_in_range(self, target: Unit, bonus_distance: float = 0) -> bool:
@@ -463,7 +463,7 @@ class Unit:
         else:
             return False
         return (
-            self._bot_object._distance_squared_unit_to_unit(self, target)
+            self._bot_object.distance_squared_unit_to_unit(self, target)
             <= (self.radius + target.radius + unit_attack_range + bonus_distance) ** 2
         )
 
@@ -483,7 +483,7 @@ class Unit:
         # For casting abilities that target other units, like transfuse, feedback, snipe, yamato
         if ability_target_type in {Target.Unit.value, Target.PointOrUnit.value} and isinstance(target, Unit):
             return (
-                self._bot_object._distance_squared_unit_to_unit(self, target)
+                self._bot_object.distance_squared_unit_to_unit(self, target)
                 <= (cast_range + self.radius + target.radius + bonus_distance) ** 2
             )
         # For casting abilities on the ground, like queen creep tumor, ravager bile, HT storm

@@ -226,16 +226,16 @@ class DistanceCalculation:
         if not 0 <= method <= 3:
             raise AssertionError(f"Selected method was: {method}")
         if method == 0:
-            self._distance_squared_unit_to_unit = self._distance_squared_unit_to_unit_method0
+            self.distance_squared_unit_to_unit = self._distance_squared_unit_to_unit_method0
         elif method == 1:
-            self._distance_squared_unit_to_unit = self._distance_squared_unit_to_unit_method1
+            self.distance_squared_unit_to_unit = self._distance_squared_unit_to_unit_method1
             self.calculate_distances = self._calculate_distances_method1
             self._get_index_of_two_units = self._get_index_of_two_units_method1
         elif method == 2:
-            self._distance_squared_unit_to_unit = self._distance_squared_unit_to_unit_method2
+            self.distance_squared_unit_to_unit = self._distance_squared_unit_to_unit_method2
             self.calculate_distances = self._calculate_distances_method2
             self._get_index_of_two_units = self._get_index_of_two_units_method2
         elif method == 3:
-            self._distance_squared_unit_to_unit = self._distance_squared_unit_to_unit_method2
+            self.distance_squared_unit_to_unit = self._distance_squared_unit_to_unit_method2
             self.calculate_distances = self._calculate_distances_method3
             self._get_index_of_two_units = self._get_index_of_two_units_method3

@@ -107,6 +107,7 @@ class Renderer:
                 self._text_vespene.text = str(observation.observation.player_common.vespene)
                 self._text_minerals.text = str(observation.observation.player_common.minerals)
             if observation.observation.HasField("score"):
+                # noinspection PyProtectedMember
                 self._text_score.text = "{} score: {}".format(
                     score_pb._SCORE_SCORETYPE.values_by_number[observation.observation.score.score_type].name,
                     observation.observation.score.score,

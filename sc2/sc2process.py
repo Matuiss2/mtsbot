@@ -32,7 +32,7 @@ class KillSwitch:
     def kill_all(cls):
         logger.info("kill_switch: Process cleanup")
         for p in cls._to_kill:
-            p._clean()
+            p.clean()
 
 
 class SC2Process:
@@ -81,7 +81,7 @@ class SC2Process:
             self._ws = await self._connect()
         except:
             await self._close_connection()
-            self._clean()
+            self.clean()
             raise
 
         return Controller(self._ws, self)
@@ -168,7 +168,7 @@ class SC2Process:
     async def _connect(self):
         for i in range(60):
             if self._process is None:
-                # The ._clean() was called, clearing the process
+                # The .clean() was called, clearing the process
                 logger.debug("Process cleanup complete, exit")
                 sys.exit()
 
@@ -199,7 +199,7 @@ class SC2Process:
         if self._session is not None:
             await self._session.close()
 
-    def _clean(self):
+    def clean(self):
         logger.info("Cleaning up...")
 
         if self._process is not None:
