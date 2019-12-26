@@ -430,8 +430,8 @@ class Unit:
         return Point3.from_proto(self.proto.pos)
 
     def distance_to(self, p: Union[Unit, Point2, Point3]) -> float:
-        """ Using the 2d distance between self and p.
-        To calculate the 3d distance, use unit.position3d.distance_to(p)
+        """ Using the 2d distance between self and position.
+        To calculate the 3d distance, use unit.position3d.distance_to(position)
 
         :param p: """
         if isinstance(p, Unit):
@@ -439,9 +439,9 @@ class Unit:
         return self.bot_object.distance_math_hypot(self.position_tuple, p)
 
     def distance_to_squared(self, p: Union[Unit, Point2, Point3]) -> float:
-        """ Using the 2d distance squared between self and p. Slightly faster than distance_to, so when filtering a
+        """ Using the 2d distance squared between self and position. Slightly faster than distance_to, so when filtering a
         lot of units, this function is recommended to be used. To calculate the 3d distance,
-        use unit.position3d.distance_to(p)
+        use unit.position3d.distance_to(position)
 
         :param p: """
         if isinstance(p, Unit):
@@ -1234,8 +1234,8 @@ class Unit:
 
     def patrol(self, position: Union[Point2, Point3], queue: bool = False) -> UnitCommand:
         """ Orders a unit to patrol between position it has when the command starts and the target position.
-        Can be queued up to seven patrol points. If the last point is the same as the starting
-        point, the unit will patrol in a circle.
+        Can be queued up to seven patrol points. If the last position is the same as the starting
+        position, the unit will patrol in a circle.
 
         :param position:
         :param queue:

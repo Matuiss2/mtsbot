@@ -37,8 +37,8 @@ class Ramp:
     def size(self) -> int:
         return len(self._points)
 
-    def height_at(self, p: Point2) -> int:
-        return self._height_map[p]
+    def height_at(self, position: Point2) -> int:
+        return self._height_map[position]
 
     @property_mutable_cache
     def points(self) -> Set[Point2]:
@@ -105,10 +105,10 @@ class Ramp:
             return None
         if len(self.upper2_for_ramp_wall) == 2:
             points = self.upper2_for_ramp_wall
-            p1 = points.pop().offset((self.x_offset, self.y_offset))
-            p2 = points.pop().offset((self.x_offset, self.y_offset))
-            # Offset from top point to barracks center is (2, 1)
-            intersects = p1.circle_intersection(p2, 5 ** 0.5)
+            point_1 = points.pop().offset((self.x_offset, self.y_offset))
+            point_2 = points.pop().offset((self.x_offset, self.y_offset))
+            # Offset from top position to barracks center is (2, 1)
+            intersects = point_1.circle_intersection(point_2, 5 ** 0.5)
             any_lower_point = next(iter(self.lower))
             return max(intersects, key=lambda p: p.distance_to_point2(any_lower_point))
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
@@ -122,7 +122,7 @@ class Ramp:
             points = self.upper2_for_ramp_wall
             p1 = points.pop().offset((self.x_offset, self.y_offset))
             p2 = points.pop().offset((self.x_offset, self.y_offset))
-            # Offset from top point to depot center is (1.5, 0.5)
+            # Offset from top position to depot center is (1.5, 0.5)
             try:
                 intersects = p1.circle_intersection(p2, 2.5 ** 0.5)
             except AssertionError:
@@ -231,11 +231,11 @@ class GameInfo:
         self.local_map_path: str = self.proto.local_map_path
         self.map_size: Size = Size.from_proto(self.proto.start_raw.map_size)
 
-        # self.pathway_grid[point]: if 0, point is not passable, if 1, point is passable
+        # self.pathway_grid[position]: if 0, position is not passable, if 1, position is passable
         self.pathway_grid: PixelMap = PixelMap(self.proto.start_raw.pathing_grid, in_bits=True, mirrored=False)
-        # self.terrain_height[point]: returns the height in range of 0 to 255 at that point
+        # self.terrain_height[position]: returns the height in range of 0 to 255 at that position
         self.terrain_height: PixelMap = PixelMap(self.proto.start_raw.terrain_height, mirrored=False)
-        # self.placement_grid[point]: if 0, point is not placeable, if 1, point is passable
+        # self.placement_grid[position]: if 0, position is not placeable, if 1, position is passable
         self.placement_grid: PixelMap = PixelMap(self.proto.start_raw.placement_grid, in_bits=True, mirrored=False)
         self.playable_area = Rect.from_proto(self.proto.start_raw.playable_area)
         self.map_center = self.playable_area.center
@@ -305,12 +305,12 @@ class GameInfo:
             while queue:
                 base: Point2 = queue.popleft()
                 for offset in nearby:
-                    px, py = base.x + offset[0], base.y + offset[1]
-                    if not (0 <= px < map_width and 0 <= py < map_height):
+                    point_x, point_y = base.x + offset[0], base.y + offset[1]
+                    if not (0 <= point_x < map_width and 0 <= point_y < map_height):
                         continue
-                    if picture[py][px] != not_colored_yet:
+                    if picture[point_y][point_x] != not_colored_yet:
                         continue
-                    point: Point2 = Point2((px, py))
+                    point: Point2 = Point2((point_x, point_y))
                     remaining.discard(point)
                     paint(point)
                     queue.append(point)

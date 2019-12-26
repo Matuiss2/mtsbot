@@ -147,9 +147,9 @@ class GameState:
 
         # Set of unit tags that died this step
         self.dead_units: Set[int] = {dead_unit_tag for dead_unit_tag in self.observation_raw.event.dead_units}
-        # self.visibility[point]: 0=Hidden, 1=Fogged, 2=Visible
+        # self.visibility[position]: 0=Hidden, 1=Fogged, 2=Visible
         self.visibility: PixelMap = PixelMap(self.observation_raw.map_state.visibility, mirrored=False)
-        # self.creep[point]: 0=No creep, 1=creep
+        # self.creep[position]: 0=No creep, 1=creep
         self.creep: PixelMap = PixelMap(self.observation_raw.map_state.creep, in_bits=True, mirrored=False)
 
         # Effects like ravager bile shot, lurker attack, everything in effect_id.py

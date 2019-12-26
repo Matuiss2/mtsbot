@@ -299,12 +299,12 @@ class BotAI(DistanceCalculation):
             possible_points = (
                 point
                 for point in possible_points
-                # Check if point can be built on
+                # Check if position can be built on
                 if self._game_info.placement_grid[point.rounded] == 1
-                # Check if all resources have enough space to point
+                # Check if all resources have enough space to position
                 and all(point.distance_to(resource) > (7 if resource in geysers else 6) for resource in resources)
             )
-            # Choose best fitting point
+            # Choose best fitting position
             result = min(possible_points, key=lambda point: sum(point.distance_to(resource) for resource in resources))
             centers[result] = resources
         return centers
@@ -1031,7 +1031,7 @@ class BotAI(DistanceCalculation):
 
         Example distance to::
 
-            # If you want to train based on distance to a certain point, you can use "closest_to"
+            # If you want to train based on distance to a certain position, you can use "closest_to"
             self.train(UnitTypeId.MARINE, 4, closest_to = self.game_info.map_center)
 
 
@@ -1071,7 +1071,7 @@ class BotAI(DistanceCalculation):
         can_have_addons = any(
             u in train_structure_type for u in {UnitTypeId.BARRACKS, UnitTypeId.FACTORY, UnitTypeId.STARPORT}
         )
-        # Sort structures closest to a point
+        # Sort structures closest to a position
         if closest_to is not None:
             train_structures = train_structures.sorted_by_distance_to(closest_to)
         elif can_have_addons:
@@ -1345,7 +1345,7 @@ class BotAI(DistanceCalculation):
         await self._client.chat_send(message, False)
 
     def in_map_bounds(self, pos: Union[Point2, tuple]) -> bool:
-        """ Tests if a 2 dimensional point is within the map boundaries of the pixelmaps.
+        """ Tests if a 2 dimensional position is within the map boundaries of the pixelmaps.
         :param pos: """
         return (
             self._game_info.playable_area.x
@@ -1388,7 +1388,7 @@ class BotAI(DistanceCalculation):
         return self._game_info.placement_grid[pos] == 1
 
     def in_pathway_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
-        """ Returns True if a ground unit can pass through a grid point.
+        """ Returns True if a ground unit can pass through a grid position.
 
         :param pos: """
         if not isinstance(pos, (Point2, Point3, Unit)):
@@ -1397,7 +1397,7 @@ class BotAI(DistanceCalculation):
         return self._game_info.pathway_grid[pos] == 1
 
     def is_visible(self, pos: Union[Point2, Point3, Unit]) -> bool:
-        """ Returns True if you have vision on a grid point.
+        """ Returns True if you have vision on a grid position.
 
         :param pos: """
         if not isinstance(pos, (Point2, Point3, Unit)):
@@ -1406,7 +1406,7 @@ class BotAI(DistanceCalculation):
         return self.state.visibility[pos] == 2
 
     def has_creep(self, pos: Union[Point2, Point3, Unit]) -> bool:
-        """ Returns True if there is creep on the grid point.
+        """ Returns True if there is creep on the grid position.
 
         :param pos: """
         if not isinstance(pos, (Point2, Point3, Unit)):
@@ -1813,7 +1813,7 @@ class BotAI(DistanceCalculation):
     async def on_start(self):
         """
         Override this in your bot class.
-        At this point, game_data, game_info and the first iteration of game_state (self.state) are available.
+        At this position, game_data, game_info and the first iteration of game_state (self.state) are available.
         """
 
     async def on_step(self, iteration: int):

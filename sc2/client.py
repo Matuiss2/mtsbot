@@ -548,7 +548,7 @@ class Client(Protocol):
     def debug_sphere_out(
         self, p: Union[Unit, Point2, Point3], r: Union[int, float], color: Union[tuple, list, Point3] = None
     ):
-        """ Draws a sphere at point p with radius r. """
+        """ Draws a sphere at position position with radius r. """
         self._debug_spheres.append(DrawItemSphere(start_point=p, radius=r, color=color))
 
     async def send_debug(self):
@@ -721,7 +721,7 @@ class Client(Protocol):
 class DrawItem:
     @staticmethod
     def to_debug_point(point: Union[Unit, Point2, Point3]) -> common_pb.Point:
-        """ Helper function for point conversion """
+        """ Helper function for position conversion """
         if isinstance(point, Unit):
             point = point.position3d
         return common_pb.Point(x=point.x, y=point.y, z=getattr(point, "z", 0))

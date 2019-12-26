@@ -84,8 +84,8 @@ class ObserverAI(DistanceCalculation):
     @property
     def time_formatted(self) -> str:
         """ Returns time as string in min:sec format """
-        t = self.time
-        return f"{int(t // 60):02}:{int(t % 60):02}"
+        seconds = self.time
+        return f"{int(seconds // 60):02}:{int(seconds % 60):02}"
 
     @property
     def game_info(self) -> GameInfo:
@@ -345,7 +345,7 @@ class ObserverAI(DistanceCalculation):
     async def on_start(self):
         """
         Override this in your bot class. This function is called after "on_start".
-        At this point, game_data, game_info and the first iteration of game_state (self.state) are available.
+        At this position, game_data, game_info and the first iteration of game_state (self.state) are available.
         """
 
     async def on_step(self, iteration: int):

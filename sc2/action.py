@@ -43,7 +43,7 @@ def combine_actions(action_iter):
                 cmd = raw_pb.ActionRawUnitCommand(
                     ability_id=ability.value, unit_tags={u.unit.tag for u in items}, queue_command=queue
                 )
-            # Combine actions with target point, e.g. attack_move or move commands on a position
+            # Combine actions with target position, e.g. attack_move or move commands on a position
             elif isinstance(target, Point2):
                 cmd = raw_pb.ActionRawUnitCommand(
                     ability_id=ability.value,

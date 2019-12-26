@@ -19,9 +19,9 @@ def get(name=None):
     if name is None:
         return maps
 
-    for m in maps:
-        if m.matches(name):
-            return m
+    for chart in maps:
+        if chart.matches(name):
+            return chart
 
     raise KeyError(f"Map '{name}' was not found. Please put the map file in \"/StarCraft II/Maps/\".")
 
@@ -45,8 +45,8 @@ class Map:
 
     @property
     def data(self):
-        with open(self.path, "rb") as f:
-            return f.read()
+        with open(self.path, "rb") as data:
+            return data.read()
 
     def matches(self, name):
         return self.name.lower().replace(" ", "") == name.lower().replace(" ", "")
