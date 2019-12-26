@@ -199,11 +199,11 @@ class Point2(Pointlike):
 
     def random_on_distance(self, distance):
         if isinstance(distance, (tuple, list)):  # interval
-            distance = distance[0] + random.random() * (distance[1] - distance[0])
+            distance = distance[0] + random.SystemRandom() * (distance[1] - distance[0])
 
         if distance <= 0:
             raise AssertionError("Distance is not greater than 0")
-        angle = random.random() * 2 * math.pi
+        angle = random.SystemRandom() * 2 * math.pi
 
         dx, dy = math.cos(angle), math.sin(angle)
         return Point2((self.x + dx * distance, self.y + dy * distance))
@@ -216,7 +216,7 @@ class Point2(Pointlike):
     ) -> Point2:
         tx, ty = self.to2.towards(p.to2, 1)
         angle = math.atan2(ty - self.y, tx - self.x)
-        angle = (angle - max_difference) + max_difference * 2 * random.random()
+        angle = (angle - max_difference) + max_difference * 2 * random.SystemRandom()
         return Point2((self.x + math.cos(angle) * distance, self.y + math.sin(angle) * distance))
 
     def circle_intersection(self, p: Point2, r: Union[int, float]) -> Set[Point2]:

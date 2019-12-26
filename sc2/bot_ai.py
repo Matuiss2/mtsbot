@@ -856,7 +856,7 @@ class BotAI(DistanceCalculation):
                 continue
 
             if random_alternative:
-                return random.choice(possible)
+                return random.SystemRandom().choice(possible)
             else:
                 return min(possible, key=lambda p: p.distance_to_point2(near))
         return None
