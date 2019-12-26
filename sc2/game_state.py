@@ -154,9 +154,3 @@ class GameState:
 
         # Effects like ravager bile shot, lurker attack, everything in effect_id.py
         self.effects: Set[EffectData] = {EffectData(effect) for effect in self.observation_raw.effects}
-        """ Usage:
-        for effect in self.state.effects:
-            if effect.id == EffectId.RAVAGERCORROSIVEBILECP:
-                positions = effect.positions
-                # dodge the ravager biles
-        """

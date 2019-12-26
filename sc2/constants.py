@@ -381,22 +381,6 @@ ALL_GAS: Set[UnitTypeId] = {
     UnitTypeId.EXTRACTOR,
     UnitTypeId.EXTRACTORRICH,
 }
-"""How much damage a unit gains per weapon upgrade per attack E.g. marauder receives +1 normal damage and +1 vs
-armored, so we have to list +1 vs armored here - the +1 normal damage is assumed E.g. stalker receives +1 normal
-damage but does not increment at all vs armored, so we don't list it here Updated using unit stats:
-https://liquipedia.net/starcraft2/Unit_Statistics_(Legacy_of_the_Void)
-
-Default will be assumed as 1, or 0 against specific armor tags, if it is not listed:
-MyUnitType: {
-    TargetType.Ground.value: {
-        # Bonus damage per weapon upgrade against ground targets
-        None: 1,
-        # Bonus damage per weapon upgrade against ground targets with specific armor tag
-        some_armor_tag: 0
-    }
-    # Same for Air and Any (=both)
-}
-"""
 DAMAGE_BONUS_PER_UPGRADE: Dict[int, UnitTypeId] = {
     #
     # Protoss

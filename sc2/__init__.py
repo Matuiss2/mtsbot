@@ -2,11 +2,7 @@ import logging
 import sys
 from pathlib import Path
 
-from . import helpers
 from . import maps
-from .bot_ai import BotAI
-from .data import *
-from .main import run_game, run_replay
 
 
 def is_submodule(path):
