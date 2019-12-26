@@ -648,7 +648,7 @@ class BotAI(DistanceCalculation):
 
     def select_build_worker(self, pos: Union[Unit, Point2, Point3], force: bool = False) -> Optional[Unit]:
         """Select a worker to build a building with.
-        
+
         Example::
 
             barracks_placement_position = self.main_base_ramp.barracks_correct_placement
