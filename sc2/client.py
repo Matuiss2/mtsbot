@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import logging
 from typing import Iterable, List, Optional, Set, Tuple, Union
 
@@ -7,6 +8,7 @@ from s2clientprotocol import debug_pb2 as debug_pb
 from s2clientprotocol import query_pb2 as query_pb
 from s2clientprotocol import raw_pb2 as raw_pb
 from s2clientprotocol import sc2api_pb2 as sc_pb
+from s2clientprotocol import spatial_pb2 as spatial_pb
 
 from .action import combine_actions
 from .data import ActionResult, ChatChannel, Race, Result, Status
@@ -455,7 +457,6 @@ class Client(Protocol):
         """ Moves camera to the target position using the spatial action interface
 
         :param position: """
-        from s2clientprotocol import spatial_pb2 as spatial_pb
 
         if not isinstance(position, (Point2, Point3)):
             raise AssertionError()
