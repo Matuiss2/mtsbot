@@ -579,7 +579,8 @@ class BotAI(DistanceCalculation):
 
     def calculate_unit_value(self, unit_type: UnitTypeId) -> Cost:
         """
-        Unlike the function below, this function returns the value of a unit given by the API (e.g. the resources lost value on kill).
+        Unlike the function below, this function returns the value of a unit given by the API (e.g. the resources
+        lost value on kill).
 
         Examples::
 
@@ -693,8 +694,9 @@ class BotAI(DistanceCalculation):
 
         Example::
 
-            stalkers = self.units(UnitTypeId.STALKER)
-            stalkers_that_can_blink = stalkers.filter(lambda unit: unit.type_id == UnitTypeId.STALKER and (await self.can_cast(unit, AbilityId.EFFECT_BLINK_STALKER, only_check_energy_and_cooldown=True)))
+            stalkers = self.units(UnitTypeId.STALKER) stalkers_that_can_blink = stalkers.filter(lambda unit:
+            unit.type_id == UnitTypeId.STALKER and (await self.can_cast(unit, AbilityId.EFFECT_BLINK_STALKER,
+            only_check_energy_and_cooldown=True)))
 
         See data_pb2.py (line 161) for the numbers 1-5 to make sense
 
@@ -907,10 +909,9 @@ class BotAI(DistanceCalculation):
         """
         Returns the build progress of a structure type.
 
-        Return range: 0 <= x <= 1 where
-            0: no such structure exists
-            0 < x < 1: at least one structure is under construction, returns the progress of the one with the highest progress
-            1: we have at least one such structure complete
+        Return range: 0 <= x <= 1 where 0: no such structure exists 0 < x < 1: at least one structure is under
+        construction, returns the progress of the one with the highest progress 1: we have at least one such
+        structure complete
 
         Example::
 
@@ -925,8 +926,9 @@ class BotAI(DistanceCalculation):
             # If you have a Hive completed but no lair, this function returns 1.0 for the following:
             self.structure_type_build_progress(UnitTypeId.LAIR)
 
-            # Assume you have 2 command centers in production, one has 0.5 build_progress and the other 0.2, the following returns 0.5
-            highest_progress_of_command_center: float = self.structure_type_build_progress(UnitTypeId.COMMANDCENTER)
+            # Assume you have 2 command centers in production, one has 0.5 build_progress and the other 0.2,
+            the following returns 0.5 highest_progress_of_command_center: float = self.structure_type_build_progress(
+            UnitTypeId.COMMANDCENTER)
 
         :param structure_type:
         """
@@ -966,9 +968,10 @@ class BotAI(DistanceCalculation):
 
         Example::
 
-            # Current state: One factory is flying and one is half way done
-            tech_requirement = self.tech_requirement_progress(UnitTypeId.STARPORT)
-            print(tech_requirement) # Prints 1 because even though the type id of the flying factory is different, it still has build progress of 1 and thus tech requirement is completed
+            # Current state: One factory is flying and one is half way done tech_requirement =
+            self.tech_requirement_progress(UnitTypeId.STARPORT) print(tech_requirement) # Prints 1 because even
+            though the type id of the flying factory is different, it still has build progress of 1 and thus tech
+            requirement is completed
 
         :param structure_type: """
         race_dict = {
@@ -1051,7 +1054,8 @@ class BotAI(DistanceCalculation):
             if not worker.is_constructing_scv:
                 continue
             for order in worker.orders:
-                # When a construction is resumed, the worker.orders[0].target is the tag of the structure, else it is a Point2
+                # When a construction is resumed, the worker.orders[0].target is the tag of the structure, else it is
+                # a Point2
                 target = order.target
                 if isinstance(target, int):
                     worker_targets.add(target)
@@ -1074,8 +1078,9 @@ class BotAI(DistanceCalculation):
         random_alternative: bool = True,
         placement_step: int = 2,
     ) -> bool:
-        """ Not recommended as this function checks many positions if it "can place" on them until it found a valid position.
-        Also if the given position is not placeable, this function tries to find a nearby position to place the structure. Then uses 'self.do' to give the worker the order to start the construction.
+        """ Not recommended as this function checks many positions if it "can place" on them until it found a valid
+        position. Also if the given position is not placeable, this function tries to find a nearby position to place
+        the structure. Then uses 'self.do' to give the worker the order to start the construction.
 
         :param building:
         :param near:
@@ -1116,8 +1121,8 @@ class BotAI(DistanceCalculation):
 
         Example Zerg::
 
-            self.train(UnitTypeId.QUEEN, 5)
-            # This should queue 5 queens in 5 different townhalls if you have enough townhalls, enough minerals and enough free supply left
+            self.train(UnitTypeId.QUEEN, 5) # This should queue 5 queens in 5 different townhalls if you have enough
+            townhalls, enough minerals and enough free supply left
 
         Example Terran::
 
@@ -1171,7 +1176,8 @@ class BotAI(DistanceCalculation):
         if closest_to is not None:
             train_structures = train_structures.sorted_by_distance_to(closest_to)
         elif can_have_addons:
-            # This should sort the structures in ascending order: first structures with reactor, then naked, then with techlab
+            # This should sort the structures in ascending order:
+            # first structures with reactor, then naked, then with techlab
             train_structures = train_structures.sorted(
                 key=lambda structure: -1 * (structure.add_on_tag in self.reactor_tags)
                 + 1 * (structure.add_on_tag in self.techlab_tags)
@@ -1191,7 +1197,8 @@ class BotAI(DistanceCalculation):
                 and structure.build_progress == 1
                 # If structure is protoss, it needs to be powered to train
                 and (not is_protoss or structure.is_powered)
-                # Either parameter "train_only_idle_buildings" is False or structure is idle or structure has less than 2 orders and has reactor
+                # Either parameter "train_only_idle_buildings" is False or structure is idle or structure has less
+                # than 2 orders and has reactor
                 and (
                     not train_only_idle_buildings
                     or len(structure.orders) < 1 + int(structure.add_on_tag in self.reactor_tags)
@@ -1201,7 +1208,6 @@ class BotAI(DistanceCalculation):
                 and (not requires_techlab or structure.add_on_tag in self.techlab_tags)
             ):
                 # Warp in at location
-                # TODO: find fast warp in locations either random location or closest to the given parameter "closest_to"
                 # TODO: find out which pylons have fast warp in by checking distance to nexus.ready and warp gates
                 if structure.type_id == UnitTypeId.WARPGATE:
                     pylons = self.structures(UnitTypeId.PYLON)
@@ -1228,7 +1234,8 @@ class BotAI(DistanceCalculation):
                         and structure.add_on_tag in self.reactor_tags
                     ):
                         trained_amount += 1
-                        # With one command queue=False and one queue=True, you can queue 2 marines in a reactored barracks in one frame
+                        # With one command queue=False and one queue=True,
+                        # you can queue 2 marines in a reactored barracks in one frame
                         successfully_trained = self.do(
                             structure.train(unit_type, queue=True), subtract_cost=True, subtract_supply=True
                         )
@@ -1254,13 +1261,11 @@ class BotAI(DistanceCalculation):
 
         Example::
 
-            # Try to research zergling movement speed if we can afford it
-            # and if at least one pool is at build_progress == 1
-            # and we are not researching it yet
-            if self.already_pending_upgrade(UpgradeId.ZERGLINGMOVEMENTSPEED) == 0 and self.can_afford(UpgradeId.ZERGLINGMOVEMENTSPEED):
-                spawning_pools_ready = self.structures(UnitTypeId.SPAWNINGPOOL).ready
-                if spawning_pools_ready:
-                    self.research(UpgradeId.ZERGLINGMOVEMENTSPEED)
+            # Try to research zergling movement speed if we can afford it # and if at least one pool is at
+            build_progress == 1 # and we are not researching it yet if self.already_pending_upgrade(
+            UpgradeId.ZERGLINGMOVEMENTSPEED) == 0 and self.can_afford(UpgradeId.ZERGLINGMOVEMENTSPEED):
+            spawning_pools_ready = self.structures(UnitTypeId.SPAWNINGPOOL).ready if spawning_pools_ready:
+            self.research(UpgradeId.ZERGLINGMOVEMENTSPEED)
 
         :param upgrade_type:
         """
@@ -1370,7 +1375,6 @@ class BotAI(DistanceCalculation):
         self.unit_tags_received_action.add(action.unit.tag)
         return True
 
-    # TODO remove again, because you can just use 'self.do()' and execute '_do_actions' and 'self.actions.clear()' afterwards?
     async def synchronous_do(self, action: UnitCommand):
         """
         Not recommended. Use self.do instead to reduce lag.
@@ -1498,7 +1502,6 @@ class BotAI(DistanceCalculation):
         """ Returns True if you have vision on a grid point.
 
         :param pos: """
-        # more info: https://github.com/Blizzard/s2client-proto/blob/9906df71d6909511907d8419b33acc1a3bd51ec0/s2clientprotocol/spatial.proto#L19
         if not isinstance(pos, (Point2, Point3, Unit)):
             raise AssertionError(f"pos is not of type Point2, Point3 or Unit")
         pos = pos.position.to2.rounded

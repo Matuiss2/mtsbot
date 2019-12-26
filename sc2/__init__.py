@@ -1,9 +1,11 @@
+import logging
+import sys
 from pathlib import Path
-import sys, logging
-from . import maps
+
 from . import helpers
-from .data import *
+from . import maps
 from .bot_ai import BotAI
+from .data import *
 from .main import run_game, run_replay
 
 
