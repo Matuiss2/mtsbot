@@ -30,8 +30,51 @@ class ObserverAI(DistanceCalculation):
 
     EXPANSION_GAP_THRESHOLD = 15
 
+    def __init__(self):
+        super().__init__()
+        self.opponent_id: int = None
+        self.realtime: bool = False
+        self.all_units: Units = Units([], self)
+        self.units: Units = Units([], self)
+        self.workers: Units = Units([], self)
+        self.townhalls: Units = Units([], self)
+        self.structures: Units = Units([], self)
+        self.gas_buildings: Units = Units([], self)
+        self.enemy_units: Units = Units([], self)
+        self.enemy_structures: Units = Units([], self)
+        self.resources: Units = Units([], self)
+        self.destructible: Units = Units([], self)
+        self.watchtowers: Units = Units([], self)
+        self.mineral_field: Units = Units([], self)
+        self.vespene_geyser: Units = Units([], self)
+        self.larva: Units = Units([], self)
+        self.techlab_tags: Set[int] = set()
+        self.reactor_tags: Set[int] = set()
+        self.minerals: int = None
+        self.vespene: int = None
+        self.supply_army: Union[float, int] = None
+        self.supply_workers: Union[float, int] = None
+        self.supply_cap: Union[float, int] = None
+        self.supply_used: Union[float, int] = None
+        self.supply_left: Union[float, int] = None
+        self.idle_worker_count: int = None
+        self.army_count: int = None
+        self.warp_gate_count: int = None
+        self.larva_count: int = None
+        self.actions: List[UnitCommand] = []
+        self.blips: Set[Blip] = set()
+        self._unit_tags_seen_this_game: Set[int] = set()
+        self._units_previous_map: Dict[int, Unit] = dict()
+        self._structures_previous_map: Dict[int, Unit] = dict()
+        self._previous_upgrades: Set[UpgradeId] = set()
+        self.unit_tags_received_action: Set[int] = set()
+        self._client: Client = None
+        self.player_id: int = None
+        self._game_info: GameInfo = None
+        self._game_data: GameData = None
+
     def initialize_variables(self):
-        DistanceCalculation.__init__(self)
+        super().__init__()
         # Specific opponent bot ID used in sc2ai ladder games http://sc2ai.net/
         # The bot ID will stay the same each game so your bot can "adapt" to the opponent
         self.opponent_id: int = None
