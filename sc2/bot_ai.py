@@ -1581,7 +1581,7 @@ class BotAI(DistanceCalculation):
             _ = self._unit_index_dict
             _ = self._cdist
 
-    async def _after_step(self) -> int:
+    async def after_step(self) -> int:
         """ Executed by main.py after each on_step function. """
         # Keep track of the bot on_step duration
         self._time_after_step: float = time.perf_counter()
@@ -1606,7 +1606,7 @@ class BotAI(DistanceCalculation):
         """ Advances the game loop by amount of 'steps'. This function is meant to be used as a debugging and testing
         tool only. If you are using this, please be aware of the consequences, e.g. 'self.units' will be filled with
         completely new data. """
-        await self._after_step()
+        await self.after_step()
         # Advance simulation by exactly "steps" frames
         await self.client.step(steps)
         state = await self.client.observation()

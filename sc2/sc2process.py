@@ -61,7 +61,7 @@ class SC2Process:
         self._tmp_dir = tempfile.mkdtemp(prefix="SC2_")
         self._process = None
         self._session = None
-        self._ws = None
+        self.ws = None
         self._sc2_version = sc2_version
         self._base_build = base_build
         self._data_hash = data_hash
@@ -78,13 +78,13 @@ class SC2Process:
 
         try:
             self._process = self._launch()
-            self._ws = await self._connect()
+            self.ws = await self._connect()
         except:
             await self._close_connection()
             self.clean()
             raise
 
-        return Controller(self._ws, self)
+        return Controller(self.ws, self)
 
     async def __aexit__(self, *args):
         KillSwitch.kill_all()
@@ -193,8 +193,8 @@ class SC2Process:
     async def _close_connection(self):
         logger.info("Closing connection...")
 
-        if self._ws is not None:
-            await self._ws.close()
+        if self.ws is not None:
+            await self.ws.close()
 
         if self._session is not None:
             await self._session.close()
@@ -218,5 +218,5 @@ class SC2Process:
             shutil.rmtree(self._tmp_dir)
 
         self._process = None
-        self._ws = None
+        self.ws = None
         logger.info("Cleanup complete")

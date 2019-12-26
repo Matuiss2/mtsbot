@@ -41,6 +41,7 @@ class AbstractPlayer:
                 raise AssertionError()
 
 
+# noinspection PyProtectedMember
 class Human(AbstractPlayer):
     def __init__(self, race, name=None, fullscreen=False):
         super().__init__(PlayerType.Participant, race, name=name, fullscreen=fullscreen)

@@ -154,7 +154,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                 # Issue event like unit created or unit destroyed
                 await ai.issue_events()
                 await ai.on_step(iteration)
-                await ai._after_step()
+                await ai.after_step()
             else:
                 if time_penalty_cooldown > 0:
                     time_penalty_cooldown -= 1
@@ -164,7 +164,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                     # Issue event like unit created or unit destroyed
                     await ai.issue_events()
                     await ai.on_step(iteration)
-                    await ai._after_step()
+                    await ai.after_step()
                 else:
                     out_of_budget = False
                     budget = time_limit - time_window.available
@@ -201,7 +201,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                             time_penalty_cooldown = int(time_penalty)
                             time_window.clear()
 
-                    await ai._after_step()
+                    await ai.after_step()
         except Exception as e:
             if isinstance(e, ProtocolError) and e.is_game_over_error:
                 if realtime:
@@ -252,6 +252,7 @@ async def _play_game(
     else:
         result = await _play_game_ai(client, player_id, player.ai, realtime, step_time_limit, game_time_limit)
 
+    # noinspection PyProtectedMember
     logging.info(f"Result for player {player_id} - {player.name if player.name else str(player)}: {result._name_}")
 
     return result
@@ -313,13 +314,13 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
                 # Issue event like unit created or unit destroyed
                 await ai.issue_events()
                 await ai.on_step(iteration)
-                await ai._after_step()
+                await ai.after_step()
             else:
 
                 # Issue event like unit created or unit destroyed
                 await ai.issue_events()
                 await ai.on_step(iteration)
-                await ai._after_step()
+                await ai.after_step()
 
         except Exception as e:
             if isinstance(e, ProtocolError) and e.is_game_over_error:
@@ -364,7 +365,7 @@ async def _setup_host_game(server, map_settings, players, realtime, random_seed=
         logger.critical(err)
         raise RuntimeError(err)
 
-    return Client(server._ws)
+    return Client(server.ws)
 
 
 async def _host_game(
@@ -458,7 +459,7 @@ async def _join_game(
     async with SC2Process(fullscreen=players[1].fullscreen) as server:
         await server.ping()
 
-        client = Client(server._ws)
+        client = Client(server.ws)
         # Bot can decide if it wants to launch with 'raw_affects_selection=True'
         if not isinstance(players[1], Human) and getattr(players[1].ai, "raw_affects_selection", None) is not None:
             client.raw_affects_selection = players[1].ai.raw_affects_selection
@@ -478,7 +479,7 @@ async def _join_game(
 
 async def _setup_replay(server, replay_path, realtime, observed_id):
     await server.start_replay(replay_path, realtime, observed_id)
-    return Client(server._ws)
+    return Client(server.ws)
 
 
 async def _host_replay(replay_path, ai, realtime, portconfig, base_build, data_version, observed_id):

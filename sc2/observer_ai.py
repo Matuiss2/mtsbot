@@ -253,7 +253,7 @@ class ObserverAI(DistanceCalculation):
                 unit_obj = Unit(unit, self)
                 self.units.append(unit_obj)
 
-    async def _after_step(self) -> int:
+    async def after_step(self) -> int:
         """ Executed by main.py after each on_step function. """
         self.unit_tags_received_action.clear()
         # Commit debug queries
