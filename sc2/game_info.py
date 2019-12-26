@@ -241,13 +241,13 @@ class GameInfo:
         self.placement_grid: PixelMap = PixelMap(self.proto.start_raw.placement_grid, in_bits=True, mirrored=False)
         self.playable_area = Rect.from_proto(self.proto.start_raw.playable_area)
         self.map_center = self.playable_area.center
-        self.map_ramps: List[Ramp] = None  # Filled later by BotAI._prepare_first_step
-        self.vision_blockers: Set[Point2] = None  # Filled later by BotAI._prepare_first_step
+        self.map_ramps: List[Ramp] = None  # Filled later by BotAI.prepare_first_step
+        self.vision_blockers: Set[Point2] = None  # Filled later by BotAI.prepare_first_step
         self.player_races: Dict[int, "Race"] = {
             p.player_id: p.race_actual or p.race_requested for p in self.proto.player_info
         }
         self.start_locations: List[Point2] = [Point2.from_proto(sl) for sl in self.proto.start_raw.start_locations]
-        self.player_start_location: Point2 = None  # Filled later by BotAI._prepare_first_step
+        self.player_start_location: Point2 = None  # Filled later by BotAI.prepare_first_step
 
     def find_ramps_and_vision_blockers(self) -> Tuple[List[Ramp], Set[Point2]]:
         """ Calculate points that are passable but not placeable.

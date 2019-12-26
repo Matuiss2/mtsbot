@@ -1439,8 +1439,8 @@ class BotAI(DistanceCalculation):
 
         self._distances_override_functions(self.distance_calculation_method)
 
-    def _prepare_first_step(self):
-        """First step extra preparations. Must not be called before _prepare_step."""
+    def prepare_first_step(self):
+        """First step extra preparations. Must not be called before prepare_step."""
         if self.townhalls:
             self._game_info.player_start_location = self.townhalls.first.position
             # Calculate and cache expansion locations forever inside 'self._cache_expansion_locations',
@@ -1449,7 +1449,7 @@ class BotAI(DistanceCalculation):
         self._game_info.map_ramps, self._game_info.vision_blockers = self._game_info.find_ramps_and_vision_blockers()
         self._time_before_step: float = time.perf_counter()
 
-    def _prepare_step(self, state, proto_game_info):
+    def prepare_step(self, state, proto_game_info):
         """
         :param state:
         :param proto_game_info:
@@ -1612,7 +1612,7 @@ class BotAI(DistanceCalculation):
         state = await self.client.observation()
         gs = GameState(state.observation)
         proto_game_info = await self.client.execute(game_info=sc_pb.RequestGameInfo())
-        self._prepare_step(gs, proto_game_info)
+        self.prepare_step(gs, proto_game_info)
         await self.issue_events()
         # await self.on_step(-1)
 

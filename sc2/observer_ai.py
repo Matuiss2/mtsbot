@@ -206,13 +206,13 @@ class ObserverAI(DistanceCalculation):
         self._game_data: GameData = game_data
         self.realtime: bool = realtime
 
-    def _prepare_first_step(self):
-        """First step extra preparations. Must not be called before _prepare_step."""
+    def prepare_first_step(self):
+        """First step extra preparations. Must not be called before prepare_step."""
         if self.townhalls:
             self._game_info.player_start_location = self.townhalls.first.position
         self._game_info.map_ramps, self._game_info.vision_blockers = self._game_info.find_ramps_and_vision_blockers()
 
-    def _prepare_step(self, state, proto_game_info):
+    def prepare_step(self, state, proto_game_info):
         """
         :param state:
         :param proto_game_info:
