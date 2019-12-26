@@ -25,12 +25,12 @@ class Controller(Protocol):
             req.random_seed = random_seed
 
         for player in players:
-            p = req.player_setup.add()
-            p.type = player.type.value
+            player_info = req.player_setup.add()
+            player_info.type = player.type.value
             if isinstance(player, Computer):
-                p.race = player.race.value
-                p.difficulty = player.difficulty.value
-                p.ai_build = player.ai_build.value
+                player_info.race = player.race.value
+                player_info.difficulty = player.difficulty.value
+                player_info.ai_build = player.ai_build.value
 
         LOGGER.info("Creating new game")
         LOGGER.info(f"Map:     {game_map.name}")

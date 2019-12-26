@@ -110,9 +110,9 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     if client.game_result:
         await ai.on_end(client.game_result[player_id])
         return client.game_result[player_id]
-    gs = GameState(state.observation)
+    game_state = GameState(state.observation)
     proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
-    ai.prepare_step(gs, proto_game_info)
+    ai.prepare_step(game_state, proto_game_info)
     await ai.on_before_start()
     ai.prepare_first_step()
     try:
@@ -127,7 +127,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     while True:
         if iteration != 0:
             if realtime:
-                state = await client.observation(gs.game_loop + client.game_step)
+                state = await client.observation(game_state.game_loop + client.game_step)
             else:
                 state = await client.observation()
             # check game result every time we get the observation
@@ -139,16 +139,16 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                     # print(f"return {client.game_result[player_id]}")
                     return client.game_result[player_id]
                 return client.game_result[player_id]
-            gs = GameState(state.observation)
-            LOGGER.debug(f"Score: {gs.score.score}")
+            game_state = GameState(state.observation)
+            LOGGER.debug(f"Score: {game_state.score.score}")
 
-            if game_time_limit and (gs.game_loop * 0.725 * (1 / 16)) > game_time_limit:
+            if game_time_limit and (game_state.game_loop * 0.725 * (1 / 16)) > game_time_limit:
                 await ai.on_end(Result.Tie)
                 return Result.Tie
             proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
-            ai.prepare_step(gs, proto_game_info)
+            ai.prepare_step(game_state, proto_game_info)
 
-        LOGGER.debug(f"Running AI step, it={iteration} {gs.game_loop * 0.725 * (1 / 16):.2f}s")
+        LOGGER.debug(f"Running AI step, it={iteration} {game_state.game_loop * 0.725 * (1 / 16):.2f}s")
 
         try:
             if realtime:
@@ -198,13 +198,12 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                     if out_of_budget and time_penalty is not None:
                         if time_penalty == "resign":
                             raise RuntimeError("Out of time")
-                        else:
-                            time_penalty_cooldown = int(time_penalty)
-                            time_window.clear()
+                        time_penalty_cooldown = int(time_penalty)
+                        time_window.clear()
 
                     await ai.after_step()
-        except Exception as e:
-            if isinstance(e, ProtocolError) and e.is_game_over_error:
+        except Exception as error:
+            if isinstance(error, ProtocolError) and error.is_game_over_error:
                 if realtime:
                     return None
                 result = client.game_result[player_id]
@@ -215,7 +214,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                 return result
             # NOTE: this message is caught by pytest suite
             LOGGER.exception(f"AI step threw an error")  # DO NOT EDIT!
-            LOGGER.error(f"Error: {e}")
+            LOGGER.error(f"Error: {error}")
             LOGGER.error(f"Resigning due to previous error")
             try:
                 await ai.on_end(Result.Defeat)
@@ -272,9 +271,9 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     if client.game_result:
         await ai.on_end(client.game_result[player_id])
         return client.game_result[player_id]
-    gs = GameState(state.observation)
+    game_state = GameState(state.observation)
     proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
-    ai.prepare_step(gs, proto_game_info)
+    ai.prepare_step(game_state, proto_game_info)
     ai.prepare_first_step()
     try:
         await ai.on_start()
@@ -288,7 +287,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     while True:
         if iteration != 0:
             if realtime:
-                state = await client.observation(gs.game_loop + client.game_step)
+                state = await client.observation(game_state.game_loop + client.game_step)
             else:
                 state = await client.observation()
             # check game result every time we get the observation
@@ -300,13 +299,13 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
                     # print(f"return {client.game_result[player_id]}")
                     return client.game_result[player_id]
                 return client.game_result[player_id]
-            gs = GameState(state.observation)
-            LOGGER.debug(f"Score: {gs.score.score}")
+            game_state = GameState(state.observation)
+            LOGGER.debug(f"Score: {game_state.score.score}")
 
             proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
-            ai.prepare_step(gs, proto_game_info)
+            ai.prepare_step(game_state, proto_game_info)
 
-        LOGGER.debug(f"Running AI step, it={iteration} {gs.game_loop * 0.725 * (1 / 16):.2f}s")
+        LOGGER.debug(f"Running AI step, it={iteration} {game_state.game_loop * 0.725 * (1 / 16):.2f}s")
 
         try:
             if realtime:
@@ -321,8 +320,8 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
                 await ai.on_step(iteration)
                 await ai.after_step()
 
-        except Exception as e:
-            if isinstance(e, ProtocolError) and e.is_game_over_error:
+        except Exception as error:
+            if isinstance(error, ProtocolError) and error.is_game_over_error:
                 if realtime:
                     return None
                 # result = client.game_result[player_id]
@@ -333,7 +332,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
                 return None
             # NOTE: this message is caught by pytest suite
             LOGGER.exception(f"AI step threw an error")  # DO NOT EDIT!
-            LOGGER.error(f"Error: {e}")
+            LOGGER.error(f"Error: {error}")
             LOGGER.error(f"Resigning due to previous error")
             try:
                 await ai.on_end(Result.Defeat)
@@ -356,11 +355,11 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
 
 
 async def _setup_host_game(server, map_settings, players, realtime, random_seed=None):
-    r = await server.create_game(map_settings, players, realtime, random_seed)
-    if r.create_game.HasField("error"):
-        err = f"Could not create game: {CreateGameError(r.create_game.error)}"
-        if r.create_game.HasField("error_details"):
-            err += f": {r.create_game.error_details}"
+    create_game_request = await server.create_game(map_settings, players, realtime, random_seed)
+    if create_game_request.create_game.HasField("error"):
+        err = f"Could not create game: {CreateGameError(create_game_request.create_game.error)}"
+        if create_game_request.create_game.HasField("error_details"):
+            err += f": {create_game_request.create_game.error_details}"
         LOGGER.critical(err)
         raise RuntimeError(err)
 
@@ -490,8 +489,8 @@ async def _host_replay(replay_path, ai, realtime, portconfig, base_build, data_v
 
 
 def get_replay_version(replay_path):
-    with open(replay_path, "rb") as f:
-        replay_data = f.read()
+    with open(replay_path, "rb") as file:
+        replay_data = file.read()
         replay_io = six.BytesIO()
         replay_io.write(replay_data)
         replay_io.seek(0)

@@ -1284,15 +1284,15 @@ class BotAI(DistanceCalculation):
         if not self.can_afford(action.ability):
             LOGGER.warning(f"Cannot afford action {action}")
             return ActionResult.Error
-        r = await self._client.actions(action)
-        if not r:  # success
+        action_request = await self._client.actions(action)
+        if not action_request:  # success
             cost = self.game_data_local.calculate_ability_cost(action.ability)
             self.minerals -= cost.minerals
             self.vespene -= cost.vespene
             self.unit_tags_received_action.add(action.unit.tag)
         else:
-            LOGGER.error(f"Error: {r} (action: {action})")
-        return r
+            LOGGER.error(f"Error: {action_request} (action: {action})")
+        return action_request
 
     async def _do_actions(self, actions: List[UnitCommand], prevent_double: bool = True):
         """ Used internally by main.py automatically, use self.do() instead!

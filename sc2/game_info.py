@@ -49,13 +49,13 @@ class Ramp:
         """ Returns the upper points of a ramp. """
         current_max = -10000
         result = set()
-        for p in self._points:
-            height = self.height_at(p)
+        for point in self._points:
+            height = self.height_at(point)
             if height > current_max:
                 current_max = height
-                result = {p}
+                result = {point}
             elif height == current_max:
-                result.add(p)
+                result.add(point)
         return result
 
     @property_mutable_cache
@@ -82,13 +82,13 @@ class Ramp:
     def lower(self) -> Set[Point2]:
         current_min = 10000
         result = set()
-        for p in self._points:
-            height = self.height_at(p)
+        for point in self._points:
+            height = self.height_at(point)
             if height < current_min:
                 current_min = height
-                result = {p}
+                result = {point}
             elif height == current_min:
-                result.add(p)
+                result.add(point)
         return result
 
     @property_immutable_cache
@@ -285,8 +285,8 @@ class GameInfo:
         current_color: int = not_colored_yet
         picture: List[List[int]] = [[-2 for _ in range(map_width)] for _ in range(map_height)]
 
-        def paint(pt: Point2) -> None:
-            picture[pt.y][pt.x] = current_color
+        def paint(pnt: Point2) -> None:
+            picture[pnt.y][pnt.x] = current_color
 
         nearby = [(a, b) for a in [-1, 0, 1] for b in [-1, 0, 1] if a != 0 or b != 0]
 
