@@ -925,12 +925,6 @@ class Unit:
         return None
 
     @property
-    def noqueue(self) -> bool:
-        """ Checks if the unit is idle. """
-        warnings.warn("noqueue will be removed soon, please use is_idle instead", DeprecationWarning, stacklevel=2)
-        return self.is_idle
-
-    @property
     def is_idle(self) -> bool:
         """ Checks if unit is idle. """
         return not self._proto.orders
