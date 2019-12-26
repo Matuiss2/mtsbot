@@ -67,7 +67,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
     # step_time_limit works like this:
     # * If None, then step time is not limited
-    # * If given integer or float, the bot will simpy resign if any step takes longer than that
+    # * If given integer or float, the bot will simply resign if any step takes longer than that
     # * Otherwise step_time_limit must be an object, with following settings:
     #
     # Key         | Value      | Description
@@ -76,7 +76,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     # penalty     | N: int     | Cooldown penalty, BotAI.on_step will not be called for N steps
     # penalty     | "resign"   | Bot resigns when going over time limit
     # time_limit  | int/float  | Time limit for a single step
-    # window_size | N: int     | The time limit will be used for last N steps, instad of 1
+    # window_size | N: int     | The time limit will be used for last N steps, instead of 1
     #
     # Cooldown is a harsh penalty. The both loses the ability to act, but even worse,
     # the observation data from skipped steps is also lost. It's like falling asleep in
@@ -351,7 +351,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
                 await ai.on_end(Result.Victory)
                 return Result.Victory
 
-        await client.step()  # unindent one line to work in realtime
+        await client.step()  # un-indent one line to work in realtime
 
         iteration += 1
 
@@ -446,9 +446,11 @@ async def _host_game_aiter(
 
 def _host_game_iter(*args, **kwargs):
     game = _host_game_aiter(*args, **kwargs)
-    new_playerconfig = None
+    new_player_configuration = None
     while True:
-        new_playerconfig = yield asyncio.get_event_loop().run_until_complete(game.asend(new_playerconfig))
+        new_player_configuration = yield asyncio.get_event_loop().run_until_complete(
+            game.asend(new_player_configuration)
+        )
 
 
 async def _join_game(

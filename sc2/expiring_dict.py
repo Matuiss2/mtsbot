@@ -2,6 +2,7 @@ from collections import OrderedDict
 from threading import RLock
 from typing import Dict, Iterable, List, Union, TYPE_CHECKING
 from contextlib import suppress
+
 if TYPE_CHECKING:
     from sc2.bot_ai import BotAI
 
@@ -81,7 +82,7 @@ class ExpiringDict(OrderedDict):
             OrderedDict.__setitem__(self, key, (value, self.frame))
 
     def __repr__(self):
-        """ Printable version of the dict instead of getting memory adress """
+        """ Printable version of the dict instead of getting memory address """
         print_list = ["ExpiringDict("]
         with self.lock:
             for key, value in OrderedDict.items(self):

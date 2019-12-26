@@ -216,8 +216,8 @@ class DistanceCalculation:
         method 0: Use python's math.hypot
         The following methods calculate the distances between all units once:
         method 1: Use scipy's pdist condensed matrix (1d array)
-        method 2: Use scipy's cidst square matrix (2d array)
-        method 3: Use scipy's cidst square matrix (2d array) without asserts (careful: very weird error messages, but maybe slightly faster) """
+        method 2: Use scipy's cdist square matrix (2d array)
+        method 3: Use scipy's cdist square matrix (2d array) without asserts (careful: very weird error messages, but maybe slightly faster) """
         if not 0 <= method <= 3:
             raise AssertionError(f"Selected method was: {method}")
         if method == 0:

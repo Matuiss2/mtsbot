@@ -42,7 +42,9 @@ class Controller(Protocol):
         interface_options = sc_pb.InterfaceOptions(
             raw=True, score=True, show_cloaked=True, raw_affects_selection=False, raw_crop_to_playable_area=False
         )
-        req = sc_pb.RequestStartReplay(replay_path=replay_path, observed_player_id=observed_id, options=interface_options)
+        req = sc_pb.RequestStartReplay(
+            replay_path=replay_path, observed_player_id=observed_id, options=interface_options
+        )
 
         result = await self._execute(start_replay=req)
 

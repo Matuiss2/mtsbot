@@ -172,7 +172,7 @@ class Ramp:
     @property_immutable_cache
     def protoss_wall_pylon(self) -> Optional[Point2]:
         """
-        Pylon position that powers the two wall buildings and the warpin position.
+        Pylon position that powers the two wall buildings and the warping position.
         """
         if len(self.upper) not in {2, 5}:
             return None
@@ -195,7 +195,7 @@ class Ramp:
             middle = self.depot_in_middle
             # direction up the ramp
             direction = self.barracks_in_middle.negative_offset(middle)
-            # sort depots based on distance to start to get wallin orientation
+            # sort depots based on distance to start to get walling orientation
             sorted_depots = sorted(
                 self.corner_depots, key=lambda depot: depot.distance_to(self.__game_info.player_start_location)
             )
@@ -205,7 +205,7 @@ class Ramp:
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
     @property_immutable_cache
-    def protoss_wall_warpin(self) -> Optional[Point2]:
+    def protoss_wall_warping(self) -> Optional[Point2]:
         """
         Position for a unit to block the wall created by protoss_wall_buildings.
         Powered by protoss_wall_pylon.
@@ -217,7 +217,7 @@ class Ramp:
         middle = self.depot_in_middle
         # direction up the ramp
         direction = self.barracks_in_middle.negative_offset(middle)
-        # sort depots based on distance to start to get wallin orientation
+        # sort depots based on distance to start to get walling orientation
         sorted_depots = sorted(self.corner_depots, key=lambda x: x.distance_to(self.__game_info.player_start_location))
         return sorted_depots[0].negative_offset(direction)
 
@@ -230,11 +230,11 @@ class GameInfo:
         self.local_map_path: str = self._proto.local_map_path
         self.map_size: Size = Size.from_proto(self._proto.start_raw.map_size)
 
-        # self.pathway_grid[point]: if 0, point is not pathable, if 1, point is pathable
+        # self.pathway_grid[point]: if 0, point is not passable, if 1, point is passable
         self.pathway_grid: PixelMap = PixelMap(self._proto.start_raw.pathing_grid, in_bits=True, mirrored=False)
         # self.terrain_height[point]: returns the height in range of 0 to 255 at that point
         self.terrain_height: PixelMap = PixelMap(self._proto.start_raw.terrain_height, mirrored=False)
-        # self.placement_grid[point]: if 0, point is not placeable, if 1, point is pathable
+        # self.placement_grid[point]: if 0, point is not placeable, if 1, point is passable
         self.placement_grid: PixelMap = PixelMap(self._proto.start_raw.placement_grid, in_bits=True, mirrored=False)
         self.playable_area = Rect.from_proto(self._proto.start_raw.playable_area)
         self.map_center = self.playable_area.center
@@ -247,8 +247,8 @@ class GameInfo:
         self.player_start_location: Point2 = None  # Filled later by BotAI._prepare_first_step
 
     def _find_ramps_and_vision_blockers(self) -> Tuple[List[Ramp], Set[Point2]]:
-        """ Calculate points that are pathable but not placeable.
-        Then devide them into ramp points if not all points around the points are equal height
+        """ Calculate points that are passable but not placeable.
+        Then divide them into ramp points if not all points around the points are equal height
         and into vision blockers if they are. """
 
         def equal_height_around(tile):
@@ -257,7 +257,7 @@ class GameInfo:
             return len(np.unique(sliced)) == 1
 
         map_area = self.playable_area
-        # all points in the playable area that are pathable but not placable
+        # all points in the playable area that are passable but not placeable
         points = [
             Point2((a, b))
             for (b, a), value in np.ndenumerate(self.pathway_grid.data_numpy)
