@@ -43,7 +43,7 @@ class PixelMap:
         return self._proto.bits_per_pixel // 8
 
     def __getitem__(self, pos):
-        """ Example usage: is_pathable = self._game_info.pathway_grid[Point2((20, 20))] != 0 """
+        """ Example usage: is_passable = self._game_info.pathway_grid[Point2((20, 20))] != 0 """
         if not 0 <= pos[0] < self.width:
             raise AssertionError(f"x is {pos[0]}, self.width is {self.width}")
         if not 0 <= pos[1] < self.height:

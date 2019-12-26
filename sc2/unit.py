@@ -269,7 +269,7 @@ class Unit:
     @property_immutable_cache
     def bonus_damage(self):
         """ Returns a tuple of form '(bonus damage, armor type)' if unit does 'bonus damage' against 'armor type'.
-        Possible armor typs are: 'Light', 'Armored', 'Biological', 'Mechanical', 'Psionic', 'Massive', 'Structure'. """
+        Possible armor types are: 'Light', 'Armored', 'Biological', 'Mechanical', 'Psionic', 'Massive', 'Structure'. """
         # TODO: Consider units with ability attacks (Oracle, Baneling) or multiple attacks (Thor).
         if self._weapons:
             for weapon in self._weapons:
@@ -591,7 +591,7 @@ class Unit:
             remaining_damage: float = 0
 
             # Calculate bonus damage against target
-            boni: List[float] = []
+            bonuses: List[float] = []
             # TODO: hardcode hellbats when they have blueflame or attack upgrades
             for bonus in weapon.damage_bonus:
                 # More about damage bonus https://github.com/Blizzard/s2client-proto/blob/b73eb59ac7f2c52b2ca585db4399f2d3202e102a/s2clientprotocol/data.proto#L55
@@ -609,9 +609,9 @@ class Unit:
                     ):
                         bonus_damage_per_upgrade += 5
                     # TODO buffs e.g. void ray charge beam vs armored
-                    boni.append(bonus.bonus + self.attack_upgrade_level * bonus_damage_per_upgrade)
-            if boni:
-                damage_per_attack += max(boni)
+                    bonuses.append(bonus.bonus + self.attack_upgrade_level * bonus_damage_per_upgrade)
+            if bonuses:
+                damage_per_attack += max(bonuses)
 
             # Subtract enemy unit's shield
             if target.shield > 0:
@@ -665,7 +665,7 @@ class Unit:
                     # 0.696044921875 for zerglings divided through 1.4 equals (+40% attack speed bonus from the upgrade):
                     weapon_speed /= 1.4
                 elif (
-                    # Adept ereceive 45% attack speed bonus from glaives
+                    # Adept receives 45% attack speed bonus from glaives
                     self.type_id == UnitTypeId.ADEPT
                     and self.is_mine
                     and UpgradeId.ADEPTPIERCINGATTACK in self._bot_object.state.upgrades
@@ -834,7 +834,7 @@ class Unit:
 
     @property
     def is_powered(self) -> bool:
-        """ Checks if the unit is powered by a pylon or warppism. """
+        """ Checks if the unit is powered by a pylon or warpprism. """
         return self._proto.is_powered
 
     @property
@@ -1073,7 +1073,7 @@ class Unit:
 
     @property
     def ideal_harvesters(self) -> int:
-        """ Returns the ideal harverster count for unit.
+        """ Returns the ideal harvester count for unit.
         3 for gas buildings, 2*n for n mineral patches on that base."""
         return self._proto.ideal_harvesters
 
