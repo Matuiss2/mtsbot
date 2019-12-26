@@ -9,7 +9,8 @@ if TYPE_CHECKING:
 
 class ExpiringDict(OrderedDict):
     """
-    An expiring dict that uses the bot.state.game_loop to only return items that are valid for a specific amount of time.
+    An expiring dict that uses the bot.state.game_loop to only return items that are valid for a specific amount of
+    time.
 
     Example usages::
 

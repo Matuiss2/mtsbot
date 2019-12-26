@@ -24,7 +24,8 @@ class GameData:
         self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
-        # Cached UnitTypeIds so that conversion does not take long. This needs to be moved elsewhere if a new GameData object is created multiple times per game
+        # Cached UnitTypeIds so that conversion does not take long.
+        # This needs to be moved elsewhere if a new GameData object is created multiple times per game
         self.unit_types: Dict[int, UnitTypeId] = {}
 
     @lru_cache(maxsize=256)
@@ -238,7 +239,8 @@ class UnitTypeData:
         # Fix for BARRACKSREACTOR which has tech alias [REACTOR] which has (0, 0) cost
         if self.tech_alias is None or self.tech_alias[0] in {UnitTypeId.TECHLAB, UnitTypeId.REACTOR}:
             return None
-        # Morphing a HIVE would have HATCHERY and LAIR in the tech alias - now subtract HIVE cost from LAIR cost instead of from HATCHERY cost
+        # Morphing a HIVE would have HATCHERY and LAIR in the tech alias
+        # - now subtract HIVE cost from LAIR cost instead of from HATCHERY cost
         tech_alias_cost_minerals = max(
             self._game_data.units[tech_alias.value].cost.minerals for tech_alias in self.tech_alias
         )
