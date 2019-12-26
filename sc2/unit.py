@@ -80,7 +80,8 @@ class UnitOrder:
         :param progress:
         """
         self.ability: AbilityData = ability
-        # This can be an int (if target is unit) or proto Point2 object, which needs to be converted using 'Point2.from_proto(target)'
+        # This can be an int (if target is unit) or proto Point2 object,
+        # which needs to be converted using 'Point2.from_proto(target)'
         self.target = target
         self.progress: float = progress
 
@@ -292,7 +293,6 @@ class Unit:
     @property
     def movement_speed(self) -> float:
         """ Returns the movement speed of the unit. Does not include upgrades or buffs. """
-        # TODO: use bot object to calculate if unit is zerg unit and if it is on creep, and if it your own unit: check for movement speed upgrades (e.g. zergling, hydra, ultralisk) or buffs (stimpack, time warp slow, fungal), perhaps write a second property function for this
         return self._type_data._proto.movement_speed
 
     @property
@@ -367,12 +367,14 @@ class Unit:
 
     @property
     def age_in_frames(self) -> int:
-        """ Returns how old the unit object data is (in game frames). This age does not reflect the unit was created / trained / morphed! """
+        """ Returns how old the unit object data is (in game frames).
+        This age does not reflect the unit was created / trained / morphed! """
         return self._bot_object.state.game_loop - self.game_loop
 
     @property
     def age(self) -> float:
-        """ Returns how old the unit object data is (in game seconds). This age does not reflect when the unit was created / trained / morphed! """
+        """ Returns how old the unit object data is (in game seconds).
+        This age does not reflect when the unit was created / trained / morphed! """
         return (self._bot_object.state.game_loop - self.game_loop) / 22.4
 
     @property
@@ -385,7 +387,6 @@ class Unit:
         """ Checks if the unit is only available as a snapshot for the bot.
         Enemy buildings that have been scouted and are in the fog of war or
         attacking enemy units on higher, not visible ground appear this way. """
-        # TODO: remove usage of bot.state.visibility when display_type is fixed by blizzard: https://github.com/Blizzard/s2client-proto/issues/167
         if self._proto.display_type == IS_SNAPSHOT:
             return True
         position = self.position.rounded
@@ -443,8 +444,9 @@ class Unit:
         return self._bot_object.distance_math_hypot(self.position_tuple, p)
 
     def distance_to_squared(self, p: Union[Unit, Point2, Point3]) -> float:
-        """ Using the 2d distance squared between self and p. Slightly faster than distance_to, so when filtering a lot of units, this function is recommended to be used.
-        To calculate the 3d distance, use unit.position3d.distance_to(p)
+        """ Using the 2d distance squared between self and p. Slightly faster than distance_to, so when filtering a
+        lot of units, this function is recommended to be used. To calculate the 3d distance,
+        use unit.position3d.distance_to(p)
 
         :param p: """
         if isinstance(p, Unit):
@@ -457,7 +459,6 @@ class Unit:
 
         :param target:
         :param bonus_distance: """
-        # TODO: Fix this because immovable units (sieged tank, planetary fortress etc.) have a little lower range than this formula
         if self.can_attack_ground and not target.is_flying:
             unit_attack_range = self.ground_range
         elif self.can_attack_air and (target.is_flying or target.type_id == UNIT_COLOSSUS):
@@ -472,7 +473,8 @@ class Unit:
     def in_ability_cast_range(
         self, ability_id: AbilityId, target: Union[Unit, Point2], bonus_distance: float = 0
     ) -> bool:
-        """ Test if a unit is able to cast an ability on the target without checking ability cooldown (like stalker blink) or if ability is made available through research (like HT storm).
+        """ Test if a unit is able to cast an ability on the target without checking ability cooldown (like stalker
+        blink) or if ability is made available through research (like HT storm).
 
         :param ability_id:
         :param target:
@@ -594,7 +596,6 @@ class Unit:
             bonuses: List[float] = []
             # TODO: hardcode hellbats when they have blueflame or attack upgrades
             for bonus in weapon.damage_bonus:
-                # More about damage bonus https://github.com/Blizzard/s2client-proto/blob/b73eb59ac7f2c52b2ca585db4399f2d3202e102a/s2clientprotocol/data.proto#L55
                 if bonus.attribute in target._type_data.attributes:
                     bonus_damage_per_upgrade = (
                         0
@@ -662,7 +663,7 @@ class Unit:
                     and self.is_mine
                     and UpgradeId.ZERGLINGATTACKSPEED in self._bot_object.state.upgrades
                 ):
-                    # 0.696044921875 for zerglings divided through 1.4 equals (+40% attack speed bonus from the upgrade):
+                    # 0.696 for zerglings divided through 1.4 equals (+40% attack speed bonus from the upgrade):
                     weapon_speed /= 1.4
                 elif (
                     # Adept receives 45% attack speed bonus from glaives
@@ -670,7 +671,6 @@ class Unit:
                     and self.is_mine
                     and UpgradeId.ADEPTPIERCINGATTACK in self._bot_object.state.upgrades
                 ):
-                    # TODO next patch: if self.type_id is adept: check if attack speed buff is active, instead of upgrade
                     weapon_speed /= 1.45
                 elif self.type_id == UnitTypeId.MARINE and BuffId.STIMPACK in self.buffs:
                     # Marine and marauder receive 50% attack speed bonus from stim
@@ -724,11 +724,11 @@ class Unit:
         return self._proto.facing
 
     def is_facing(self, other_unit: Unit, angle_error: float = 0.05) -> bool:
-        """ Check if this unit is facing the target unit. If you make angle_error too small, there might be rounding errors. If you make angle_error too big, this function might return false positives.
+        """ Check if this unit is facing the target unit. If you make angle_error too small, there might be rounding
+        errors. If you make angle_error too big, this function might return false positives.
 
         :param other_unit:
         :param angle_error: """
-        # TODO perhaps return default True for units that cannot 'face' another unit? e.g. structures (planetary fortress, bunker, missile turret, photon cannon, spine, spore) or sieged tanks
         angle = math.atan2(
             other_unit.position_tuple[1] - self.position_tuple[1], other_unit.position_tuple[0] - self.position_tuple[0]
         )
@@ -763,8 +763,7 @@ class Unit:
 
     @property
     def cloak(self) -> CloakState:
-        """ Returns cloak state.
-        See https://github.com/Blizzard/s2client-api/blob/d9ba0a33d6ce9d233c2a4ee988360c188fbe9dbf/include/sc2api/sc2_unit.h#L95 """
+        """ Returns cloak state. """
         return self._proto.cloak
 
     @property
@@ -839,7 +838,8 @@ class Unit:
 
     @property
     def is_active(self) -> bool:
-        """ Checks if the unit has an order (e.g. unit is currently moving or attacking, structure is currently training or researching). """
+        """ Checks if the unit has an order
+        (e.g. unit is currently moving or attacking, structure is currently training or researching). """
         return self._proto.is_active
 
     # PROPERTIES BELOW THIS COMMENT ARE NOT POPULATED FOR SNAPSHOTS
@@ -1004,12 +1004,14 @@ class Unit:
 
     @property_immutable_cache
     def has_techlab(self) -> bool:
-        """ Check if a structure is connected to a techlab addon. This should only ever return True for BARRACKS, FACTORY, STARPORT. """
+        """ Check if a structure is connected to a techlab addon.
+        This should only ever return True for BARRACKS, FACTORY, STARPORT. """
         return self.add_on_tag in self._bot_object.techlab_tags
 
     @property_immutable_cache
     def has_reactor(self) -> bool:
-        """ Check if a structure is connected to a reactor addon. This should only ever return True for BARRACKS, FACTORY, STARPORT. """
+        """ Check if a structure is connected to a reactor addon.
+        This should only ever return True for BARRACKS, FACTORY, STARPORT. """
         return self.add_on_tag in self._bot_object.reactor_tags
 
     @property_immutable_cache
@@ -1026,12 +1028,14 @@ class Unit:
 
     @property_mutable_cache
     def passengers(self) -> Set[Unit]:
-        """ Returns the units inside a Bunker, CommandCenter, PlanetaryFortress, Medivac, Nydus, Overlord or WarpPrism. """
+        """ Returns the units inside a Bunker, CommandCenter, PlanetaryFortress, Medivac, Nydus, Overlord or
+        WarpPrism. """
         return {Unit(unit, self._bot_object) for unit in self._proto.passengers}
 
     @property_mutable_cache
     def passengers_tags(self) -> Set[int]:
-        """ Returns the tags of the units inside a Bunker, CommandCenter, PlanetaryFortress, Medivac, Nydus, Overlord or WarpPrism. """
+        """ Returns the tags of the units inside a Bunker, CommandCenter, PlanetaryFortress, Medivac, Nydus,
+        Overlord or WarpPrism. """
         return {unit.tag for unit in self._proto.passengers}
 
     @property
@@ -1096,8 +1100,6 @@ class Unit:
     def engaged_target_tag(self) -> int:
         # TODO What does this do?
         return self._proto.engaged_target_tag
-
-    # TODO: Add rally targets https://github.com/Blizzard/s2client-proto/commit/80484692fa9e0ea6e7be04e728e4f5995c64daa3#diff-3b331650a4f7c9271a579b31cf771ed5R88-R92
 
     # Unit functions
 

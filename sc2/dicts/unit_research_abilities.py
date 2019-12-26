@@ -53,10 +53,10 @@ RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool,
             "required_building": UnitTypeId.FLEETBEACON,
             "requires_power": True,
         },
-        UpgradeId.WARPGATERESEARCH: {"ability": AbilityId.RESEARCH_WARPGATE, "requires_power": True,},
+        UpgradeId.WARPGATERESEARCH: {"ability": AbilityId.RESEARCH_WARPGATE, "requires_power": True},
     },
     UnitTypeId.DARKSHRINE: {
-        UpgradeId.DARKTEMPLARBLINKUPGRADE: {"ability": AbilityId.RESEARCH_SHADOWSTRIKE, "requires_power": True,}
+        UpgradeId.DARKTEMPLARBLINKUPGRADE: {"ability": AbilityId.RESEARCH_SHADOWSTRIKE, "requires_power": True}
     },
     UnitTypeId.ENGINEERINGBAY: {
         UpgradeId.HISECAUTOTRACKING: {"ability": AbilityId.RESEARCH_HISECAUTOTRACKING},
@@ -113,9 +113,9 @@ RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool,
     },
     UnitTypeId.FACTORYTECHLAB: {
         UpgradeId.CYCLONELOCKONDAMAGEUPGRADE: {"ability": AbilityId.RESEARCH_CYCLONELOCKONDAMAGE},
-        UpgradeId.DRILLCLAWS: {"ability": AbilityId.RESEARCH_DRILLINGCLAWS, "required_building": UnitTypeId.ARMORY,},
+        UpgradeId.DRILLCLAWS: {"ability": AbilityId.RESEARCH_DRILLINGCLAWS, "required_building": UnitTypeId.ARMORY},
         UpgradeId.HIGHCAPACITYBARRELS: {"ability": AbilityId.RESEARCH_INFERNALPREIGNITER},
-        UpgradeId.SMARTSERVOS: {"ability": AbilityId.RESEARCH_SMARTSERVOS, "required_building": UnitTypeId.ARMORY,},
+        UpgradeId.SMARTSERVOS: {"ability": AbilityId.RESEARCH_SMARTSERVOS, "required_building": UnitTypeId.ARMORY},
     },
     UnitTypeId.FLEETBEACON: {
         UpgradeId.PHOENIXRANGEUPGRADE: {
@@ -214,7 +214,7 @@ RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool,
     },
     UnitTypeId.INFESTATIONPIT: {
         UpgradeId.INFESTORENERGYUPGRADE: {"ability": AbilityId.RESEARCH_PATHOGENGLANDS},
-        UpgradeId.MICROBIALSHROUD: {"ability": AbilityId.INFESTATIONPITRESEARCH_EVOLVEAMORPHOUSARMORCLOUD,},
+        UpgradeId.MICROBIALSHROUD: {"ability": AbilityId.INFESTATIONPITRESEARCH_EVOLVEAMORPHOUSARMORCLOUD},
         UpgradeId.NEURALPARASITE: {"ability": AbilityId.RESEARCH_NEURALPARASITE},
     },
     UnitTypeId.LAIR: {
@@ -222,19 +222,19 @@ RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool,
         UpgradeId.OVERLORDSPEED: {"ability": AbilityId.RESEARCH_PNEUMATIZEDCARAPACE},
     },
     UnitTypeId.LURKERDENMP: {
-        UpgradeId.DIGGINGCLAWS: {"ability": AbilityId.RESEARCH_ADAPTIVETALONS, "required_building": UnitTypeId.HIVE,}
+        UpgradeId.DIGGINGCLAWS: {"ability": AbilityId.RESEARCH_ADAPTIVETALONS, "required_building": UnitTypeId.HIVE}
     },
     UnitTypeId.ROACHWARREN: {
         UpgradeId.GLIALRECONSTITUTION: {
             "ability": AbilityId.RESEARCH_GLIALREGENERATION,
             "required_building": UnitTypeId.LAIR,
         },
-        UpgradeId.TUNNELINGCLAWS: {"ability": AbilityId.RESEARCH_TUNNELINGCLAWS, "required_building": UnitTypeId.LAIR,},
+        UpgradeId.TUNNELINGCLAWS: {"ability": AbilityId.RESEARCH_TUNNELINGCLAWS, "required_building": UnitTypeId.LAIR},
     },
     UnitTypeId.ROBOTICSBAY: {
-        UpgradeId.EXTENDEDTHERMALLANCE: {"ability": AbilityId.RESEARCH_EXTENDEDTHERMALLANCE, "requires_power": True,},
-        UpgradeId.GRAVITICDRIVE: {"ability": AbilityId.RESEARCH_GRAVITICDRIVE, "requires_power": True,},
-        UpgradeId.OBSERVERGRAVITICBOOSTER: {"ability": AbilityId.RESEARCH_GRAVITICBOOSTER, "requires_power": True,},
+        UpgradeId.EXTENDEDTHERMALLANCE: {"ability": AbilityId.RESEARCH_EXTENDEDTHERMALLANCE, "requires_power": True},
+        UpgradeId.GRAVITICDRIVE: {"ability": AbilityId.RESEARCH_GRAVITICDRIVE, "requires_power": True},
+        UpgradeId.OBSERVERGRAVITICBOOSTER: {"ability": AbilityId.RESEARCH_GRAVITICBOOSTER, "requires_power": True},
     },
     UnitTypeId.SPAWNINGPOOL: {
         UpgradeId.ZERGLINGATTACKSPEED: {
@@ -273,12 +273,12 @@ RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool,
         UpgradeId.RAVENCORVIDREACTOR: {"ability": AbilityId.RESEARCH_RAVENCORVIDREACTOR},
     },
     UnitTypeId.TEMPLARARCHIVE: {
-        UpgradeId.PSISTORMTECH: {"ability": AbilityId.RESEARCH_PSISTORM, "requires_power": True,}
+        UpgradeId.PSISTORMTECH: {"ability": AbilityId.RESEARCH_PSISTORM, "requires_power": True}
     },
     UnitTypeId.TWILIGHTCOUNCIL: {
-        UpgradeId.ADEPTPIERCINGATTACK: {"ability": AbilityId.RESEARCH_ADEPTRESONATINGGLAIVES, "requires_power": True,},
-        UpgradeId.BLINKTECH: {"ability": AbilityId.RESEARCH_BLINK, "requires_power": True,},
-        UpgradeId.CHARGE: {"ability": AbilityId.RESEARCH_CHARGE, "requires_power": True,},
+        UpgradeId.ADEPTPIERCINGATTACK: {"ability": AbilityId.RESEARCH_ADEPTRESONATINGGLAIVES, "requires_power": True},
+        UpgradeId.BLINKTECH: {"ability": AbilityId.RESEARCH_BLINK, "requires_power": True},
+        UpgradeId.CHARGE: {"ability": AbilityId.RESEARCH_CHARGE, "requires_power": True},
     },
     UnitTypeId.ULTRALISKCAVERN: {
         UpgradeId.ANABOLICSYNTHESIS: {"ability": AbilityId.RESEARCH_ANABOLICSYNTHESIS},
