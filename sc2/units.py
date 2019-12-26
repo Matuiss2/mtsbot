@@ -99,7 +99,8 @@ class Units(list):
 
     @property
     def first(self) -> Unit:
-        assert self, "Units object is empty"
+        if not self:
+            raise AssertionError("Units object is empty")
         return self[0]
 
     def take(self, n: int) -> Units:
@@ -110,7 +111,8 @@ class Units(list):
 
     @property
     def random(self) -> Unit:
-        assert self, "Units object is empty"
+        if not self:
+            raise AssertionError("Units object is empty")
         return random.choice(self)
 
     def random_or(self, other: any) -> Unit:
@@ -171,7 +173,8 @@ class Units(list):
             # Contains the distance between the marine and the closest zergling
 
         :param position: """
-        assert self, "Units object is empty"
+        if not self:
+            raise AssertionError("Units object is empty")
         if isinstance(position, Unit):
             return min(self._bot_object._distance_squared_unit_to_unit(unit, position) for unit in self) ** 0.5
         return min(self._bot_object._distance_units_to_pos(self, position))
@@ -190,7 +193,8 @@ class Units(list):
                 # Contains the distance between the marine and the furthest away zergling
 
         :param position: """
-        assert self, "Units object is empty"
+        if not self:
+            raise AssertionError("Units object is empty")
         if isinstance(position, Unit):
             return max(self._bot_object._distance_squared_unit_to_unit(unit, position) for unit in self) ** 0.5
         return max(self._bot_object._distance_units_to_pos(self, position))
@@ -208,7 +212,8 @@ class Units(list):
                 # Contains the zergling that is closest to the target marine
 
         :param position: """
-        assert self, "Units object is empty"
+        if not self:
+            raise AssertionError("Units object is empty")
         if isinstance(position, Unit):
             return min(
                 (unit1 for unit1 in self),
@@ -231,7 +236,8 @@ class Units(list):
                 # Contains the zergling that is furthest away to the target marine
 
         :param position: """
-        assert self, "Units object is empty"
+        if not self:
+            raise AssertionError("Units object is empty")
         if isinstance(position, Unit):
             return max(
                 (unit1 for unit1 in self),
@@ -371,7 +377,8 @@ class Units(list):
         :param other_units:
         :param distance:
         """
-        assert other_units, "Other units object is empty"
+        if not self:
+            raise AssertionError("Units object is empty")
         # Return self because there are no enemies
         if not self:
             return self
@@ -401,8 +408,10 @@ class Units(list):
         Loops over all units in self, then loops over all units in other_units and calculates the shortest distance. Returns the units that is closest to any unit of 'other_units'.
 
         :param other_units: """
-        assert self, "Units object is empty"
-        assert other_units, "Given units object is empty"
+        if not self:
+            raise AssertionError("Units object is empty")
+        if not other_units:
+            raise AssertionError("Given units object is empty")
         return min(
             self,
             key=lambda self_unit: min(
@@ -460,7 +469,8 @@ class Units(list):
 
         :param pred:
         """
-        assert callable(pred), "Function is not callable"
+        if not callable(pred):
+            raise AssertionError("Function is not callable")
         return self.subgroup(filter(pred, self))
 
     def sorted(self, key: callable, reverse: bool = False) -> Units:
@@ -565,10 +575,13 @@ class Units(list):
 
         :param other:
         """
-        assert isinstance(other, set), (
-            f"Please use a set as this filter function is already fairly slow. For example"
-            + " 'self.units.same_tech({UnitTypeId.LAIR})'"
-        )
+        if not isinstance(other, set):
+            raise AssertionError(
+                (
+                    f"Please use a set as this filter function is already fairly slow. For example"
+                    + " 'self.units.same_tech({UnitTypeId.LAIR})'"
+                )
+            )
         tech_alias_types: Set[int] = {u.value for u in other}
         unit_data = self._bot_object._game_data.units
         for unitType in other:
@@ -615,7 +628,8 @@ class Units(list):
     @property
     def center(self) -> Point2:
         """ Returns the central position of all units. """
-        assert self, f"Units object is empty"
+        if not self:
+            raise AssertionError("Units object is empty")
         amount = self.amount
         return Point2(
             (sum(unit._proto.pos.x for unit in self) / amount, sum(unit._proto.pos.y for unit in self) / amount,)
@@ -718,11 +732,11 @@ class UnitSelection(Units):
         if isinstance(selection, (UnitTypeId)):
             super().__init__((unit for unit in parent if unit.type_id == selection), parent._bot_object)
         elif isinstance(selection, set):
-            assert all(isinstance(t, UnitTypeId) for t in selection), f"Not all ids in selection are of type UnitTypeId"
+            if not all(isinstance(t, UnitTypeId) for t in selection):
+                raise AssertionError(f"Not all ids in selection are of type UnitTypeId")
             super().__init__((unit for unit in parent if unit.type_id in selection), parent._bot_object)
         elif selection is None:
             super().__init__((unit for unit in parent), parent._bot_object)
         else:
-            assert isinstance(
-                selection, (UnitTypeId, set)
-            ), f"selection is not None or of type UnitTypeId or Set[UnitTypeId]"
+            if not isinstance(selection, (UnitTypeId, set)):
+                raise AssertionError(f"selection is not None or of type UnitTypeId or Set[UnitTypeId]")
