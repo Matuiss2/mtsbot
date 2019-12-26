@@ -176,7 +176,6 @@ class SC2Process:
             try:
                 self._session = aiohttp.ClientSession()
                 ws = await self._session.ws_connect(self.ws_url, timeout=120)
-                # FIXME fix deprecation warning in for future aiohttp version
                 # ws = await self._session.ws_connect(
                 #     self.ws_url, timeout=aiohttp.client_ws.ClientWSTimeout(ws_close=120)
                 # )

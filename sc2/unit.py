@@ -196,7 +196,6 @@ class Unit:
     @property_immutable_cache
     def can_attack(self) -> bool:
         """ Checks if the unit can attack at all. """
-        # TODO BATTLECRUISER doesnt have weapons in proto?!
         return bool(self._weapons) or self.type_id in {UNIT_BATTLECRUISER, UNIT_ORACLE}
 
     @property_immutable_cache
@@ -268,7 +267,6 @@ class Unit:
     def bonus_damage(self):
         """ Returns a tuple of form '(bonus damage, armor type)' if unit does 'bonus damage' against 'armor type'.
         Possible armor types are: 'Light', 'Armored', 'Biological', 'Mechanical', 'Psionic', 'Massive', 'Structure'. """
-        # TODO: Consider units with ability attacks (Oracle, Baneling) or multiple attacks (Thor).
         if self._weapons:
             for weapon in self._weapons:
                 if weapon.damage_bonus:
@@ -532,7 +530,6 @@ class Unit:
             enemy_armor: float = 0
             enemy_shield_armor: float = 0
         else:
-            # TODO: enemy is under influence of anti armor missile -> reduce armor and shield armor
             enemy_armor: float = target.armor + target.armor_upgrade_level
             enemy_shield_armor: float = target.shield_upgrade_level
             # Ultralisk armor upgrade, only works if target belongs to the bot calling this function
@@ -595,7 +592,6 @@ class Unit:
 
             # Calculate bonus damage against target
             bonuses: List[float] = []
-            # TODO: hardcode hellbats when they have blueflame or attack upgrades
             for bonus in weapon.damage_bonus:
                 if bonus.attribute in target.type_data.attributes:
                     bonus_damage_per_upgrade = (
@@ -610,7 +606,6 @@ class Unit:
                         and UpgradeId.HIGHCAPACITYBARRELS in self.bot_object.state.upgrades
                     ):
                         bonus_damage_per_upgrade += 5
-                    # TODO buffs e.g. void ray charge beam vs armored
                     bonuses.append(bonus.bonus + self.attack_upgrade_level * bonus_damage_per_upgrade)
             if bonuses:
                 damage_per_attack += max(bonuses)
@@ -630,7 +625,6 @@ class Unit:
                     remaining_damage = -enemy_shield
                     enemy_shield = 0
 
-            # TODO roach and hydra in melee range are not affected by guardian shield
             # Fix for ranged units if enemy has guardian shield buff
             enemy_armor_temp = enemy_armor + 2 if target_has_guardian_shield and weapon_range >= 2 else enemy_armor
             # Subtract enemy unit's HP
@@ -679,7 +673,6 @@ class Unit:
                 elif self.type_id == UnitTypeId.MARAUDER and BuffId.STIMPACKMARAUDER in self.buffs:
                     weapon_speed /= 1.5
                 elif (
-                    # TODO always assume that the enemy has the range upgrade researched
                     self.type_id == UnitTypeId.HYDRALISK
                     and self.is_mine
                     and UpgradeId.EVOLVEGROOVEDSPINES in self.bot_object.state.upgrades
@@ -714,7 +707,6 @@ class Unit:
         calc_tuple: Tuple[float, float, float] = self.calculate_damage_vs_target(
             target, ignore_armor, include_overkill_damage
         )
-        # TODO fix for real time? The result may have to be multiplied by 1.4 because of game_speed=normal
         if calc_tuple[1] == 0:
             return 0
         return calc_tuple[0] / calc_tuple[1]
@@ -910,7 +902,6 @@ class Unit:
     @property_mutable_cache
     def orders(self) -> List[UnitOrder]:
         """ Returns the a list of the current orders. """
-        # TODO: add examples on how to use unit orders
         return [UnitOrder.from_proto(order, self.bot_object) for order in self.proto.orders]
 
     @property_immutable_cache
@@ -1098,7 +1089,6 @@ class Unit:
 
     @property
     def engaged_target_tag(self) -> int:
-        # TODO What does this do?
         return self.proto.engaged_target_tag
 
     # Unit functions
