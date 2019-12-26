@@ -117,7 +117,7 @@ class GameInfo:
         self.map_center = self.playable_area.center
         self.map_ramps: List[Ramp] = None  # Filled later by BotAI.prepare_first_step
         self.vision_blockers: Set[Point2] = None  # Filled later by BotAI.prepare_first_step
-        self.player_races: Dict[int, "Race"] = {
+        self.player_races = {
             p.player_id: p.race_actual or p.race_requested for p in self.proto.player_info
         }
         self.start_locations: List[Point2] = [Point2.from_proto(sl) for sl in self.proto.start_raw.start_locations]

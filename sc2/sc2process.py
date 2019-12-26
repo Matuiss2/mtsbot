@@ -182,7 +182,7 @@ class SC2Process:
                 # )
                 LOGGER.debug("Websocket connection ready")
                 return web_service
-            except aiohttp.client_exceptions.ClientConnectorError:
+            except aiohttp.ClientConnectorError:
                 await self._session.close()
                 if i > 15:
                     LOGGER.debug("Connection refused (startup not complete (yet))")

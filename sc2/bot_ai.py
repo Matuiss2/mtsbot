@@ -1,15 +1,17 @@
 from __future__ import annotations
+
 import itertools
 import logging
 import math
 import random
 import time
-from contextlib import suppress
 from collections import Counter
+from contextlib import suppress
 from typing import Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
+
 from s2clientprotocol import sc2api_pb2 as sc_pb
 
-from .cache import property_cache_forever, property_cache_once_per_frame, property_cache_once_per_frame_no_copy
+from .cache import property_cache_forever, property_cache_once_per_frame_no_copy
 from .constants import (
     FakeEffectID,
     abilityid_to_unittypeid,
@@ -23,14 +25,13 @@ from .constants import (
     TERRAN_STRUCTURES_REQUIRE_SCV,
 )
 from .data import ActionResult, Alert, Race, Result, Target, race_townhalls, race_worker
+from .dicts.unit_research_abilities import RESEARCH_INFO
+from .dicts.unit_train_build_abilities import TRAIN_INFO
+from .dicts.unit_trained_from import UNIT_TRAINED_FROM
+from .dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
 from .distances import DistanceCalculation
 from .game_data import AbilityData, GameData
-
-from .dicts.unit_trained_from import UNIT_TRAINED_FROM
-from .dicts.unit_train_build_abilities import TRAIN_INFO
-from .dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
-from .dicts.unit_research_abilities import RESEARCH_INFO
-
+from .game_data import Cost
 # Imports for mypy and pycharm autocomplete as well as sphinx auto-documentation
 from .game_state import Blip, EffectData, GameState
 from .ids.ability_id import AbilityId
@@ -39,9 +40,8 @@ from .ids.upgrade_id import UpgradeId
 from .pixel_map import PixelMap
 from .position import Point2, Point3
 from .unit import Unit
-from .units import Units
-from .game_data import Cost
 from .unit_command import UnitCommand
+from .units import Units
 
 LOGGER = logging.getLogger(__name__)
 
@@ -52,12 +52,67 @@ if TYPE_CHECKING:
 
 class BotAI(DistanceCalculation):
     """Base class for bots."""
-
     EXPANSION_GAP_THRESHOLD = 15
+
+    def __init__(self):
+        super().__init__()
+        self.opponent_id: str = None
+        self.realtime: bool = False
+        self.realtime: bool = False
+        self.all_units: Units = Units([], self)
+        self.units: Units = Units([], self)
+        self.workers: Units = Units([], self)
+        self.townhalls: Units = Units([], self)
+        self.structures: Units = Units([], self)
+        self.gas_buildings: Units = Units([], self)
+        self.enemy_units: Units = Units([], self)
+        self.enemy_structures: Units = Units([], self)
+        self.resources: Units = Units([], self)
+        self.destructible: Units = Units([], self)
+        self.watchtowers: Units = Units([], self)
+        self.mineral_field: Units = Units([], self)
+        self.vespene_geyser: Units = Units([], self)
+        self.larva: Units = Units([], self)
+        self.techlab_tags: Set[int] = set()
+        self.reactor_tags: Set[int] = set()
+        self.distance_calculation_method: int = 2
+        self.minerals: int = 0
+        self.vespene: int = 0
+        self.supply_army: float = 0
+        self.supply_workers: float = 0
+        self.supply_cap: float = 0
+        self.supply_used: float = 0
+        self.supply_left: float = 0
+        self.idle_worker_count: int = None
+        self.army_count: int = 0
+        self.warp_gate_count: int = 0
+        self.actions: List[UnitCommand] = []
+        self.blips: Set[Blip] = set()
+        self.cached_main_base_ramp = None
+        self._units_created: Counter = Counter()
+        self._unit_tags_seen_this_game: Set[int] = set()
+        self._units_previous_map: Dict[int, Unit] = dict()
+        self._structures_previous_map: Dict[int, Unit] = dict()
+        self._enemy_units_previous_map: Dict[int, Unit] = dict()
+        self._enemy_structures_previous_map: Dict[int, Unit] = dict()
+        self._previous_upgrades: Set[UpgradeId] = set()
+        self._time_before_step: float = None
+        self._time_after_step: float = None
+        self._min_step_time: float = math.inf
+        self._max_step_time: float = 0
+        self._last_step_step_time: float = 0
+        self._total_time_in_on_step: float = 0
+        self._total_steps_iterations: int = 0
+        self.unit_tags_received_action: Set[int] = set()
+        self._client: Client = None
+        self.player_id: int = None
+        self._game_info: GameInfo = None
+        self.game_data_local: GameData = None
+        self.race: Race = None
+        self.enemy_race: Race = None
 
     def initialize_variables(self):
         """ Called from main.py internally """
-        DistanceCalculation.__init__(self)
         # Specific opponent bot ID used in sc2ai ladder games http://sc2ai.net/ and on ai arena https://ai-arena.net
         # The bot ID will stay the same each game so your bot can "adapt" to the opponent
         if not hasattr(self, "opponent_id"):
