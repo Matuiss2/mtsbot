@@ -989,6 +989,7 @@ class BotAI(DistanceCalculation):
         :param random_alternative:
         :param placement_step: """
 
+        p = None
         if not isinstance(near, (Unit, Point2, Point3)):
             raise AssertionError()
         gas_buildings = {UnitTypeId.EXTRACTOR, UnitTypeId.ASSIMILATOR, UnitTypeId.REFINERY}
