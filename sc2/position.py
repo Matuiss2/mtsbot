@@ -143,6 +143,10 @@ class Pointlike(tuple):
             a + (b - a) / d * distance for a, b in itertools.zip_longest(self, p[: len(self)], fillvalue=0)
         )
 
+    @property
+    def to2(self) -> Point2:
+        return Point2(self[:2])
+
     def __eq__(self, other):
         try:
             return all(abs(a - b) <= EPSILON for a, b in itertools.zip_longest(self, other, fillvalue=0))

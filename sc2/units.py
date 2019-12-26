@@ -326,9 +326,7 @@ class Units(list):
             return self.subgroup(
                 unit
                 for unit in self
-                if distance1_squared
-                < self.bot_object.distance_squared_unit_to_unit(unit, position)
-                < distance2_squared
+                if distance1_squared < self.bot_object.distance_squared_unit_to_unit(unit, position) < distance2_squared
             )
         distances = self.bot_object.distance_units_to_pos(self, position)
         return self.subgroup(unit for unit, dist in zip(self, distances) if distance1 < dist < distance2)
@@ -385,7 +383,7 @@ class Units(list):
         distance_squared = distance ** 2
         if len(self) == 1:
             if any(
-                    self.bot_object.distance_squared_unit_to_unit(self[0], target) < distance_squared
+                self.bot_object.distance_squared_unit_to_unit(self[0], target) < distance_squared
                 for target in other_units
             ):
                 return self
@@ -625,8 +623,7 @@ class Units(list):
             unit_alias_types.add(unit_data[unitType.value].proto.unit_alias)
         unit_alias_types.discard(0)
         return self.filter(
-            lambda unit: unit.proto.unit_type in unit_alias_types
-                         or unit.type_data.proto.unit_alias in unit_alias_types
+            lambda unit: unit.proto.unit_type in unit_alias_types or unit.type_data.proto.unit_alias in unit_alias_types
         )
 
     @property

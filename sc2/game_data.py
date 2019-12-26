@@ -1,7 +1,8 @@
 from __future__ import annotations
+
 from bisect import bisect_left
 from functools import lru_cache
-from typing import Any, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
+from typing import Dict, List, Optional
 
 from .constants import ZERGLING
 from .data import Attribute, Race
