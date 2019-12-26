@@ -1397,7 +1397,8 @@ class BotAI(DistanceCalculation):
         result = await self._client.actions(actions)
         return result
 
-    def prevent_double_actions(self, action) -> bool:
+    @staticmethod
+    def prevent_double_actions(action) -> bool:
         """
         :param action:
         """

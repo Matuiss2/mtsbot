@@ -711,13 +711,15 @@ class Client(Protocol):
 
 
 class DrawItem:
-    def to_debug_point(self, point: Union[Unit, Point2, Point3]) -> common_pb.Point:
+    @staticmethod
+    def to_debug_point(point: Union[Unit, Point2, Point3]) -> common_pb.Point:
         """ Helper function for point conversion """
         if isinstance(point, Unit):
             point = point.position3d
         return common_pb.Point(x=point.x, y=point.y, z=getattr(point, "z", 0))
 
-    def to_debug_color(self, color: Union[tuple, Point3]):
+    @staticmethod
+    def to_debug_color(color: Union[tuple, Point3]):
         """ Helper function for color conversion """
         if color is None:
             return debug_pb.Color(r=255, g=255, b=255)
