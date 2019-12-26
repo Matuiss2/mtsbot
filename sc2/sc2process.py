@@ -130,10 +130,10 @@ class SC2Process:
         ]
         if self._sc2_version:
 
-            def special_match(strg: str):
+            def special_match(string_to_validate: str):
                 """ Tests if the specified version is in the versions.py dict. """
                 for version in self.versions:
-                    if version["label"] == strg:
+                    if version["label"] == string_to_validate:
                         return True
                 return False
 

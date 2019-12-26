@@ -152,7 +152,7 @@ class Units(list):
             enemy_mutalisks = self.enemy_units(UnitTypeId.MUTALISK)
             my_marauder = next((unit for unit in self.units if unit.type_id == UnitTypeId.MARAUDER), None)
             if my_marauder:
-                all_mutalisks_my_marauder_can_attack = enemy_mutaliskss.in_attack_range_of(my_marauder)
+                all_mutalisks_my_marauder_can_attack = enemy_mutalisks.in_attack_range_of(my_marauder)
                 # Is empty because mutalisk are flying and marauder cannot attack air
 
         :param unit:
@@ -225,7 +225,7 @@ class Units(list):
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         """
-        Returns the furhest unit (from this Units object) to the target unit or position.
+        Returns the furthest unit (from this Units object) to the target unit or position.
 
         Example::
 
@@ -354,7 +354,7 @@ class Units(list):
 
     def furthest_n_units(self, position: Union[Unit, Point2, np.ndarray], n: int) -> Units:
         """
-        Returns the n furhest units in distance to position.
+        Returns the n furthest units in distance to position.
 
         Example::
 
