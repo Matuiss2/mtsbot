@@ -1169,8 +1169,10 @@ class Unit:
     def warp_in(self, unit: UnitTypeId, position: Union[Point2, Point3]) -> UnitCommand:
         """ Orders Warpgate to warp in 'unit' at 'position'. 
 
-        :param unit:
-        :param queue:
+        Parameters
+        ----------
+        unit
+        position
         """
         normal_creation_ability = self._bot_object._game_data.units[unit.value].creation_ability.id
         return self(warpgate_abilities[normal_creation_ability], target=position)

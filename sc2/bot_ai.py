@@ -1073,7 +1073,7 @@ class BotAI(DistanceCalculation):
         :param building:
         :param near:
         :param max_distance:
-        :param unit:
+        :param build_worker:
         :param random_alternative:
         :param placement_step: """
 
@@ -1860,7 +1860,10 @@ class BotAI(DistanceCalculation):
 
             print(f"My unit took damage: {unit} took {amount_damage_taken} damage")
 
-        :param unit:
+        Parameters
+        ----------
+        unit
+        amount_damage_taken
         """
 
     async def on_enemy_unit_entered_vision(self, unit: Unit):
