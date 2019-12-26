@@ -70,7 +70,7 @@ def latest_executable(versions_dir, base_build=None):
 class _MetaPaths(type):
     """"Lazily loads paths to allow importing the library even if SC2 isn't installed."""
 
-    def __setup(self):
+    def __setup(cls):
         if PF not in BASEDIR:
             LOGGER.critical(f"Unsupported platform '{PF}'")
             sys.exit()
@@ -88,23 +88,23 @@ class _MetaPaths(type):
                             base = None
             if base is None:
                 base = BASEDIR[PF]
-            self.BASE = Path(base).expanduser()
-            self.EXECUTABLE = latest_executable(self.BASE / "Versions")
-            self.CWD = self.BASE / CWD[PF] if CWD[PF] else None
+            cls.BASE = Path(base).expanduser()
+            cls.EXECUTABLE = latest_executable(cls.BASE / "Versions")
+            cls.CWD = cls.BASE / CWD[PF] if CWD[PF] else None
 
-            self.REPLAYS = self.BASE / "Replays"
+            cls.REPLAYS = cls.BASE / "Replays"
 
-            if (self.BASE / "maps").exists():
-                self.MAPS = self.BASE / "maps"
+            if (cls.BASE / "maps").exists():
+                cls.MAPS = cls.BASE / "maps"
             else:
-                self.MAPS = self.BASE / "Maps"
+                cls.MAPS = cls.BASE / "Maps"
         except FileNotFoundError as error:
             LOGGER.critical(f"SC2 installation not found: File '{error.filename}' does not exist.")
             sys.exit()
 
-    def __getattr__(self, attr):
-        self.__setup()
-        return getattr(self, attr)
+    def __getattr__(cls, attr):
+        cls.__setup()
+        return getattr(cls, attr)
 
 
 class Paths(metaclass=_MetaPaths):
