@@ -58,7 +58,8 @@ class Bot(AbstractPlayer):
         AI can be None if this player object is just used to inform the
         server about player types.
         """
-        assert isinstance(ai, BotAI) or ai is None, f"ai is of type {type(ai)}, inherit BotAI from bot_ai.py"
+        if not (isinstance(ai, BotAI) or ai is None):
+            raise AssertionError(f"ai is of type {type(ai)}, inherit BotAI from bot_ai.py")
         super().__init__(PlayerType.Participant, race, name=name, fullscreen=fullscreen)
         self.ai = ai
 
