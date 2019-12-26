@@ -25,7 +25,7 @@ from sc2.dicts.unit_train_build_abilities import TRAIN_INFO
 from sc2.dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
 from sc2.dicts.unit_research_abilities import RESEARCH_INFO
 
-# Imports for mypy and pycharm autocomplete as well as sphinx autodocumentation
+# Imports for mypy and pycharm autocomplete as well as sphinx auto-documentation
 from sc2.game_state import Blip, EffectData, GameState
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
@@ -65,7 +65,7 @@ class ObserverAI(DistanceCalculation):
         self.enemy_units: Units = Units([], self)
         self.enemy_structures: Units = Units([], self)
         self.resources: Units = Units([], self)
-        self.destructables: Units = Units([], self)
+        self.destructible: Units = Units([], self)
         self.watchtowers: Units = Units([], self)
         self.mineral_field: Units = Units([], self)
         self.vespene_geyser: Units = Units([], self)
@@ -252,7 +252,7 @@ class ObserverAI(DistanceCalculation):
         self.mineral_field: Units = Units([], self)
         self.vespene_geyser: Units = Units([], self)
         self.resources: Units = Units([], self)
-        self.destructables: Units = Units([], self)
+        self.destructible: Units = Units([], self)
         self.watchtowers: Units = Units([], self)
         self.all_units: Units = Units([], self)
         self.workers: Units = Units([], self)

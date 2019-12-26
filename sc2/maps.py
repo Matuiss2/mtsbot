@@ -7,14 +7,14 @@ logger = logging.getLogger(__name__)
 
 def get(name=None):
     maps = []
-    for mapdir in (p for p in Paths.MAPS.iterdir()):
-        if mapdir.is_dir():
-            for mapfile in (p for p in mapdir.iterdir() if p.is_file()):
-                if mapfile.suffix == ".SC2Map":
-                    maps.append(Map(mapfile))
-        elif mapdir.is_file():
-            if mapdir.suffix == ".SC2Map":
-                maps.append(Map(mapdir))
+    for map_directory in (p for p in Paths.MAPS.iterdir()):
+        if map_directory.is_dir():
+            for map_file in (p for p in map_directory.iterdir() if p.is_file()):
+                if map_file.suffix == ".SC2Map":
+                    maps.append(Map(map_file))
+        elif map_directory.is_file():
+            if map_directory.suffix == ".SC2Map":
+                maps.append(Map(map_directory))
 
     if name is None:
         return maps

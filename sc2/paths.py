@@ -50,7 +50,7 @@ def get_runner_args(cwd):
     return []
 
 
-def latest_executeble(versions_dir, base_build=None):
+def latest_executable(versions_dir, base_build=None):
 
     if base_build is None:
         latest = max((int(p.name[4:]), p) for p in versions_dir.iterdir() if p.is_dir() and p.name.startswith("Base"))
@@ -78,9 +78,9 @@ class _MetaPaths(type):
         try:
             base = os.environ.get("SC2PATH")
             if base is None and USERPATH[PF] is not None:
-                einfo = str(Path.home().expanduser()) + USERPATH[PF]
-                if os.path.isfile(einfo):
-                    with open(einfo) as f:
+                executable_info = str(Path.home().expanduser()) + USERPATH[PF]
+                if os.path.isfile(executable_info):
+                    with open(executable_info) as f:
                         content = f.read()
                     if content:
                         base = re.search(r" = (.*)Versions", content).group(1)
@@ -89,7 +89,7 @@ class _MetaPaths(type):
             if base is None:
                 base = BASEDIR[PF]
             self.BASE = Path(base).expanduser()
-            self.EXECUTABLE = latest_executeble(self.BASE / "Versions")
+            self.EXECUTABLE = latest_executable(self.BASE / "Versions")
             self.CWD = self.BASE / CWD[PF] if CWD[PF] else None
 
             self.REPLAYS = self.BASE / "Replays"

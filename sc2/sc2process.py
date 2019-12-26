@@ -112,7 +112,7 @@ class SC2Process:
 
     def _launch(self):
         if self._base_build:
-            executable = str(paths.latest_executeble(Paths.BASE / "Versions", self._base_build))
+            executable = str(paths.latest_executable(Paths.BASE / "Versions", self._base_build))
         else:
             executable = str(Paths.EXECUTABLE)
         args = paths.get_runner_args(Paths.CWD) + [
