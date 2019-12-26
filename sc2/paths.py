@@ -3,6 +3,7 @@ import os
 import platform
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
@@ -62,7 +63,7 @@ def latest_executable(versions_dir, base_build=None):
 
     if version < 55958:
         LOGGER.critical(f"Your SC2 binary is too old. Upgrade to 3.16.1 or newer.")
-        exit(1)
+        sys.exit()
     return path / BINPATH[PF]
 
 
@@ -72,7 +73,7 @@ class _MetaPaths(type):
     def __setup(self):
         if PF not in BASEDIR:
             LOGGER.critical(f"Unsupported platform '{PF}'")
-            exit(1)
+            sys.exit()
 
         try:
             base = os.environ.get("SC2PATH")
@@ -99,7 +100,7 @@ class _MetaPaths(type):
                 self.MAPS = self.BASE / "Maps"
         except FileNotFoundError as error:
             LOGGER.critical(f"SC2 installation not found: File '{error.filename}' does not exist.")
-            exit(1)
+            sys.exit()
 
     def __getattr__(self, attr):
         self.__setup()
