@@ -49,7 +49,7 @@ class Client(Protocol):
         return self._status in {Status.in_game, Status.in_replay}
 
     async def join_game(self, name=None, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None):
-        ifopts = sc_pb.InterfaceOptions(
+        interface_options = sc_pb.InterfaceOptions(
             raw=True,
             score=True,
             show_cloaked=True,
@@ -68,20 +68,20 @@ class Client(Protocol):
             map_width, map_height = window_size
             minimap_width, minimap_height = minimap_size
 
-            ifopts.render.resolution.x = map_width
-            ifopts.render.resolution.y = map_height
-            ifopts.render.minimap_resolution.x = minimap_width
-            ifopts.render.minimap_resolution.y = minimap_height
+            interface_options.render.resolution.x = map_width
+            interface_options.render.resolution.y = map_height
+            interface_options.render.minimap_resolution.x = minimap_width
+            interface_options.render.minimap_resolution.y = minimap_height
 
         if race is None:
             if not isinstance(observed_player_id, int):
                 raise AssertionError(f"observed_player_id is of type {type(observed_player_id)}")
             # join as observer
-            req = sc_pb.RequestJoinGame(observed_player_id=observed_player_id, options=ifopts)
+            req = sc_pb.RequestJoinGame(observed_player_id=observed_player_id, options=interface_options)
         else:
             if not isinstance(race, Race):
                 raise AssertionError()
-            req = sc_pb.RequestJoinGame(race=race.value, options=ifopts)
+            req = sc_pb.RequestJoinGame(race=race.value, options=interface_options)
 
         if portconfig:
             req.shared_port = portconfig.shared
@@ -199,11 +199,11 @@ class Client(Protocol):
         else:
             return [ActionResult(r) for r in res.action.result if ActionResult(r) != ActionResult.Success]
 
-    async def query_pathing(
+    async def query_pathway(
         self, start: Union[Unit, Point2, Point3], end: Union[Point2, Point3]
     ) -> Optional[Union[int, float]]:
         """ Caution: returns "None" when path not found
-        Try to combine queries with the function below because the pathing query is generally slow.
+        Try to combine queries with the function below because the pathway query is generally slow.
 
         :param start:
         :param end: """
@@ -235,8 +235,8 @@ class Client(Protocol):
             return None
         return distance
 
-    async def query_pathings(self, zipped_list: List[List[Union[Unit, Point2, Point3]]]) -> List[Union[float, int]]:
-        """ Usage: await self.query_pathings([[unit1, target2], [unit2, target2]])
+    async def query_pathways(self, zipped_list: List[List[Union[Unit, Point2, Point3]]]) -> List[Union[float, int]]:
+        """ Usage: await self.query_pathways([[unit1, target2], [unit2, target2]])
         -> returns [distance1, distance2]
         Caution: returns 0 when path not found
 
@@ -451,7 +451,7 @@ class Client(Protocol):
         )
 
     async def move_camera_spatial(self, position: Union[Point2, Point3]):
-        """ Moves camera to the target position using the spatial aciton interface
+        """ Moves camera to the target position using the spatial action interface
 
         :param position: """
         from s2clientprotocol import spatial_pb2 as spatial_pb
@@ -653,7 +653,7 @@ class Client(Protocol):
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=1)]))
 
     async def debug_control_enemy(self):
-        """ Allows control over enemy units and structures similar to team games control - does not allow the bot to spend the opponent's ressources. Using it a second time disables it again.  """
+        """ Allows control over enemy units and structures similar to team games control - does not allow the bot to spend the opponent's resources. Using it a second time disables it again.  """
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=2)]))
 
     async def debug_food(self):

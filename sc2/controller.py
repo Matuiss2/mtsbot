@@ -39,10 +39,10 @@ class Controller(Protocol):
         return result
 
     async def start_replay(self, replay_path, realtime, observed_id=0):  # Added
-        ifopts = sc_pb.InterfaceOptions(
+        interface_options = sc_pb.InterfaceOptions(
             raw=True, score=True, show_cloaked=True, raw_affects_selection=False, raw_crop_to_playable_area=False
         )
-        req = sc_pb.RequestStartReplay(replay_path=replay_path, observed_player_id=observed_id, options=ifopts)
+        req = sc_pb.RequestStartReplay(replay_path=replay_path, observed_player_id=observed_id, options=interface_options)
 
         result = await self._execute(start_replay=req)
 

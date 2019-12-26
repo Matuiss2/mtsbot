@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
 from . import unit as unit_module
 from .ids.ability_id import AbilityId
 from .position import Point2
-from .constants import COMBINEABLE_ABILITIES
+from .constants import COMBINABLE_ABILITIES
 
 from typing import Union
 
@@ -35,7 +35,7 @@ class UnitCommand:
 
     @property
     def combining_tuple(self):
-        return (self.ability, self.target, self.queue, self.ability in COMBINEABLE_ABILITIES)
+        return (self.ability, self.target, self.queue, self.ability in COMBINABLE_ABILITIES)
 
     def __repr__(self):
         return f"UnitCommand({self.ability}, {self.unit}, {self.target}, {self.queue})"

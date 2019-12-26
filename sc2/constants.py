@@ -222,7 +222,7 @@ IS_DETECTOR: Set[UnitTypeId] = {
 UNIT_PHOTONCANNON: UnitTypeId = UnitTypeId.PHOTONCANNON
 UNIT_COLOSSUS: UnitTypeId = UnitTypeId.COLOSSUS
 # Used in unit_command.py and action.py to combine only certain abilities
-COMBINEABLE_ABILITIES: Set[AbilityId] = {
+COMBINABLE_ABILITIES: Set[AbilityId] = {
     AbilityId.MOVE,
     AbilityId.ATTACK,
     AbilityId.SCAN_MOVE,
