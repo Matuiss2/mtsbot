@@ -227,25 +227,25 @@ class Point2(Pointlike):
         :param r: """
         if self == p:
             raise AssertionError(f"self is equal to p")
-        distanceBetweenPoints = self.distance_to(p)
-        if r < distanceBetweenPoints / 2:
+        distance_between_points = self.distance_to(p)
+        if r < distance_between_points / 2:
             raise AssertionError()
         # remaining distance from center towards the intersection, using pythagoras
-        remainingDistanceFromCenter = (r ** 2 - (distanceBetweenPoints / 2) ** 2) ** 0.5
+        remaining_distance_from_center = (r ** 2 - (distance_between_points / 2) ** 2) ** 0.5
         # center of both points
-        offsetToCenter = Point2(((p.x - self.x) / 2, (p.y - self.y) / 2))
-        center = self.offset(offsetToCenter)
+        offset_to_center = Point2(((p.x - self.x) / 2, (p.y - self.y) / 2))
+        center = self.offset(offset_to_center)
 
         # stretch offset vector in the ratio of remaining distance from center to intersection
-        vectorStretchFactor = remainingDistanceFromCenter / (distanceBetweenPoints / 2)
-        v = offsetToCenter
-        offsetToCenterStretched = Point2((v.x * vectorStretchFactor, v.y * vectorStretchFactor))
+        vector_stretch_factor = remaining_distance_from_center / (distance_between_points / 2)
+        v = offset_to_center
+        offset_to_center_stretched = Point2((v.x * vector_stretch_factor, v.y * vector_stretch_factor))
 
         # rotate vector by 90° and -90°
-        vectorRotated1 = Point2((offsetToCenterStretched.y, -offsetToCenterStretched.x))
-        vectorRotated2 = Point2((-offsetToCenterStretched.y, offsetToCenterStretched.x))
-        intersect1 = center.offset(vectorRotated1)
-        intersect2 = center.offset(vectorRotated2)
+        vector_rotated1 = Point2((offset_to_center_stretched.y, -offset_to_center_stretched.x))
+        vector_rotated2 = Point2((-offset_to_center_stretched.y, offset_to_center_stretched.x))
+        intersect1 = center.offset(vector_rotated1)
+        intersect2 = center.offset(vector_rotated2)
         return {intersect1, intersect2}
 
     @property

@@ -23,7 +23,7 @@ from sc2.versions import VERSIONS
 logger = logging.getLogger(__name__)
 
 
-class kill_switch:
+class KillSwitch:
     _to_kill: List[Any] = []
 
     @classmethod
@@ -70,12 +70,12 @@ class SC2Process:
         self._data_hash = data_hash
 
     async def __aenter__(self):
-        kill_switch.add(self)
+        KillSwitch.add(self)
 
         def signal_handler(*args):
             # unused arguments: signal handling library expects all signal
             # callback handlers to accept two positional arguments
-            kill_switch.kill_all()
+            KillSwitch.kill_all()
 
         signal.signal(signal.SIGINT, signal_handler)
 
@@ -90,7 +90,7 @@ class SC2Process:
         return Controller(self._ws, self)
 
     async def __aexit__(self, *args):
-        kill_switch.kill_all()
+        KillSwitch.kill_all()
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     @property
