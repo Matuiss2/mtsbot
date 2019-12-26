@@ -276,14 +276,14 @@ TERRAN_STRUCTURES_REQUIRE_SCV: Set[UnitTypeId] = {
 }
 
 
-def return_NOTAUNIT():
+def return_not_an_unit():
     # NOTAUNIT = 0
     return NOTAUNIT
 
 
 # Hotfix for structures and units as the API does not seem to return the correct values, e.g. ghost and thor have None in the requirements
 TERRAN_TECH_REQUIREMENT: Dict[UnitTypeId, UnitTypeId] = defaultdict(
-    return_NOTAUNIT,
+    return_not_an_unit,
     {
         MISSILETURRET: ENGINEERINGBAY,
         SENSORTOWER: ENGINEERINGBAY,
@@ -303,7 +303,7 @@ TERRAN_TECH_REQUIREMENT: Dict[UnitTypeId, UnitTypeId] = defaultdict(
     },
 )
 PROTOSS_TECH_REQUIREMENT: Dict[UnitTypeId, UnitTypeId] = defaultdict(
-    return_NOTAUNIT,
+    return_not_an_unit,
     {
         PHOTONCANNON: FORGE,
         CYBERNETICSCORE: GATEWAY,
@@ -327,7 +327,7 @@ PROTOSS_TECH_REQUIREMENT: Dict[UnitTypeId, UnitTypeId] = defaultdict(
     },
 )
 ZERG_TECH_REQUIREMENT: Dict[UnitTypeId, UnitTypeId] = defaultdict(
-    return_NOTAUNIT,
+    return_not_an_unit,
     {
         ZERGLING: SPAWNINGPOOL,
         QUEEN: SPAWNINGPOOL,

@@ -866,10 +866,10 @@ class BotAI(DistanceCalculation):
             raise AssertionError(f"{upgrade_type} is no UpgradeId")
         if upgrade_type in self.state.upgrades:
             return 1
-        creationAbilityID = self._game_data.upgrades[upgrade_type.value].research_ability.exact_id
+        creation_ability_id = self._game_data.upgrades[upgrade_type.value].research_ability.exact_id
         for structure in self.structures.filter(lambda unit: unit.is_ready):
             for order in structure.orders:
-                if order.ability.exact_id == creationAbilityID:
+                if order.ability.exact_id == creation_ability_id:
                     return order.progress
         return 0
 
@@ -1032,7 +1032,7 @@ class BotAI(DistanceCalculation):
         return self._worker_orders[ability]
 
     @property_cache_once_per_frame
-    def structures_without_construction_SCVs(self) -> Units:
+    def structures_without_construction_scv(self) -> Units:
         """ Returns all structures that do not have an SCV constructing it.
         Warning: this function may move to become a Units filter.
         New function. Please report any bugs! """

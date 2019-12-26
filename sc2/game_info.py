@@ -108,8 +108,8 @@ class Ramp:
             p2 = points.pop().offset((self.x_offset, self.y_offset))
             # Offset from top point to barracks center is (2, 1)
             intersects = p1.circle_intersection(p2, 5 ** 0.5)
-            anyLowerPoint = next(iter(self.lower))
-            return max(intersects, key=lambda p: p.distance_to_point2(anyLowerPoint))
+            any_lower_point = next(iter(self.lower))
+            return max(intersects, key=lambda p: p.distance_to_point2(any_lower_point))
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
     @property_immutable_cache
@@ -127,8 +127,8 @@ class Ramp:
             except AssertionError:
                 # Returns None when no placement was found, this is the case on the map Honorgrounds LE with an exceptionally large main base ramp
                 return None
-            anyLowerPoint = next(iter(self.lower))
-            return max(intersects, key=lambda p: p.distance_to_point2(anyLowerPoint))
+            any_lower_point = next(iter(self.lower))
+            return max(intersects, key=lambda p: p.distance_to_point2(any_lower_point))
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
     @property_mutable_cache
@@ -141,11 +141,11 @@ class Ramp:
             p1 = points.pop().offset((self.x_offset, self.y_offset))
             p2 = points.pop().offset((self.x_offset, self.y_offset))
             center = p1.towards(p2, p1.distance_to_point2(p2) / 2)
-            depotPosition = self.depot_in_middle
-            if depotPosition is None:
+            depot_position = self.depot_in_middle
+            if depot_position is None:
                 return set()
             # Offset from middle depot to corner depots is (2, 1)
-            intersects = center.circle_intersection(depotPosition, 5 ** 0.5)
+            intersects = center.circle_intersection(depot_position, 5 ** 0.5)
             return intersects
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
@@ -267,10 +267,10 @@ class GameInfo:
             and self.placement_grid[(a, b)] == 0
         ]
         # divide points into ramp points and vision blockers
-        rampPoints = [point for point in points if not equal_height_around(point)]
-        visionBlockers = set(point for point in points if equal_height_around(point))
-        ramps = [Ramp(group, self) for group in self._find_groups(rampPoints)]
-        return ramps, visionBlockers
+        ramp_points = [point for point in points if not equal_height_around(point)]
+        vision_blockers = set(point for point in points if equal_height_around(point))
+        ramps = [Ramp(group, self) for group in self._find_groups(ramp_points)]
+        return ramps, vision_blockers
 
     def _find_groups(self, points: Set[Point2], minimum_points_per_group: int = 8):
         """
@@ -279,41 +279,41 @@ class GameInfo:
         Returns groups of points as list, like [{p1, p2, p3}, {p4, p5, p6, p7, p8}]
         """
         # TODO do we actually need colors here? the ramps will never touch anyways.
-        NOT_COLORED_YET = -1
+        not_colored_yet = -1
         map_width = self.pathway_grid.width
         map_height = self.pathway_grid.height
-        currentColor: int = NOT_COLORED_YET
+        current_color: int = not_colored_yet
         picture: List[List[int]] = [[-2 for _ in range(map_width)] for _ in range(map_height)]
 
         def paint(pt: Point2) -> None:
-            picture[pt.y][pt.x] = currentColor
+            picture[pt.y][pt.x] = current_color
 
         nearby = [(a, b) for a in [-1, 0, 1] for b in [-1, 0, 1] if a != 0 or b != 0]
 
         remaining: Set[Point2] = set(points)
         for point in remaining:
             paint(point)
-        currentColor = 1
+        current_color = 1
         queue: Deque[Point2] = deque()
         while remaining:
-            currentGroup: Set[Point2] = set()
+            current_group: Set[Point2] = set()
             if not queue:
                 start = remaining.pop()
                 paint(start)
                 queue.append(start)
-                currentGroup.add(start)
+                current_group.add(start)
             while queue:
                 base: Point2 = queue.popleft()
                 for offset in nearby:
                     px, py = base.x + offset[0], base.y + offset[1]
                     if not (0 <= px < map_width and 0 <= py < map_height):
                         continue
-                    if picture[py][px] != NOT_COLORED_YET:
+                    if picture[py][px] != not_colored_yet:
                         continue
                     point: Point2 = Point2((px, py))
                     remaining.discard(point)
                     paint(point)
                     queue.append(point)
-                    currentGroup.add(point)
-            if len(currentGroup) >= minimum_points_per_group:
-                yield currentGroup
+                    current_group.add(point)
+            if len(current_group) >= minimum_points_per_group:
+                yield current_group
