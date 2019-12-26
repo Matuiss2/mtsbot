@@ -616,8 +616,8 @@ class Units(list):
             other = {other}
         unit_alias_types: Set[int] = {u.value for u in other}
         unit_data = self.bot_object.game_data_local.units
-        for unitType in other:
-            unit_alias_types.add(unit_data[unitType.value].proto.unit_alias)
+        for unit_type in other:
+            unit_alias_types.add(unit_data[unit_type.value].proto.unit_alias)
         unit_alias_types.discard(0)
         return self.filter(
             lambda unit: unit.proto.unit_type in unit_alias_types or unit.type_data.proto.unit_alias in unit_alias_types

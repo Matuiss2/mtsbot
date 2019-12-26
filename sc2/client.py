@@ -515,7 +515,10 @@ class Client(Protocol):
         return self.debug_text_world(text, pos, color, size)
 
     def debug_line_out(
-        self, starting_point: Union[Unit, Point2, Point3], ending_point: Union[Unit, Point2, Point3], color: Union[tuple, list, Point3] = None
+        self,
+        starting_point: Union[Unit, Point2, Point3],
+        ending_point: Union[Unit, Point2, Point3],
+        color: Union[tuple, list, Point3] = None,
     ):
         """ Draws a line from starting_point to ending_point. """
         self._debug_lines.append(DrawItemLine(color=color, start_point=starting_point, end_point=ending_point))
@@ -546,7 +549,10 @@ class Client(Protocol):
         self._debug_boxes.append(DrawItemBox(start_point=starting_point, end_point=ending_point, color=color))
 
     def debug_sphere_out(
-        self, middle_point: Union[Unit, Point2, Point3], radius: Union[int, float], color: Union[tuple, list, Point3] = None
+        self,
+        middle_point: Union[Unit, Point2, Point3],
+        radius: Union[int, float],
+        color: Union[tuple, list, Point3] = None,
     ):
         """ Draws a sphere at position position with radius radius. """
         self._debug_spheres.append(DrawItemSphere(start_point=middle_point, radius=radius, color=color))

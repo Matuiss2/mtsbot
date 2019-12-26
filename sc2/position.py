@@ -25,8 +25,8 @@ class Pointlike(tuple):
         """Calculate a single distance from a position or unit to another position or unit
 
         :param target: """
-        position_x, position_y  = target.position
-        return math.hypot(self[0] - position_x, self[1] - position_y )
+        position_x, position_y = target.position
+        return math.hypot(self[0] - position_x, self[1] - position_y)
 
     def distance_to_point2(self, target_position: Union[Point2, Tuple[float, float]]) -> Union[int, float]:
         """ Same as the function above, but should be a bit faster because of the dropped asserts
@@ -123,7 +123,9 @@ class Pointlike(tuple):
         """
         return self.__class__(_sign(b - a) for a, b in itertools.zip_longest(self, point[: len(self)], fillvalue=0))
 
-    def towards(self, target: Union[Unit, Pointlike], distance: Union[int, float] = 1, limit: bool = False) -> Pointlike:
+    def towards(
+        self, target: Union[Unit, Pointlike], distance: Union[int, float] = 1, limit: bool = False
+    ) -> Pointlike:
         """
 
         :param target:
@@ -139,7 +141,8 @@ class Pointlike(tuple):
         if limit:
             distance = min(distance_to_target, distance)
         return self.__class__(
-            a + (b - a) / distance_to_target * distance for a, b in itertools.zip_longest(self, target[: len(self)], fillvalue=0)
+            a + (b - a) / distance_to_target * distance
+            for a, b in itertools.zip_longest(self, target[: len(self)], fillvalue=0)
         )
 
     @property
