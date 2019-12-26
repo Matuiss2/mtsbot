@@ -32,6 +32,7 @@ from .dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
 from .distances import DistanceCalculation
 from .game_data import AbilityData, GameData
 from .game_data import Cost
+
 # Imports for mypy and pycharm autocomplete as well as sphinx auto-documentation
 from .game_state import Blip, EffectData, GameState
 from .ids.ability_id import AbilityId
@@ -52,7 +53,6 @@ if TYPE_CHECKING:
 
 class BotAI(DistanceCalculation):
     """Base class for bots."""
-    EXPANSION_GAP_THRESHOLD = 15
 
     def __init__(self):
         super().__init__()
@@ -459,10 +459,8 @@ class BotAI(DistanceCalculation):
         distance = math.inf
         for expansion_location in self.expansion_locations:
 
-            def is_near_to_expansion(townhall):
-                return townhall.distance_to(expansion_location) < self.EXPANSION_GAP_THRESHOLD
-
-            if any(map(is_near_to_expansion, self.townhalls)):
+            taken_expansion = [th for th in self.townhalls if th.distance_to(expansion_location) < 15]
+            if any(taken_expansion):
                 # already taken
                 continue
 
@@ -482,13 +480,9 @@ class BotAI(DistanceCalculation):
         """List of expansions owned by the player."""
         owned = {}
         for expansion_location in self.expansion_locations:
-
-            def is_near_to_expansion(townhall):
-                return townhall.distance_to(expansion_location) < self.EXPANSION_GAP_THRESHOLD
-
-            owned_townhall_location = next((x for x in self.townhalls if is_near_to_expansion(x)), None)
-            if owned_townhall_location:
-                owned[expansion_location] = owned_townhall_location
+            taken_expansion = next((x for x in self.townhalls if x.distance_to(expansion_location) < 15), None)
+            if taken_expansion:
+                owned[expansion_location] = taken_expansion
         return owned
 
     def calculate_supply_cost(self, unit_type: UnitTypeId) -> float:
