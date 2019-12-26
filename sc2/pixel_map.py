@@ -1,6 +1,8 @@
 from typing import Callable, FrozenSet, List, Set
 
+import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image
 
 from .position import Point2
 
@@ -62,11 +64,11 @@ class PixelMap:
             raise AssertionError(f"value is of type {type(value)}, it should be an integer")
         self.data_numpy[pos[1], pos[0]] = value
 
-    def is_set(self, p):
-        return self[p] != 0
+    def is_set(self, position):
+        return self[position] != 0
 
-    def is_empty(self, p):
-        return not self.is_set(p)
+    def is_empty(self, position):
+        return not self.is_set(position)
 
     def copy(self):
         return PixelMap(self.proto, in_bits=self._in_bits, mirrored=self._mirrored)
@@ -110,14 +112,11 @@ class PixelMap:
 
     def save_image(self, filename):
         data = [(0, 0, self[x, y]) for y in range(self.height) for x in range(self.width)]
-        from PIL import Image
 
-        im = Image.new("RGB", (self.width, self.height))
-        im.putdata(data)
-        im.save(filename)
+        img = Image.new("RGB", (self.width, self.height))
+        img.putdata(data)
+        img.save(filename)
 
     def plot(self):
-        import matplotlib.pyplot as plt
-
         plt.imshow(self.data_numpy, origin="lower")
         plt.show()

@@ -31,8 +31,8 @@ class KillSwitch:
     @classmethod
     def kill_all(cls):
         LOGGER.info("kill_switch: Process cleanup")
-        for p in cls._to_kill:
-            p.clean()
+        for process in cls._to_kill:
+            process.clean()
 
 
 class SC2Process:
@@ -61,7 +61,7 @@ class SC2Process:
         self._tmp_dir = tempfile.mkdtemp(prefix="SC2_")
         self.process = None
         self._session = None
-        self.ws = None
+        self.web_service = None
         self._sc2_version = sc2_version
         self._base_build = base_build
         self._data_hash = data_hash
@@ -78,13 +78,13 @@ class SC2Process:
 
         try:
             self.process = self._launch()
-            self.ws = await self._connect()
+            self.web_service = await self._connect()
         except:
             await self._close_connection()
             self.clean()
             raise
 
-        return Controller(self.ws, self)
+        return Controller(self.web_service, self)
 
     async def __aexit__(self, *args):
         KillSwitch.kill_all()
@@ -176,12 +176,12 @@ class SC2Process:
             await asyncio.sleep(1)
             try:
                 self._session = aiohttp.ClientSession()
-                ws = await self._session.ws_connect(self.ws_url, timeout=120)
-                # ws = await self._session.ws_connect(
+                web_service = await self._session.ws_connect(self.ws_url, timeout=120)
+                # web_service = await self._session.ws_connect(
                 #     self.ws_url, timeout=aiohttp.client_ws.ClientWSTimeout(ws_close=120)
                 # )
                 LOGGER.debug("Websocket connection ready")
-                return ws
+                return web_service
             except aiohttp.client_exceptions.ClientConnectorError:
                 await self._session.close()
                 if i > 15:
@@ -193,8 +193,8 @@ class SC2Process:
     async def _close_connection(self):
         LOGGER.info("Closing connection...")
 
-        if self.ws is not None:
-            await self.ws.close()
+        if self.web_service is not None:
+            await self.web_service.close()
 
         if self._session is not None:
             await self._session.close()
@@ -218,5 +218,5 @@ class SC2Process:
             shutil.rmtree(self._tmp_dir)
 
         self.process = None
-        self.ws = None
+        self.web_service = None
         LOGGER.info("Cleanup complete")

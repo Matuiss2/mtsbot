@@ -24,11 +24,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Client(Protocol):
-    def __init__(self, ws):
+    def __init__(self, web_server):
         """
-        :param ws:
+        :param web_server:
         """
-        super().__init__(ws)
+        super().__init__(web_server)
         # How many frames will be waited between iterations before the next one is called
         self.game_step = 8
         self._player_id = None

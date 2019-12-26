@@ -9,8 +9,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Controller(Protocol):
-    def __init__(self, ws, process):
-        super().__init__(ws)
+    def __init__(self, web_server, process):
+        super().__init__(web_server)
         self.__process = process
 
     @property

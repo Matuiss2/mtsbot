@@ -135,21 +135,21 @@ class Renderer:
 
         self._window.flip()
 
-    def _on_mouse_press(self, x, y, button, modifiers):
+    def _on_mouse_press(self, x, y, button):
         if button != 1:  # 1: mouse.LEFT
             return
         if x > self._minimap_size[0] or y > self._minimap_size[1]:
             return
         self._mouse_x, self._mouse_y = x, y
 
-    def _on_mouse_release(self, x, y, button, modifiers):
+    def _on_mouse_release(self, x, y, button):
         if button != 1:  # 1: mouse.LEFT
             return
         if x > self._minimap_size[0] or y > self._minimap_size[1]:
             return
         self._mouse_x, self._mouse_y = x, y
 
-    def _on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+    def _on_mouse_drag(self, x, y, buttons):
         if not buttons & 1:  # 1: mouse.LEFT
             return
         if x > self._minimap_size[0] or y > self._minimap_size[1]:
