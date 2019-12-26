@@ -61,7 +61,7 @@ class Protocol:
         return response
 
     async def _execute(self, **kwargs):
-        if not len(kwargs) != 1:
+        if len(kwargs) != 1:
             raise AssertionError("Only one request allowed")
 
         request = sc_pb.Request(**kwargs)
