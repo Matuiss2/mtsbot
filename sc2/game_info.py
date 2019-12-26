@@ -227,26 +227,26 @@ class Ramp:
 
 class GameInfo:
     def __init__(self, proto):
-        self._proto = proto
-        self.players: List[Player] = [Player.from_proto(p) for p in self._proto.player_info]
-        self.map_name: str = self._proto.map_name
-        self.local_map_path: str = self._proto.local_map_path
-        self.map_size: Size = Size.from_proto(self._proto.start_raw.map_size)
+        self.proto = proto
+        self.players: List[Player] = [Player.from_proto(p) for p in self.proto.player_info]
+        self.map_name: str = self.proto.map_name
+        self.local_map_path: str = self.proto.local_map_path
+        self.map_size: Size = Size.from_proto(self.proto.start_raw.map_size)
 
         # self.pathway_grid[point]: if 0, point is not passable, if 1, point is passable
-        self.pathway_grid: PixelMap = PixelMap(self._proto.start_raw.pathing_grid, in_bits=True, mirrored=False)
+        self.pathway_grid: PixelMap = PixelMap(self.proto.start_raw.pathing_grid, in_bits=True, mirrored=False)
         # self.terrain_height[point]: returns the height in range of 0 to 255 at that point
-        self.terrain_height: PixelMap = PixelMap(self._proto.start_raw.terrain_height, mirrored=False)
+        self.terrain_height: PixelMap = PixelMap(self.proto.start_raw.terrain_height, mirrored=False)
         # self.placement_grid[point]: if 0, point is not placeable, if 1, point is passable
-        self.placement_grid: PixelMap = PixelMap(self._proto.start_raw.placement_grid, in_bits=True, mirrored=False)
-        self.playable_area = Rect.from_proto(self._proto.start_raw.playable_area)
+        self.placement_grid: PixelMap = PixelMap(self.proto.start_raw.placement_grid, in_bits=True, mirrored=False)
+        self.playable_area = Rect.from_proto(self.proto.start_raw.playable_area)
         self.map_center = self.playable_area.center
         self.map_ramps: List[Ramp] = None  # Filled later by BotAI._prepare_first_step
         self.vision_blockers: Set[Point2] = None  # Filled later by BotAI._prepare_first_step
         self.player_races: Dict[int, "Race"] = {
-            p.player_id: p.race_actual or p.race_requested for p in self._proto.player_info
+            p.player_id: p.race_actual or p.race_requested for p in self.proto.player_info
         }
-        self.start_locations: List[Point2] = [Point2.from_proto(sl) for sl in self._proto.start_raw.start_locations]
+        self.start_locations: List[Point2] = [Point2.from_proto(sl) for sl in self.proto.start_raw.start_locations]
         self.player_start_location: Point2 = None  # Filled later by BotAI._prepare_first_step
 
     def find_ramps_and_vision_blockers(self) -> Tuple[List[Ramp], Set[Point2]]:

@@ -12,35 +12,35 @@ class PixelMap:
         :param in_bits:
         :param mirrored:
         """
-        self._proto = proto
+        self.proto = proto
         # Used for copying pixelmaps
         self._in_bits: bool = in_bits
         self._mirrored: bool = mirrored
 
-        if self.width * self.height != (8 if in_bits else 1) * len(self._proto.data):
-            raise AssertionError(f"{self.width * self.height} {(8 if in_bits else 1)*len(self._proto.data)}")
-        buffer_data = np.frombuffer(self._proto.data, dtype=np.uint8)
+        if self.width * self.height != (8 if in_bits else 1) * len(self.proto.data):
+            raise AssertionError(f"{self.width * self.height} {(8 if in_bits else 1)*len(self.proto.data)}")
+        buffer_data = np.frombuffer(self.proto.data, dtype=np.uint8)
         if in_bits:
             buffer_data = np.unpackbits(buffer_data)
-        self.data_numpy = buffer_data.reshape(self._proto.size.y, self._proto.size.x)
+        self.data_numpy = buffer_data.reshape(self.proto.size.y, self.proto.size.x)
         if mirrored:
             self.data_numpy = np.flipud(self.data_numpy)
 
     @property
     def width(self):
-        return self._proto.size.x
+        return self.proto.size.x
 
     @property
     def height(self):
-        return self._proto.size.y
+        return self.proto.size.y
 
     @property
     def bits_per_pixel(self):
-        return self._proto.bits_per_pixel
+        return self.proto.bits_per_pixel
 
     @property
     def bytes_per_pixel(self):
-        return self._proto.bits_per_pixel // 8
+        return self.proto.bits_per_pixel // 8
 
     def __getitem__(self, pos):
         """ Example usage: is_passable = self._game_info.pathway_grid[Point2((20, 20))] != 0 """
@@ -69,7 +69,7 @@ class PixelMap:
         return not self.is_set(p)
 
     def copy(self):
-        return PixelMap(self._proto, in_bits=self._in_bits, mirrored=self._mirrored)
+        return PixelMap(self.proto, in_bits=self._in_bits, mirrored=self._mirrored)
 
     def flood_fill(self, start_point: Point2, pred: Callable[[int], bool]) -> Set[Point2]:
         nodes: Set[Point2] = set()

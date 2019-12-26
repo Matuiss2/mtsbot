@@ -453,12 +453,12 @@ class BotAI(DistanceCalculation):
         :param unit_type: """
         if unit_type in {UnitTypeId.ZERGLING}:
             return 1
-        unit_supply_cost = self._game_data.units[unit_type.value]._proto.food_required
+        unit_supply_cost = self._game_data.units[unit_type.value].proto.food_required
         if unit_supply_cost > 0 and unit_type in UNIT_TRAINED_FROM and len(UNIT_TRAINED_FROM[unit_type]) == 1:
             for producer in UNIT_TRAINED_FROM[unit_type]:  # type: UnitTypeId
                 producer_unit_data = self.game_data.units[producer.value]
-                if producer_unit_data._proto.food_required <= unit_supply_cost:
-                    producer_supply_cost = producer_unit_data._proto.food_required
+                if producer_unit_data.proto.food_required <= unit_supply_cost:
+                    producer_supply_cost = producer_unit_data.proto.food_required
                     unit_supply_cost -= producer_supply_cost
         return unit_supply_cost
 
@@ -491,7 +491,7 @@ class BotAI(DistanceCalculation):
         :param unit_type:
         """
         unit_data = self.game_data.units[unit_type.value]
-        return Cost(unit_data._proto.mineral_cost, unit_data._proto.vespene_cost)
+        return Cost(unit_data.proto.mineral_cost, unit_data.proto.vespene_cost)
 
     def calculate_cost(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId]) -> Cost:
         """
@@ -537,11 +537,11 @@ class BotAI(DistanceCalculation):
             # Cost of structure morphs is automatically correctly calculated by 'calculate_ability_cost'
             cost = self._game_data.calculate_ability_cost(unit_data.creation_ability)
             # Fix non-structure morph cost: check if is morph, then subtract the original cost
-            unit_supply_cost = unit_data._proto.food_required
+            unit_supply_cost = unit_data.proto.food_required
             if unit_supply_cost > 0 and item_id in UNIT_TRAINED_FROM and len(UNIT_TRAINED_FROM[item_id]) == 1:
                 for producer in UNIT_TRAINED_FROM[item_id]:  # type: UnitTypeId
                     producer_unit_data = self.game_data.units[producer.value]
-                    if 0 < producer_unit_data._proto.food_required <= unit_supply_cost:
+                    if 0 < producer_unit_data.proto.food_required <= unit_supply_cost:
                         if producer == UnitTypeId.ZERGLING:
                             producer_cost = Cost(25, 0)
                         else:
@@ -620,8 +620,8 @@ class BotAI(DistanceCalculation):
         if ability_id in abilities:
             if only_check_energy_and_cooldown:
                 return True
-            cast_range = self._game_data.abilities[ability_id.value]._proto.cast_range
-            ability_target = self._game_data.abilities[ability_id.value]._proto.target
+            cast_range = self._game_data.abilities[ability_id.value].proto.cast_range
+            ability_target = self._game_data.abilities[ability_id.value].proto.target
             # Check if target is in range (or is a self cast like stimpack)
             if (
                 ability_target == 1
@@ -846,7 +846,7 @@ class BotAI(DistanceCalculation):
         }
         creation_ability: AbilityData = self._game_data.units[structure_type_value].creation_ability
         max_value = max(
-            [s.build_progress for s in self.structures if s._proto.unit_type in equiv_values]
+            [s.build_progress for s in self.structures if s.proto.unit_type in equiv_values]
             + [self._abilities_all_units[1].get(creation_ability, 0)]
         )
         return max_value
@@ -882,7 +882,7 @@ class BotAI(DistanceCalculation):
         unit_info_id = race_dict[self.race][structure_type]
         unit_info_id_value = unit_info_id.value
         # The following commented out line is unreliable for ghost / thor as they return 0 which is incorrect
-        # unit_info_id_value = self._game_data.units[structure_type.value]._proto.tech_requirement
+        # unit_info_id_value = self._game_data.units[structure_type.value].proto.tech_requirement
         if not unit_info_id_value:  # Equivalent to "if unit_info_id_value == 0:"
             return 1
         progresses: List[int] = [self.structure_type_build_progress(unit_info_id_value)]

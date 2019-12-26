@@ -17,42 +17,42 @@ class Blip:
         """
         :param proto:
         """
-        self._proto = proto
+        self.proto = proto
 
     @property
     def is_blip(self) -> bool:
         """Detected by sensor tower."""
-        return self._proto.is_blip
+        return self.proto.is_blip
 
     @property
     def is_snapshot(self) -> bool:
-        return self._proto.display_type == DisplayType.Snapshot.value
+        return self.proto.display_type == DisplayType.Snapshot.value
 
     @property
     def is_visible(self) -> bool:
-        return self._proto.display_type == DisplayType.Visible.value
+        return self.proto.display_type == DisplayType.Visible.value
 
     @property
     def alliance(self) -> Alliance:
-        return self._proto.alliance
+        return self.proto.alliance
 
     @property
     def is_mine(self) -> bool:
-        return self._proto.alliance == Alliance.Self.value
+        return self.proto.alliance == Alliance.Self.value
 
     @property
     def is_enemy(self) -> bool:
-        return self._proto.alliance == Alliance.Enemy.value
+        return self.proto.alliance == Alliance.Enemy.value
 
     @property
     def position(self) -> Point2:
         """2d position of the blip."""
-        return Point2.from_proto(self._proto.pos)
+        return Point2.from_proto(self.proto.pos)
 
     @property
     def position3d(self) -> Point3:
         """3d position of the blip."""
-        return Point3.from_proto(self._proto.pos)
+        return Point3.from_proto(self.proto.pos)
 
 
 class Common:
@@ -71,12 +71,12 @@ class Common:
     ]
 
     def __init__(self, proto):
-        self._proto = proto
+        self.proto = proto
 
     def __getattr__(self, attr):
         if attr not in self.ATTRIBUTES:
             raise AssertionError(f"'{attr}' is not a valid attribute")
-        return int(getattr(self._proto, attr))
+        return int(getattr(self.proto, attr))
 
 
 class EffectData:
@@ -85,38 +85,38 @@ class EffectData:
         :param proto:
         :param fake:
         """
-        self._proto = proto
+        self.proto = proto
         self.fake = fake
 
     @property
     def id(self) -> Union[EffectId, str]:
         if self.fake:
             # Returns the string from constants.py, e.g. "KD8CHARGE"
-            return FakeEffectID[self._proto.unit_type]
+            return FakeEffectID[self.proto.unit_type]
         else:
-            return EffectId(self._proto.effect_id)
+            return EffectId(self.proto.effect_id)
 
     @property
     def positions(self) -> Set[Point2]:
         if self.fake:
-            return {Point2.from_proto(self._proto.pos)}
+            return {Point2.from_proto(self.proto.pos)}
         else:
-            return {Point2.from_proto(p) for p in self._proto.pos}
+            return {Point2.from_proto(p) for p in self.proto.pos}
 
     @property
     def alliance(self) -> Alliance:
-        return self._proto.alliance
+        return self.proto.alliance
 
     @property
     def owner(self) -> int:
-        return self._proto.owner
+        return self.proto.owner
 
     @property
     def radius(self) -> float:
         if self.fake:
-            return FakeEffectRadii[self._proto.unit_type]
+            return FakeEffectRadii[self.proto.unit_type]
         else:
-            return self._proto.radius
+            return self.proto.radius
 
     def __repr__(self) -> str:
         return f"{self.id} with radius {self.radius} at {self.positions}"
