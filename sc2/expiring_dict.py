@@ -88,7 +88,7 @@ class ExpiringDict(OrderedDict):
                 if self.frame - value[1] < self.max_age:
                     try:
                         print_list.append(f"{repr(key)}: {repr(value)}")
-                    except:
+                    except Exception:
                         print_list.append(f"{key}: {value}")
                     print_list.append(", ")
         if print_list[-1] == ", ":
@@ -141,7 +141,7 @@ class ExpiringDict(OrderedDict):
                 return default, self.frame
             return None
 
-    def update(self, other_dict: dict):
+    def update(self, other_dict: dict, **kwargs):
         with self.lock:
             for key, value in other_dict.items():
                 self[key] = value

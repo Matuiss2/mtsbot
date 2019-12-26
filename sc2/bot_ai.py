@@ -1052,8 +1052,8 @@ class BotAI(DistanceCalculation):
             # This should sort the structures in ascending order:
             # first structures with reactor, then naked, then with techlab
             train_structures = train_structures.sorted(
-                key=lambda structure: -1 * (structure.add_on_tag in self.reactor_tags)
-                + 1 * (structure.add_on_tag in self.techlab_tags)
+                key=lambda building: -1 * (building.add_on_tag in self.reactor_tags)
+                + 1 * (building.add_on_tag in self.techlab_tags)
             )
 
         structure: Unit

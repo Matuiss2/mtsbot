@@ -190,7 +190,7 @@ class Unit:
         """ Returns the weapons of the unit. """
         try:
             return self.type_data.proto.weapons
-        except:
+        except Exception:
             return None
 
     @property_immutable_cache
@@ -1256,7 +1256,7 @@ class Unit:
     def __eq__(self, other):
         try:
             return self.tag == other.tag
-        except:
+        except Exception:
             return False
 
     def __call__(self, ability, target=None, queue: bool = False):

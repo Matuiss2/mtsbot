@@ -79,7 +79,7 @@ class SC2Process:
         try:
             self.process = self._launch()
             self.web_service = await self._connect()
-        except:
+        except Exception:
             await self._close_connection()
             self.clean()
             raise
