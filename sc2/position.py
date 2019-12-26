@@ -152,7 +152,8 @@ class Pointlike(tuple):
     def __eq__(self, other):
         try:
             return all(abs(a - b) <= EPSILON for a, b in itertools.zip_longest(self, other, fillvalue=0))
-        except Exception:
+        except Exception as error:
+            print(f"An error occurred when comparing positions - {error.__traceback__}")
             return False
 
     def __hash__(self):

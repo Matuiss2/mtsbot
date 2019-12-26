@@ -80,7 +80,8 @@ class SC2Process:
         try:
             self.process = self._launch()
             self.web_service = await self._connect()
-        except Exception:
+        except Exception as error:
+            print(f"An error occurred while trying to launch the process - {error.__traceback__}")
             await self._close_connection()
             self.clean()
             raise

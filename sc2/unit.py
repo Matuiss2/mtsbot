@@ -190,7 +190,8 @@ class Unit:
         """ Returns the weapons of the unit. """
         try:
             return self.type_data.proto.weapons
-        except Exception:
+        except Exception as error:
+            print(f"An error occurred while trying to get the weapon of an unit - {error.__traceback__}")
             return None
 
     @property_immutable_cache
@@ -1256,7 +1257,8 @@ class Unit:
     def __eq__(self, other):
         try:
             return self.tag == other.tag
-        except Exception:
+        except Exception as error:
+            print(f"An error occurred when comparing the tags - {error.__traceback__}")
             return False
 
     def __call__(self, ability, target=None, queue: bool = False):

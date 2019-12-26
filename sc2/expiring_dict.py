@@ -88,7 +88,8 @@ class ExpiringDict(OrderedDict):
                 if self.frame - value[1] < self.max_age:
                     try:
                         print_list.append(f"{repr(key)}: {repr(value)}")
-                    except Exception:
+                    except Exception as error:
+                        print(f"An error occurred while trying to put values on the Dict - {error.__traceback__}")
                         print_list.append(f"{key}: {value}")
                     print_list.append(", ")
         if print_list[-1] == ", ":

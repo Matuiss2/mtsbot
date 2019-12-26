@@ -117,8 +117,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     ai.prepare_first_step()
     try:
         await ai.on_start()
-    except Exception:
-        LOGGER.exception(f"AI on_start threw an error")
+    except Exception as error:
+        LOGGER.exception(f"AI on_start threw an error - {error.__traceback__}")
         LOGGER.error(f"resigning due to previous error")
         await ai.on_end(Result.Defeat)
         return Result.Defeat
@@ -277,8 +277,8 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     ai.prepare_first_step()
     try:
         await ai.on_start()
-    except Exception:
-        LOGGER.exception(f"AI on_start threw an error")
+    except Exception as error:
+        LOGGER.exception(f"AI on_start threw an error - {error.__traceback__}")
         LOGGER.error(f"resigning due to previous error")
         await ai.on_end(Result.Defeat)
         return Result.Defeat
