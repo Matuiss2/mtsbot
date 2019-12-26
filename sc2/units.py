@@ -729,7 +729,7 @@ class Units(list):
 
 class UnitSelection(Units):
     def __init__(self, parent, selection=None):
-        if isinstance(selection, (UnitTypeId)):
+        if isinstance(selection, UnitTypeId):
             super().__init__((unit for unit in parent if unit.type_id == selection), parent._bot_object)
         elif isinstance(selection, set):
             if not all(isinstance(t, UnitTypeId) for t in selection):

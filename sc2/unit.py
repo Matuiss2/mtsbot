@@ -275,7 +275,7 @@ class Unit:
             for weapon in self._weapons:
                 if weapon.damage_bonus:
                     b = weapon.damage_bonus[0]
-                    return (b.bonus, Attribute(b.attribute).name)
+                    return b.bonus, Attribute(b.attribute).name
         else:
             return None
 
@@ -565,8 +565,8 @@ class Unit:
             if self.is_enemy:
                 if self.is_active:
                     # Expect fully loaded bunker with marines
-                    return (24, 0.854, 6)
-                return (0, 0, 0)
+                    return 24, 0.854, 6
+                return 0, 0, 0
 
         required_target_type: Set[
             int
