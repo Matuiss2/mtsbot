@@ -203,7 +203,7 @@ class DistanceCalculation:
     def _distance_pos_to_pos(self, pos1: Tuple[float, float], pos2: Tuple[float, float]) -> float:
         return self.distance_math_hypot(pos1, pos2)
 
-    def _distance_units_to_pos(self, units: Units, pos: Tuple[float, float]) -> Generator[float, None, None]:
+    def distance_units_to_pos(self, units: Units, pos: Tuple[float, float]) -> Generator[float, None, None]:
         """ This function does not scale well, if len(units) > 100 it gets fairly slow """
         return (self.distance_math_hypot(u.position_tuple, pos) for u in units)
 

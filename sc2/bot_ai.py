@@ -153,7 +153,7 @@ class BotAI(DistanceCalculation):
     @property
     def game_data(self) -> GameData:
         """ See game_data.py """
-        return self._game_data
+        return self.game_data_local
 
     @property
     def client(self) -> Client:
@@ -453,7 +453,7 @@ class BotAI(DistanceCalculation):
         :param unit_type: """
         if unit_type in {UnitTypeId.ZERGLING}:
             return 1
-        unit_supply_cost = self._game_data.units[unit_type.value].proto.food_required
+        unit_supply_cost = self.game_data_local.units[unit_type.value].proto.food_required
         if unit_supply_cost > 0 and unit_type in UNIT_TRAINED_FROM and len(UNIT_TRAINED_FROM[unit_type]) == 1:
             for producer in UNIT_TRAINED_FROM[unit_type]:  # type: UnitTypeId
                 producer_unit_data = self.game_data.units[producer.value]
@@ -533,9 +533,9 @@ class BotAI(DistanceCalculation):
                     return Cost(50, 25)
                 elif item_id == UnitTypeId.ARCHON:
                     return self.calculate_unit_value(UnitTypeId.ARCHON)
-            unit_data = self._game_data.units[item_id.value]
+            unit_data = self.game_data_local.units[item_id.value]
             # Cost of structure morphs is automatically correctly calculated by 'calculate_ability_cost'
-            cost = self._game_data.calculate_ability_cost(unit_data.creation_ability)
+            cost = self.game_data_local.calculate_ability_cost(unit_data.creation_ability)
             # Fix non-structure morph cost: check if is morph, then subtract the original cost
             unit_supply_cost = unit_data.proto.food_required
             if unit_supply_cost > 0 and item_id in UNIT_TRAINED_FROM and len(UNIT_TRAINED_FROM[item_id]) == 1:
@@ -549,10 +549,10 @@ class BotAI(DistanceCalculation):
                         cost = cost - producer_cost
 
         elif isinstance(item_id, UpgradeId):
-            cost = self._game_data.upgrades[item_id.value].cost
+            cost = self.game_data_local.upgrades[item_id.value].cost
         else:
             # Is already AbilityId
-            cost = self._game_data.calculate_ability_cost(item_id)
+            cost = self.game_data_local.calculate_ability_cost(item_id)
         return cost
 
     def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
@@ -620,8 +620,8 @@ class BotAI(DistanceCalculation):
         if ability_id in abilities:
             if only_check_energy_and_cooldown:
                 return True
-            cast_range = self._game_data.abilities[ability_id.value].proto.cast_range
-            ability_target = self._game_data.abilities[ability_id.value].proto.target
+            cast_range = self.game_data_local.abilities[ability_id.value].proto.cast_range
+            ability_target = self.game_data_local.abilities[ability_id.value].proto.target
             # Check if target is in range (or is a self cast like stimpack)
             if (
                 ability_target == 1
@@ -691,9 +691,9 @@ class BotAI(DistanceCalculation):
         if building_type not in {AbilityData, AbilityId, UnitTypeId}:
             raise AssertionError()
         if building_type == UnitTypeId:
-            building = self._game_data.units[building.value].creation_ability
+            building = self.game_data_local.units[building.value].creation_ability
         elif building_type == AbilityId:
-            building = self._game_data.abilities[building.value]
+            building = self.game_data_local.abilities[building.value]
 
         r = await self._client.query_building_placement(building, [position])
         return r[0] == ActionResult.Success
@@ -726,9 +726,9 @@ class BotAI(DistanceCalculation):
             raise AssertionError(f"{near} is no Point2 object")
 
         if isinstance(building, UnitTypeId):
-            building = self._game_data.units[building.value].creation_ability
+            building = self.game_data_local.units[building.value].creation_ability
         else:  # AbilityId
-            building = self._game_data.abilities[building.value]
+            building = self.game_data_local.abilities[building.value]
 
         if await self.can_place(building, near):
             return near
@@ -777,7 +777,7 @@ class BotAI(DistanceCalculation):
             raise AssertionError(f"{upgrade_type} is no UpgradeId")
         if upgrade_type in self.state.upgrades:
             return 1
-        creation_ability_id = self._game_data.upgrades[upgrade_type.value].research_ability.exact_id
+        creation_ability_id = self.game_data_local.upgrades[upgrade_type.value].research_ability.exact_id
         for structure in self.structures.filter(lambda unit: unit.is_ready):
             for order in structure.orders:
                 if order.ability.exact_id == creation_ability_id:
@@ -797,7 +797,7 @@ class BotAI(DistanceCalculation):
                 if self.race != Race.Terran or not unit.is_structure:
                     # If an SCV is constructing a building, already_pending would count this structure twice
                     # (once from the SCV order, and once from "not structure.is_ready")
-                    creation_ability: AbilityData = self._game_data.units[unit.type_id.value].creation_ability
+                    creation_ability: AbilityData = self.game_data_local.units[unit.type_id.value].creation_ability
                     abilities_amount[creation_ability] += 1
                     max_build_progress[creation_ability] = max(
                         max_build_progress.get(creation_ability, 0), unit.build_progress
@@ -844,7 +844,7 @@ class BotAI(DistanceCalculation):
         equiv_values: Set[int] = {structure_type_value} | {
             s_type.value for s_type in EQUIVALENTS_FOR_TECH_PROGRESS.get(structure_type, set())
         }
-        creation_ability: AbilityData = self._game_data.units[structure_type_value].creation_ability
+        creation_ability: AbilityData = self.game_data_local.units[structure_type_value].creation_ability
         max_value = max(
             [s.build_progress for s in self.structures if s.proto.unit_type in equiv_values]
             + [self._abilities_all_units[1].get(creation_ability, 0)]
@@ -882,7 +882,7 @@ class BotAI(DistanceCalculation):
         unit_info_id = race_dict[self.race][structure_type]
         unit_info_id_value = unit_info_id.value
         # The following commented out line is unreliable for ghost / thor as they return 0 which is incorrect
-        # unit_info_id_value = self._game_data.units[structure_type.value].proto.tech_requirement
+        # unit_info_id_value = self.game_data_local.units[structure_type.value].proto.tech_requirement
         if not unit_info_id_value:  # Equivalent to "if unit_info_id_value == 0:"
             return 1
         progresses: List[int] = [self.structure_type_build_progress(unit_info_id_value)]
@@ -907,7 +907,7 @@ class BotAI(DistanceCalculation):
         """
         if isinstance(unit_type, UpgradeId):
             return self.already_pending_upgrade(unit_type)
-        ability = self._game_data.units[unit_type.value].creation_ability
+        ability = self.game_data_local.units[unit_type.value].creation_ability
         return self._abilities_all_units[0][ability]
 
     @property_cache_once_per_frame_no_copy
@@ -940,7 +940,7 @@ class BotAI(DistanceCalculation):
         New function. Please report any bugs!
 
         :param unit_type: """
-        ability = self._game_data.units[unit_type.value].creation_ability
+        ability = self.game_data_local.units[unit_type.value].creation_ability
         return self._worker_orders[ability]
 
     @property_cache_once_per_frame
@@ -1258,7 +1258,7 @@ class BotAI(DistanceCalculation):
         if not isinstance(action, UnitCommand):
             raise AssertionError(f"Given unit command is not a command, but instead of type {type(action)}")
         if subtract_cost:
-            cost: Cost = self._game_data.calculate_ability_cost(action.ability)
+            cost: Cost = self.game_data_local.calculate_ability_cost(action.ability)
             if can_afford_check and not (self.minerals >= cost.minerals and self.vespene >= cost.vespene):
                 # Don't do action if can't afford
                 return False
@@ -1288,7 +1288,7 @@ class BotAI(DistanceCalculation):
             return ActionResult.Error
         r = await self._client.actions(action)
         if not r:  # success
-            cost = self._game_data.calculate_ability_cost(action.ability)
+            cost = self.game_data_local.calculate_ability_cost(action.ability)
             self.minerals -= cost.minerals
             self.vespene -= cost.vespene
             self.unit_tags_received_action.add(action.unit.tag)
@@ -1429,7 +1429,7 @@ class BotAI(DistanceCalculation):
         self._client: Client = client
         self.player_id: int = player_id
         self._game_info: GameInfo = game_info
-        self._game_data: GameData = game_data
+        self.game_data_local: GameData = game_data
         self.realtime: bool = realtime
 
         self.race: Race = Race(self._game_info.player_races[self.player_id])

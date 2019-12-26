@@ -102,7 +102,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     game_data = await client.get_game_data()
     game_info = await client.get_game_info()
 
-    # This game_data will become self._game_data in botAI
+    # This game_data will become self.game_data_local in botAI
     ai.prepare_start(client, player_id, game_info, game_data, realtime=realtime)
     state = await client.observation()
     # check game result every time we get the observation
@@ -264,7 +264,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     game_data = await client.get_game_data()
     game_info = await client.get_game_info()
     client.game_step = 1
-    # This game_data will become self._game_data in botAI
+    # This game_data will become self.game_data_local in botAI
     ai.prepare_start(client, player_id, game_info, game_data, realtime=realtime)
     state = await client.observation()
     # Check game result every time we get the observation

@@ -178,7 +178,7 @@ class Units(list):
             raise AssertionError("Units object is empty")
         if isinstance(position, Unit):
             return min(self._bot_object.distance_squared_unit_to_unit(unit, position) for unit in self) ** 0.5
-        return min(self._bot_object._distance_units_to_pos(self, position))
+        return min(self._bot_object.distance_units_to_pos(self, position))
 
     def furthest_distance_to(self, position: Union[Unit, Point2, Point3]) -> float:
         """
@@ -198,7 +198,7 @@ class Units(list):
             raise AssertionError("Units object is empty")
         if isinstance(position, Unit):
             return max(self._bot_object.distance_squared_unit_to_unit(unit, position) for unit in self) ** 0.5
-        return max(self._bot_object._distance_units_to_pos(self, position))
+        return max(self._bot_object.distance_units_to_pos(self, position))
 
     def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         """
@@ -221,7 +221,7 @@ class Units(list):
                 key=lambda unit2: self._bot_object.distance_squared_unit_to_unit(unit2, position),
             )
 
-        distances = self._bot_object._distance_units_to_pos(self, position)
+        distances = self._bot_object.distance_units_to_pos(self, position)
         return min(((unit, dist) for unit, dist in zip(self, distances)), key=lambda my_tuple: my_tuple[1])[0]
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
@@ -244,7 +244,7 @@ class Units(list):
                 (unit1 for unit1 in self),
                 key=lambda unit2: self._bot_object.distance_squared_unit_to_unit(unit2, position),
             )
-        distances = self._bot_object._distance_units_to_pos(self, position)
+        distances = self._bot_object.distance_units_to_pos(self, position)
         return max(((unit, dist) for unit, dist in zip(self, distances)), key=lambda my_tuple: my_tuple[1])[0]
 
     def closer_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> Units:
@@ -270,7 +270,7 @@ class Units(list):
                 for unit in self
                 if self._bot_object.distance_squared_unit_to_unit(unit, position) < distance_squared
             )
-        distances = self._bot_object._distance_units_to_pos(self, position)
+        distances = self._bot_object.distance_units_to_pos(self, position)
         return self.subgroup(unit for unit, dist in zip(self, distances) if dist < distance)
 
     def further_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> Units:
@@ -297,7 +297,7 @@ class Units(list):
                 for unit in self
                 if distance_squared < self._bot_object.distance_squared_unit_to_unit(unit, position)
             )
-        distances = self._bot_object._distance_units_to_pos(self, position)
+        distances = self._bot_object.distance_units_to_pos(self, position)
         return self.subgroup(unit for unit, dist in zip(self, distances) if distance < dist)
 
     def in_distance_between(
@@ -330,7 +330,7 @@ class Units(list):
                 < self._bot_object.distance_squared_unit_to_unit(unit, position)
                 < distance2_squared
             )
-        distances = self._bot_object._distance_units_to_pos(self, position)
+        distances = self._bot_object.distance_units_to_pos(self, position)
         return self.subgroup(unit for unit, dist in zip(self, distances) if distance1 < dist < distance2)
 
     def closest_n_units(self, position: Union[Unit, Point2], n: int) -> Units:
@@ -428,7 +428,7 @@ class Units(list):
                 key=lambda unit: abs(self._bot_object.distance_squared_unit_to_unit(unit, position) - distance),
                 reverse=True,
             )
-        distances = self._bot_object._distance_units_to_pos(self, position)
+        distances = self._bot_object.distance_units_to_pos(self, position)
         unit_dist_dict = {unit.tag: dist for unit, dist in zip(self, distances)}
         return sorted(self, key=lambda unit2: abs(unit_dist_dict[unit2.tag] - distance), reverse=True)
 
@@ -481,7 +481,7 @@ class Units(list):
             return sorted(
                 self, key=lambda unit: self._bot_object.distance_squared_unit_to_unit(unit, position), reverse=reverse
             )
-        distances = self._bot_object._distance_units_to_pos(self, position)
+        distances = self._bot_object.distance_units_to_pos(self, position)
         unit_dist_dict = {unit.tag: dist for unit, dist in zip(self, distances)}
         return sorted(self, key=lambda unit2: unit_dist_dict[unit2.tag], reverse=reverse)
 
@@ -586,7 +586,7 @@ class Units(list):
                 )
             )
         tech_alias_types: Set[int] = {u.value for u in other}
-        unit_data = self._bot_object._game_data.units
+        unit_data = self._bot_object.game_data_local.units
         for unitType in other:
             for same in unit_data[unitType.value].proto.tech_alias:
                 tech_alias_types.add(same)
@@ -620,7 +620,7 @@ class Units(list):
         if isinstance(other, UnitTypeId):
             other = {other}
         unit_alias_types: Set[int] = {u.value for u in other}
-        unit_data = self._bot_object._game_data.units
+        unit_data = self._bot_object.game_data_local.units
         for unitType in other:
             unit_alias_types.add(unit_data[unitType.value].proto.unit_alias)
         unit_alias_types.discard(0)

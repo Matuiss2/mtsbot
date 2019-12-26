@@ -65,7 +65,7 @@ class UnitOrder:
     @classmethod
     def from_proto(cls, proto, bot_object: BotAI):
         return cls(
-            bot_object._game_data.abilities[proto.ability_id],
+            bot_object.game_data_local.abilities[proto.ability_id],
             (proto.target_world_space_pos if proto.HasField("target_world_space_pos") else proto.target_unit_tag),
             proto.progress,
         )
@@ -107,19 +107,19 @@ class Unit:
         """ UnitTypeId found in sc2/ids/unit_typeid.
         Caches all type_ids of the same unit type. """
         unit_type = self.proto.unit_type
-        if unit_type not in self._bot_object._game_data.unit_types:
-            self._bot_object._game_data.unit_types[unit_type] = UnitTypeId(unit_type)
-        return self._bot_object._game_data.unit_types[unit_type]
+        if unit_type not in self._bot_object.game_data_local.unit_types:
+            self._bot_object.game_data_local.unit_types[unit_type] = UnitTypeId(unit_type)
+        return self._bot_object.game_data_local.unit_types[unit_type]
 
     @property_immutable_cache
     def _type_data(self) -> UnitTypeData:
         """ Provides the unit type data. """
-        return self._bot_object._game_data.units[self.proto.unit_type]
+        return self._bot_object.game_data_local.units[self.proto.unit_type]
 
     @property_immutable_cache
     def _creation_ability(self) -> AbilityData:
         """ Provides the AbilityData of the creation ability of this unit. """
-        return self._bot_object._game_data.units[self.proto.unit_type].creation_ability
+        return self._bot_object.game_data_local.units[self.proto.unit_type].creation_ability
 
     @property
     def name(self) -> str:
@@ -476,10 +476,10 @@ class Unit:
         :param ability_id:
         :param target:
         :param bonus_distance: """
-        cast_range = self._bot_object._game_data.abilities[ability_id.value].proto.cast_range
+        cast_range = self._bot_object.game_data_local.abilities[ability_id.value].proto.cast_range
         if cast_range <= 0:
             raise AssertionError(f"Checking for an ability ({ability_id}) that has no cast range")
-        ability_target_type = self._bot_object._game_data.abilities[ability_id.value].proto.target
+        ability_target_type = self._bot_object.game_data_local.abilities[ability_id.value].proto.target
         # For casting abilities that target other units, like transfuse, feedback, snipe, yamato
         if ability_target_type in {Target.Unit.value, Target.PointOrUnit.value} and isinstance(target, Unit):
             return (
@@ -745,7 +745,7 @@ class Unit:
         For barracks, spawning pool, gateway, this returns 1.5
         For supply depot, this returns 1
         For sensor tower, creep tumor, this return 0.5 """
-        return self._bot_object._game_data.units[self.proto.unit_type].creation_ability.proto.footprint_radius
+        return self._bot_object.game_data_local.units[self.proto.unit_type].creation_ability.proto.footprint_radius
 
     @property
     def radius(self) -> float:
@@ -1116,7 +1116,7 @@ class Unit:
 
         :param unit:
         :param queue: """
-        return self(self._bot_object._game_data.units[unit.value].creation_ability.id, queue=queue)
+        return self(self._bot_object.game_data_local.units[unit.value].creation_ability.id, queue=queue)
 
     def build(self, unit: UnitTypeId, position: Union[Point2, Point3] = None, queue: bool = False) -> UnitCommand:
         """ Orders unit to build another 'unit' at 'position'.
@@ -1136,7 +1136,7 @@ class Unit:
                     f"When building the gas structure, the target needs to be a unit"
                     f" (the vespene geysir) not the position of the vespene geysir."
                 )
-        return self(self._bot_object._game_data.units[unit.value].creation_ability.id, target=position, queue=queue)
+        return self(self._bot_object.game_data_local.units[unit.value].creation_ability.id, target=position, queue=queue)
 
     def build_gas(self, target_geysir: Unit, queue: bool = False) -> UnitCommand:
         """ Orders unit to build another 'unit' at 'position'.
@@ -1155,7 +1155,7 @@ class Unit:
                 f"not the position of the vespene geysir."
             )
         return self(
-            self._bot_object._game_data.units[gas_structure_type_id.value].creation_ability.id,
+            self._bot_object.game_data_local.units[gas_structure_type_id.value].creation_ability.id,
             target=target_geysir,
             queue=queue,
         )
@@ -1167,7 +1167,7 @@ class Unit:
         :param upgrade:
         :param queue:
         """
-        return self(self._bot_object._game_data.upgrades[upgrade.value].research_ability.exact_id, queue=queue)
+        return self(self._bot_object.game_data_local.upgrades[upgrade.value].research_ability.exact_id, queue=queue)
 
     def warp_in(self, unit: UnitTypeId, position: Union[Point2, Point3]) -> UnitCommand:
         """ Orders Warpgate to warp in 'unit' at 'position'. 
@@ -1177,7 +1177,7 @@ class Unit:
         unit
         position
         """
-        normal_creation_ability = self._bot_object._game_data.units[unit.value].creation_ability.id
+        normal_creation_ability = self._bot_object.game_data_local.units[unit.value].creation_ability.id
         return self(warpgate_abilities[normal_creation_ability], target=position)
 
     def attack(self, target: Union[Unit, Point2, Point3], queue: bool = False) -> UnitCommand:
