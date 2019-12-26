@@ -478,7 +478,8 @@ class Unit:
         :param target:
         :param bonus_distance: """
         cast_range = self._bot_object._game_data.abilities[ability_id.value]._proto.cast_range
-        assert cast_range > 0, f"Checking for an ability ({ability_id}) that has no cast range"
+        if cast_range <= 0:
+            raise AssertionError(f"Checking for an ability ({ability_id}) that has no cast range")
         ability_target_type = self._bot_object._game_data.abilities[ability_id.value]._proto.target
         # For casting abilities that target other units, like transfuse, feedback, snipe, yamato
         if ability_target_type in {Target.Unit.value, Target.PointOrUnit.value} and isinstance(target, Unit):
@@ -1111,7 +1112,8 @@ class Unit:
 
     def has_buff(self, buff: BuffId) -> bool:
         """ Checks if unit has buff 'buff'. """
-        assert isinstance(buff, BuffId), f"{buff} is no BuffId"
+        if not isinstance(buff, BuffId):
+            raise AssertionError(f"{buff} is no BuffId")
         return buff in self.buffs
 
     def train(self, unit: UnitTypeId, queue: bool = False) -> UnitCommand:
@@ -1135,9 +1137,11 @@ class Unit:
         :param queue:
         """
         if unit in {UnitTypeId.EXTRACTOR, UnitTypeId.ASSIMILATOR, UnitTypeId.REFINERY}:
-            assert isinstance(
-                position, Unit
-            ), f"When building the gas structure, the target needs to be a unit (the vespene geysir) not the position of the vespene geysir."
+            if not isinstance(position, Unit):
+                raise AssertionError(
+                    f"When building the gas structure, the target needs to be a unit"
+                    f" (the vespene geysir) not the position of the vespene geysir."
+                )
         return self(self._bot_object._game_data.units[unit.value].creation_ability.id, target=position, queue=queue)
 
     def build_gas(self, target_geysir: Unit, queue: bool = False) -> UnitCommand:
@@ -1151,9 +1155,11 @@ class Unit:
         :param queue:
         """
         gas_structure_type_id: UnitTypeId = race_gas[self._bot_object.race]
-        assert isinstance(
-            target_geysir, Unit
-        ), f"When building the gas structure, the target needs to be a unit (the vespene geysir) not the position of the vespene geysir."
+        if not isinstance(target_geysir, Unit):
+            raise AssertionError(
+                f"When building the gas structure, the target needs to be a unit (the vespene geysir) "
+                f"not the position of the vespene geysir."
+            )
         return self(
             self._bot_object._game_data.units[gas_structure_type_id.value].creation_ability.id,
             target=target_geysir,
