@@ -211,7 +211,7 @@ class UnitTypeData:
             return None
         if self.proto.unit_alias not in self._game_data.units:
             return None
-        """ For flying OrbitalCommand, this returns UnitTypeId.OrbitalCommand """
+        # For flying OrbitalCommand, this returns UnitTypeId.OrbitalCommand
         return UnitTypeId(self.proto.unit_alias)
 
     @property

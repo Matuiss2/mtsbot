@@ -302,7 +302,7 @@ class Client(Protocol):
         """ Query abilities of multiple units """
         input_was_a_list = True
         if not isinstance(units, list):
-            """ Deprecated, accepting a single unit may be removed in the future, query a list of units instead """
+            # Deprecated, accepting a single unit may be removed in the future, query a list of units instead
             if not isinstance(units, Unit):
                 raise AssertionError()
             units = [units]
@@ -315,7 +315,7 @@ class Client(Protocol):
                 ignore_resource_requirements=ignore_resource_requirements,
             )
         )
-        """ Fix for bots that only query a single unit, may be removed soon """
+        # Fix for bots that only query a single unit, may be removed soon
         if not input_was_a_list:
             return [[AbilityId(a.ability_id) for a in b.abilities] for b in result.query.abilities][0]
         return [[AbilityId(a.ability_id) for a in b.abilities] for b in result.query.abilities]
