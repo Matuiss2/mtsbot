@@ -191,15 +191,14 @@ class Client(Protocol):
     async def actions(self, actions, return_successes=False):
         if not actions:
             return None
-        elif not isinstance(actions, list):
+        if not isinstance(actions, list):
             actions = [actions]
         res = await self.execute(
             action=sc_pb.RequestAction(actions=(sc_pb.Action(action_raw=a) for a in combine_actions(actions)))
         )
         if return_successes:
             return [ActionResult(r) for r in res.action.result]
-        else:
-            return [ActionResult(r) for r in res.action.result if ActionResult(r) != ActionResult.Success]
+        return [ActionResult(r) for r in res.action.result if ActionResult(r) != ActionResult.Success]
 
     async def query_pathway(
         self, start: Union[Unit, Point2, Point3], end: Union[Point2, Point3]
@@ -733,19 +732,18 @@ class DrawItem:
         if color is None:
             return debug_pb.Color(r=255, g=255, b=255)
         # Need to check if not of type Point3 because Point3 inherits from tuple
-        elif isinstance(color, (tuple, list)) and not isinstance(color, Point3) and len(color) == 3:
+        if isinstance(color, (tuple, list)) and not isinstance(color, Point3) and len(color) == 3:
             return debug_pb.Color(r=color[0], g=color[1], b=color[2])
         # In case color is of type Point3
-        else:
-            r = getattr(color, "r", getattr(color, "x", 255))
-            g = getattr(color, "g", getattr(color, "y", 255))
-            b = getattr(color, "b", getattr(color, "z", 255))
-            if max(r, g, b) <= 1:
-                r *= 255
-                g *= 255
-                b *= 255
+        r = getattr(color, "r", getattr(color, "x", 255))
+        g = getattr(color, "g", getattr(color, "y", 255))
+        b = getattr(color, "b", getattr(color, "z", 255))
+        if max(r, g, b) <= 1:
+            r *= 255
+            g *= 255
+            b *= 255
 
-            return debug_pb.Color(r=int(r), g=int(g), b=int(b))
+        return debug_pb.Color(r=int(r), g=int(g), b=int(b))
 
 
 class DrawItemScreenText(DrawItem):

@@ -529,9 +529,9 @@ class BotAI(DistanceCalculation):
             if item_id in {UnitTypeId.REACTOR, UnitTypeId.TECHLAB, UnitTypeId.ARCHON}:
                 if item_id == UnitTypeId.REACTOR:
                     return Cost(50, 50)
-                elif item_id == UnitTypeId.TECHLAB:
+                if item_id == UnitTypeId.TECHLAB:
                     return Cost(50, 25)
-                elif item_id == UnitTypeId.ARCHON:
+                if item_id == UnitTypeId.ARCHON:
                     return self.calculate_unit_value(UnitTypeId.ARCHON)
             unit_data = self.game_data_local.units[item_id.value]
             # Cost of structure morphs is automatically correctly calculated by 'calculate_ability_cost'
@@ -631,14 +631,14 @@ class BotAI(DistanceCalculation):
             ):  # cant replace 1 with "Target.None.value" because ".None" doesnt seem to be a valid enum name
                 return True
             # Check if able to use ability on a unit
-            elif (
+            if (
                 ability_target in {Target.Unit.value, Target.PointOrUnit.value}
                 and isinstance(target, Unit)
                 and unit.distance_to(target) <= unit.radius + target.radius + cast_range
             ):
                 return True
             # Check if able to use ability on a position
-            elif (
+            if (
                 ability_target in {Target.Point.value, Target.PointOrUnit.value}
                 and isinstance(target, (Point2, Point3))
                 and unit.distance_to(target) <= unit.radius + cast_range
@@ -753,8 +753,7 @@ class BotAI(DistanceCalculation):
 
             if random_alternative:
                 return random.SystemRandom().choice(possible)
-            else:
-                return min(possible, key=lambda p: p.distance_to_point2(near))
+            return min(possible, key=lambda p: p.distance_to_point2(near))
         return None
 
     # TODO: improve using cache per frame
