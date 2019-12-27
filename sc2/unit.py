@@ -1,3 +1,7 @@
+"""
+Groups a lot of info from individual units
+changed last: 27/12/2019
+"""
 from __future__ import annotations
 
 import math

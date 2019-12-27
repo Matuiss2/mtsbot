@@ -31,6 +31,7 @@ LOGGER = logging.getLogger(__name__)
 
 class Client(Protocol):
     """ Groups the requests to the client """
+
     def __init__(self, web_server):
         super().__init__(web_server)
         # How many frames will be waited between iterations before the next one is called

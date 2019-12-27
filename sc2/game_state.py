@@ -1,9 +1,13 @@
+"""
+Groups useful data about elements of the game, very similar to game_info.py maybe merge both
+changed last: 27/12/2019
+"""
 from __future__ import annotations
 
 from typing import Set, Union
 
 from .constants import FakeEffectID, FakeEffectRadii
-from .data import ALLIANCE, DISPLAY_TYPE
+from .data import ALLIANCE
 from .ids.effect_id import EffectId
 from .ids.upgrade_id import UpgradeId
 from .pixel_map import PixelMap
@@ -13,36 +17,16 @@ from .score import ScoreDetails
 
 
 class Blip:
+    """
+    It detects the visibility, ownership etc  of an unit
+    """
     def __init__(self, proto):
-        """
-        :param proto:
-        """
         self.proto = proto
 
     @property
     def is_blip(self) -> bool:
         """Detected by sensor tower."""
         return self.proto.is_blip
-
-    @property
-    def is_snapshot(self) -> bool:
-        return self.proto.display_type == DISPLAY_TYPE.Snapshot.value
-
-    @property
-    def is_visible(self) -> bool:
-        return self.proto.display_type == DISPLAY_TYPE.Visible.value
-
-    @property
-    def alliance(self) -> ALLIANCE:
-        return self.proto.alliance
-
-    @property
-    def is_mine(self) -> bool:
-        return self.proto.alliance == ALLIANCE.Self.value
-
-    @property
-    def is_enemy(self) -> bool:
-        return self.proto.alliance == ALLIANCE.Enemy.value
 
     @property
     def position(self) -> Point2:
@@ -127,7 +111,6 @@ class GameState:
         self.actions = response_observation.actions  # successful actions since last loop
         self.action_errors = response_observation.action_errors  # error actions since last loop
 
-        # https://github.com/Blizzard/s2client-proto/blob/51662231c0965eba47d5183ed0a6336d5ae6b640/s2clientprotocol/sc2api.proto#L575
         self.observation = response_observation.observation
         self.observation_raw = self.observation.raw_data
         self.alerts = self.observation.alerts
@@ -139,7 +122,6 @@ class GameState:
         self.psionic_matrix: PsionicMatrix = PsionicMatrix.from_proto(self.observation_raw.player.power_sources)
         self.game_loop: int = self.observation.game_loop  # 22.4 per second on faster game speed
 
-        # https://github.com/Blizzard/s2client-proto/blob/33f0ecf615aa06ca845ffe4739ef3133f37265a9/s2clientprotocol/score.proto#L31
         self.score: ScoreDetails = ScoreDetails(self.observation.score)
         self.abilities = self.observation.abilities  # abilities of selected units
         self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation_raw.player.upgrade_ids}

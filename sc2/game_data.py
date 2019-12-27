@@ -1,3 +1,7 @@
+"""
+Groups useful data from units, abilities and game
+changed last: 27/12/2019
+"""
 from __future__ import annotations
 
 from bisect import bisect_left
@@ -15,6 +19,7 @@ FREE_ABILITIES = {"Lower", "Raise", "Land", "Lift", "Hold", "Harvest"}
 
 
 class GameData:
+    """ Calculates cost info for the abilities, units and upgrades"""
     def __init__(self, data):
         """
         :param data:
@@ -66,11 +71,12 @@ class GameData:
 
 
 class AbilityData:
-
+    """ Some info about abilities"""
     ability_ids: List[int] = [ability_id.value for ability_id in AbilityId][1:]  # sorted list
 
     @classmethod
     def id_exists(cls, ability_id):
+        """Check if the given AbilityID exists"""
         if not isinstance(ability_id, int):
             raise AssertionError(f"Wrong type: {ability_id} is not int")
         if ability_id == 0:
@@ -81,8 +87,6 @@ class AbilityData:
     def __init__(self, game_data, proto):
         self._game_data = game_data
         self.proto = proto
-
-        # What happens if we comment this out? Should this not be commented out? What is its purpose?
         if self.id == 0:
             raise AssertionError()
 
@@ -118,16 +122,19 @@ class AbilityData:
 
     @property
     def is_free_morph(self) -> bool:
+        """ This returns True if the ability is in {"Lower", "Raise", "Land", "Lift", "Hold", "Harvest"}"""
         if any(free in self.proto.link_name for free in FREE_ABILITIES):
             return True
         return False
 
     @property
     def cost(self) -> Cost:
+        """returns the ability cost"""
         return self._game_data.calculate_ability_cost(self.id)
 
 
 class UnitTypeData:
+    """ Some info about units"""
     def __init__(self, game_data: GameData, proto):
         """
         :param game_data:
@@ -253,6 +260,7 @@ class UnitTypeData:
 
 
 class UpgradeData:
+    """ Some info about Upgrades"""
     def __init__(self, game_data: GameData, proto):
         """
         :param game_data:

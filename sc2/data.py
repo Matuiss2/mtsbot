@@ -1,5 +1,5 @@
 """
-Groups and primary data
+Groups the primary data
 changed last: 27/12/2019
 """
 import enum
