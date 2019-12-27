@@ -16,6 +16,8 @@ from .position import Point2, Rect, Size
 
 
 class Ramp:
+    """ Groups useful data from the ramps"""
+
     def __init__(self, points: Set[Point2], game_info: GameInfo):
         """
         :param points:
@@ -39,9 +41,11 @@ class Ramp:
 
     @property_immutable_cache
     def size(self) -> int:
+        """ returns the ramp size"""
         return len(self._points)
 
     def height_at(self, position: Point2) -> int:
+        """ returns the ramp height at given position"""
         return self._height_map[position]
 
     @property_mutable_cache
@@ -77,6 +81,7 @@ class Ramp:
 
     @property_immutable_cache
     def top_center(self) -> Point2:
+        """ Returns the center point of the upper points in a ramp. """
         upper = self.upper
         length = len(upper)
         pos = Point2((sum(p.x for p in upper) / length, sum(p.y for p in upper) / length))
@@ -84,6 +89,7 @@ class Ramp:
 
     @property_mutable_cache
     def lower(self) -> Set[Point2]:
+        """ Returns the lower points of a ramp. """
         current_min = 10000
         result = set()
         for point in self._points:
@@ -97,6 +103,7 @@ class Ramp:
 
     @property_immutable_cache
     def bottom_center(self) -> Point2:
+        """ Returns the center point of the lower points in a ramp. """
         lower = self.lower
         length = len(lower)
         pos = Point2((sum(p.x for p in lower) / length, sum(p.y for p in lower) / length))

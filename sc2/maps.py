@@ -1,3 +1,7 @@
+"""
+Open the map and return some info about it like the name
+changed last: 27/12/2019
+"""
 import logging
 
 from .paths import Paths

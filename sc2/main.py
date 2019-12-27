@@ -1,3 +1,7 @@
+"""
+Groups all the actions related to the game(join, watch replay, host, etc)
+changed last: 27/12/2019
+"""
 import asyncio
 import json
 import logging
