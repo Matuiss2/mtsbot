@@ -494,7 +494,7 @@ class Unit:
             target, (Point2, tuple)
         ):
             return (
-                self.bot_object.distance_pos_to_pos(self.position_tuple, target)
+                self.bot_object.distance_math_dist(self.position_tuple, target)
                 <= cast_range + self.radius + bonus_distance
             )
         return False

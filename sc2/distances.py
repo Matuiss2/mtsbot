@@ -17,6 +17,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 class DistanceCalculation:
+    """Groups 4 distance calculation methods and it's helpers """
+
     def __init__(self):
         self.state: GameState = None
         self._generated_frame = -100
@@ -32,6 +34,7 @@ class DistanceCalculation:
 
     @property
     def _units_count(self) -> int:
+        """ Counts all visible units """
         return len(self.all_units)
 
     @property
@@ -65,6 +68,7 @@ class DistanceCalculation:
         return self._cached_unit_index_dict
 
     def _calculate_distances_method1(self) -> np.ndarray:
+        """ Use scipy's pdist condensed matrix (1d array) """
         if self._generated_frame2 != self.state.game_loop:
             # Converts tuple [(1, 2), (3, 4)] to flat list like [1, 2, 3, 4]
             flat_positions = (coord for unit in self.all_units for coord in unit.position_tuple)
@@ -75,11 +79,11 @@ class DistanceCalculation:
             if len(positions_array) != self._units_count:
                 raise AssertionError()
             self._generated_frame2 = self.state.game_loop
-            # See performance benchmarks
             self._cached_pdist = pdist(positions_array, "sqeuclidean")
         return self._cached_pdist
 
     def _calculate_distances_method2(self) -> np.ndarray:
+        """ Use scipy's cdist square matrix (2d array) """
         if self._generated_frame2 != self.state.game_loop:
             # Converts tuple [(1, 2), (3, 4)] to flat list like [1, 2, 3, 4]
             flat_positions = (coord for unit in self.all_units for coord in unit.position_tuple)
@@ -90,7 +94,6 @@ class DistanceCalculation:
             if len(positions_array) != self._units_count:
                 raise AssertionError()
             self._generated_frame2 = self.state.game_loop
-            # See performance benchmarks
             self._cached_cdist = cdist(positions_array, positions_array, "sqeuclidean")
 
         return self._cached_cdist
@@ -103,12 +106,12 @@ class DistanceCalculation:
                 flat_positions, dtype=np.float, count=2 * self._units_count
             ).reshape((-1, 2))
             self._generated_frame2 = self.state.game_loop
-            # See performance benchmarks
             self._cached_cdist = cdist(positions_array, positions_array, "sqeuclidean")
 
         return self._cached_cdist
 
     def _get_index_of_two_units_method1(self, unit1: Unit, unit2: Unit) -> int:
+        """ Condenses two unit indexes for method1"""
         if unit1.tag not in self._unit_index_dict:
             raise AssertionError(
                 f"Unit1 {unit1} is not in index dict for distance calculation."
@@ -125,11 +128,10 @@ class DistanceCalculation:
                 f" as these contain unit data from the current frame."
                 f" Do not try to save 'Units' objects over several iterations."
             )
-        # index1 = self._unit_index_dict[unit1.tag]
-        # index2 = self._unit_index_dict[unit2.tag]
         return self.square_to_condensed(self._unit_index_dict[unit1.tag], self._unit_index_dict[unit2.tag])
 
     def _get_index_of_two_units_method2(self, unit1: Unit, unit2: Unit) -> Tuple[int, int]:
+        """ Get two unit indexes for method2 and unite then in a tuple"""
         if unit1.tag not in self._unit_index_dict:
             raise AssertionError(
                 f"Unit1 {unit1} is not in index dict for distance calculation."
@@ -155,8 +157,7 @@ class DistanceCalculation:
     # Helper functions
 
     def square_to_condensed(self, i, j) -> int:
-        # Converts indices of a square matrix to condensed matrix
-        # https://stackoverflow.com/a/36867493/10882657
+        """Converts indices of a square matrix to condensed matrix"""
         if i == j:
             raise AssertionError("No diagonal elements in condensed matrix! Diagonal elements are zero")
         if i < j:
@@ -172,20 +173,24 @@ class DistanceCalculation:
 
     @staticmethod
     def distance_math_dist(start_point: Tuple[float, float], destiny: Tuple[float, float]):
+        """ math.dist(), its about the same speed as math.hypot but it's cleaner, also there is no need for slices
+         in this method which makes it considerably faster than the hypot alternative for big amounts"""
         return math.dist(start_point, destiny)
 
     @staticmethod
     def distance_math_dist_squared(start_point: Tuple[float, float], destiny: Tuple[float, float]):
+        """ math.dist but with squared values, its untested, im not sure this method works the same way as with hypot"""
         return math.dist(pow(start_point, 2), pow(destiny, 2))
 
     def _distance_squared_unit_to_unit_method0(self, unit1: Unit, unit2: Unit) -> float:
+        """ Use python's math.dist """
         return self.distance_math_dist_squared(unit1.position_tuple, unit2.position_tuple)
 
     # Distance calculation using the pre-calculated matrix above
 
     def _distance_squared_unit_to_unit_method1(self, unit1: Unit, unit2: Unit) -> float:
-        # If checked on units if they have the same tag, return distance 0 as these are not in the 1 dimensional
-        # pdist array - would result in an error otherwise
+        """If checked on units if they have the same tag, return distance 0 as these are not in the 1 dimensional
+        pdist array - would result in an error otherwise"""
         if unit1.tag == unit2.tag:
             return 0
         # Calculate index, needs to be after pdist has been calculated and cached
@@ -200,17 +205,10 @@ class DistanceCalculation:
         return distance
 
     def _distance_squared_unit_to_unit_method2(self, unit1: Unit, unit2: Unit) -> float:
-        # Calculate index, needs to be after cdist has been calculated and cached
-        # index1, index2 = self._get_index_of_two_units(unit1, unit2)
-        # distance = self._cdist[index1, index2]
-        # return distance
+        """ Calculate index, needs to be after cdist has been calculated and cached"""
         return self._cdist[self._get_index_of_two_units(unit1, unit2)]
 
     # Distance calculation using the fastest distance calculation functions
-
-    def distance_pos_to_pos(self, pos1: Tuple[float, float], pos2: Tuple[float, float]) -> float:
-        return self.distance_math_dist(pos1, pos2)
-
     def distance_units_to_pos(self, units: Units, pos: Tuple[float, float]) -> Generator[float, None, None]:
         """ This function does not scale well, if len(units) > 100 it gets fairly slow """
         return (self.distance_math_dist(u.position_tuple, pos) for u in units)
@@ -224,7 +222,7 @@ class DistanceCalculation:
 
     def _distances_override_functions(self, method: int = 0):
         """ Overrides the internal distance calculation functions at game start in bot_ai.py self.prepare_start()
-        function method 0: Use python's math.hypot The following methods calculate the distances between all units
+        function method 0: Use python's math.dist The following methods calculate the distances between all units
         once:
         method 1: Use scipy's pdist condensed matrix (1d array)
         method 2: Use scipy's cdist square matrix (2d

@@ -20,6 +20,7 @@ class Blip:
     """
     It detects the visibility, ownership etc  of an unit
     """
+
     def __init__(self, proto):
         self.proto = proto
 

@@ -1,5 +1,5 @@
 """
-Groups the requests to the client and the debugger functions
+Groups the requests to the client or protocol and also houses debugger functions
 changed last: 27/12/2019
 """
 from __future__ import annotations
@@ -166,10 +166,11 @@ class Client(Protocol):
         return await self.execute(step=sc_pb.RequestStep(count=step_size))
 
     async def get_game_data(self) -> GameData:
-        result = await self.execute(
+        """Request the data from the protocol and convert to the API type GameData"""
+        request = await self.execute(
             data=sc_pb.RequestData(ability_id=True, unit_type_id=True, upgrade_id=True, buff_id=True, effect_id=True)
         )
-        return GameData(result.data)
+        return GameData(request.data)
 
     async def dump_data(self, ability_id=True, unit_type_id=True, upgrade_id=True, buff_id=True, effect_id=True):
         """
@@ -192,8 +193,9 @@ class Client(Protocol):
             file.write(str(result.data))
 
     async def get_game_info(self) -> GameInfo:
-        result = await self.execute(game_info=sc_pb.RequestGameInfo())
-        return GameInfo(result.game_info)
+        """Request the game_info from the protocol and convert to the API type GameInfo"""
+        request = await self.execute(game_info=sc_pb.RequestGameInfo())
+        return GameInfo(request.game_info)
 
     async def actions(self, actions, return_successes=False):
         if not actions:
@@ -287,6 +289,7 @@ class Client(Protocol):
     async def query_building_placement(
         self, ability: AbilityData, positions: List[Union[Point2, Point3]], ignore_resources: bool = True
     ) -> List[ACTION_RESULT]:
+        """ It returns a list with all possible placements within the given positions parameter list"""
         if not isinstance(ability, AbilityData):
             raise AssertionError()
         result = await self.execute(
@@ -502,6 +505,7 @@ class Client(Protocol):
         color: Union[tuple, list, Point3] = None,
         size: int = 8,
     ):
+        """Draw a text in 2d on the screen on the given position with given color and size"""
         return self.debug_text_screen(text, pos, color, size)
 
     def debug_text_world(
@@ -518,6 +522,7 @@ class Client(Protocol):
     def debug_text_3d(
         self, text: str, pos: Union[Unit, Point2, Point3], color: Union[tuple, list, Point3] = None, size: int = 8
     ):
+        """Draw a text in 3d on the screen on the given position with given color and size"""
         return self.debug_text_world(text, pos, color, size)
 
     def debug_line_out(
@@ -615,6 +620,7 @@ class Client(Protocol):
             self._debug_draw_last_frame = False
 
     async def debug_leave(self):
+        """Closes the debugger"""
         await self.execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(end_game=debug_pb.DebugEndGame())]))
 
     async def debug_set_unit_value(self, unit_tags: Union[Iterable[int], Units, Unit], unit_value: int, value: float):
@@ -731,6 +737,8 @@ class Client(Protocol):
 
 
 class DrawItem:
+    """ Helpers for conversions: API types -> protocol type"""
+
     @staticmethod
     def to_debug_point(point: Union[Unit, Point2, Point3]) -> common_pb.Point:
         """ Helper function for position conversion """
@@ -759,6 +767,8 @@ class DrawItem:
 
 
 class DrawItemScreenText(DrawItem):
+    """ Extends DrawItem it does the same conversion but specify it to texts """
+
     def __init__(self, start_point: Point2 = None, color: Point3 = None, text: str = "", font_size: int = 8):
         self._start_point: Point2 = start_point
         self._color: Point3 = color
@@ -779,6 +789,8 @@ class DrawItemScreenText(DrawItem):
 
 
 class DrawItemWorldText(DrawItem):
+    """ Extends DrawItem it does the same conversion but specify it to world texts """
+
     def __init__(self, start_point: Point3 = None, color: Point3 = None, text: str = "", font_size: int = 8):
         self._start_point: Point3 = start_point
         self._color: Point3 = color
@@ -799,6 +811,8 @@ class DrawItemWorldText(DrawItem):
 
 
 class DrawItemLine(DrawItem):
+    """ Extends DrawItem it does the same conversion but specify it to lines """
+
     def __init__(self, start_point: Point3 = None, end_point: Point3 = None, color: Point3 = None):
         self._start_point: Point3 = start_point
         self._end_point: Point3 = end_point
@@ -815,6 +829,8 @@ class DrawItemLine(DrawItem):
 
 
 class DrawItemBox(DrawItem):
+    """ Extends DrawItem it does the same conversion but specify it to boxes """
+
     def __init__(self, start_point: Point3 = None, end_point: Point3 = None, color: Point3 = None):
         self._start_point: Point3 = start_point
         self._end_point: Point3 = end_point
@@ -832,6 +848,8 @@ class DrawItemBox(DrawItem):
 
 
 class DrawItemSphere(DrawItem):
+    """ Extends DrawItem it does the same conversion but specify it to spheres """
+
     def __init__(self, start_point: Point3 = None, radius: float = None, color: Point3 = None):
         self._start_point: Point3 = start_point
         self._radius: float = radius

@@ -20,6 +20,7 @@ FREE_ABILITIES = {"Lower", "Raise", "Land", "Lift", "Hold", "Harvest"}
 
 class GameData:
     """ Calculates cost info for the abilities, units and upgrades"""
+
     def __init__(self, data):
         """
         :param data:
@@ -72,6 +73,7 @@ class GameData:
 
 class AbilityData:
     """ Some info about abilities"""
+
     ability_ids: List[int] = [ability_id.value for ability_id in AbilityId][1:]  # sorted list
 
     @classmethod
@@ -135,6 +137,7 @@ class AbilityData:
 
 class UnitTypeData:
     """ Some info about units"""
+
     def __init__(self, game_data: GameData, proto):
         """
         :param game_data:
@@ -261,6 +264,7 @@ class UnitTypeData:
 
 class UpgradeData:
     """ Some info about Upgrades"""
+
     def __init__(self, game_data: GameData, proto):
         """
         :param game_data:
