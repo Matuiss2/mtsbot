@@ -1,3 +1,7 @@
+"""
+Groups 4 distance calculation methods and it's helpers
+changed last: 27/12/2019
+"""
 import logging
 import math
 from typing import Dict, Tuple, Iterable, Generator

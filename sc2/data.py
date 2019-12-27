@@ -1,3 +1,7 @@
+"""
+Groups and primary data
+changed last: 27/12/2019
+"""
 import enum
 from typing import Dict, Set  # mypy type checking
 
@@ -9,7 +13,6 @@ from s2clientprotocol import sc2api_pb2 as sc_pb
 
 from .ids.ability_id import AbilityId
 from .ids.unit_typeid import UnitTypeId
-
 
 CREATE_GAME_ERROR = enum.Enum("CreateGameError", sc_pb.ResponseCreateGame.Error.items())
 

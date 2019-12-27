@@ -1,3 +1,7 @@
+"""
+Groups and transforms all ids and data
+changed last: 27/12/2019
+"""
 from collections import defaultdict
 from typing import Dict, Set
 
@@ -275,14 +279,10 @@ TERRAN_STRUCTURES_REQUIRE_SCV: Set[UnitTypeId] = {
 }
 
 
-def return_not_an_unit():
-    return UnitTypeId.NOTAUNIT
-
-
 # Hotfix for structures and units as the API does not seem to return the correct values,
 # e.g. ghost and thor have None in the requirements
 TERRAN_TECH_REQUIREMENT: Dict[UnitTypeId, UnitTypeId] = defaultdict(
-    return_not_an_unit,
+    UnitTypeId.NOTAUNIT,
     {
         UnitTypeId.MISSILETURRET: UnitTypeId.ENGINEERINGBAY,
         UnitTypeId.SENSORTOWER: UnitTypeId.ENGINEERINGBAY,
@@ -302,7 +302,7 @@ TERRAN_TECH_REQUIREMENT: Dict[UnitTypeId, UnitTypeId] = defaultdict(
     },
 )
 PROTOSS_TECH_REQUIREMENT: Dict[UnitTypeId, UnitTypeId] = defaultdict(
-    return_not_an_unit,
+    UnitTypeId.NOTAUNIT,
     {
         UnitTypeId.PHOTONCANNON: UnitTypeId.FORGE,
         UnitTypeId.CYBERNETICSCORE: UnitTypeId.GATEWAY,
@@ -326,7 +326,7 @@ PROTOSS_TECH_REQUIREMENT: Dict[UnitTypeId, UnitTypeId] = defaultdict(
     },
 )
 ZERG_TECH_REQUIREMENT: Dict[UnitTypeId, UnitTypeId] = defaultdict(
-    return_not_an_unit,
+    UnitTypeId.NOTAUNIT,
     {
         UnitTypeId.ZERGLING: UnitTypeId.SPAWNINGPOOL,
         UnitTypeId.QUEEN: UnitTypeId.SPAWNINGPOOL,
