@@ -4,7 +4,7 @@ from bisect import bisect_left
 from functools import lru_cache
 from typing import Dict, List, Optional
 
-from .data import Attribute, Race
+from .data import ATTRIBUTE, RACE
 from .ids.ability_id import AbilityId
 from .ids.unit_typeid import UnitTypeId
 from .unit_command import UnitCommand
@@ -162,11 +162,11 @@ class UnitTypeData:
         return self._game_data.abilities[self.proto.ability_id]
 
     @property
-    def attributes(self) -> List[Attribute]:
+    def attributes(self) -> List[ATTRIBUTE]:
         return self.proto.attributes
 
     def has_attribute(self, attr) -> bool:
-        if not isinstance(attr, Attribute):
+        if not isinstance(attr, ATTRIBUTE):
             raise AssertionError()
         return attr in self.attributes
 
@@ -214,8 +214,8 @@ class UnitTypeData:
         return UnitTypeId(self.proto.unit_alias)
 
     @property
-    def race(self) -> Race:
-        return Race(self.proto.race)
+    def race(self) -> RACE:
+        return RACE(self.proto.race)
 
     @property
     def cost(self) -> Cost:
@@ -224,7 +224,7 @@ class UnitTypeData:
     @property
     def cost_zerg_corrected(self) -> Cost:
         """ This returns 25 for extractor and 200 for spawning pool instead of 75 and 250 respectively """
-        if self.race == Race.Zerg and Attribute.Structure.value in self.attributes:
+        if self.race == RACE.Zerg and ATTRIBUTE.Structure.value in self.attributes:
             # a = self.game_data_local.units(UnitTypeId.ZERGLING)
             # print(a)
             # print(vars(a))

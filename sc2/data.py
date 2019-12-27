@@ -11,45 +11,45 @@ from .ids.ability_id import AbilityId
 from .ids.unit_typeid import UnitTypeId
 
 
-CreateGameError = enum.Enum("CreateGameError", sc_pb.ResponseCreateGame.Error.items())
+CREATE_GAME_ERROR = enum.Enum("CreateGameError", sc_pb.ResponseCreateGame.Error.items())
 
-PlayerType = enum.Enum("PlayerType", sc_pb.PlayerType.items())
-Difficulty = enum.Enum("Difficulty", sc_pb.Difficulty.items())
-AIBuild = enum.Enum("AIBuild", sc_pb.AIBuild.items())
-Status = enum.Enum("Status", sc_pb.Status.items())
-Result = enum.Enum("Result", sc_pb.Result.items())
-Alert = enum.Enum("Alert", sc_pb.Alert.items())
-ChatChannel = enum.Enum("ChatChannel", sc_pb.ActionChat.Channel.items())
+PLAYER_TYPE = enum.Enum("PlayerType", sc_pb.PlayerType.items())
+DIFFICULTY = enum.Enum("Difficulty", sc_pb.Difficulty.items())
+AI_BUILD = enum.Enum("AIBuild", sc_pb.AIBuild.items())
+STATUS = enum.Enum("Status", sc_pb.Status.items())
+RESULT = enum.Enum("Result", sc_pb.Result.items())
+ALERT = enum.Enum("Alert", sc_pb.Alert.items())
+CHAT_CHANNEL = enum.Enum("ChatChannel", sc_pb.ActionChat.Channel.items())
 
-Race = enum.Enum("Race", common_pb.Race.items())
+RACE = enum.Enum("Race", common_pb.Race.items())
 
-DisplayType = enum.Enum("DisplayType", raw_pb.DisplayType.items())
-Alliance = enum.Enum("Alliance", raw_pb.Alliance.items())
-CloakState = enum.Enum("CloakState", raw_pb.CloakState.items())
+DISPLAY_TYPE = enum.Enum("DisplayType", raw_pb.DisplayType.items())
+ALLIANCE = enum.Enum("Alliance", raw_pb.Alliance.items())
+CLOAK_STATE = enum.Enum("CloakState", raw_pb.CloakState.items())
 
-Attribute = enum.Enum("Attribute", data_pb.Attribute.items())
-TargetType = enum.Enum("TargetType", data_pb.Weapon.TargetType.items())
-Target = enum.Enum("Target", data_pb.AbilityData.Target.items())
+ATTRIBUTE = enum.Enum("Attribute", data_pb.Attribute.items())
+TARGET_TYPE = enum.Enum("TargetType", data_pb.Weapon.TargetType.items())
+TARGET = enum.Enum("Target", data_pb.AbilityData.Target.items())
 
-ActionResult = enum.Enum("ActionResult", error_pb.ActionResult.items())
+ACTION_RESULT = enum.Enum("ActionResult", error_pb.ActionResult.items())
 
-race_worker: Dict[Race, UnitTypeId] = {
-    Race.Protoss: UnitTypeId.PROBE,
-    Race.Terran: UnitTypeId.SCV,
-    Race.Zerg: UnitTypeId.DRONE,
+race_worker: Dict[RACE, UnitTypeId] = {
+    RACE.Protoss: UnitTypeId.PROBE,
+    RACE.Terran: UnitTypeId.SCV,
+    RACE.Zerg: UnitTypeId.DRONE,
 }
 
-race_townhalls: Dict[Race, Set[UnitTypeId]] = {
-    Race.Protoss: {UnitTypeId.NEXUS},
-    Race.Terran: {
+race_townhalls: Dict[RACE, Set[UnitTypeId]] = {
+    RACE.Protoss: {UnitTypeId.NEXUS},
+    RACE.Terran: {
         UnitTypeId.COMMANDCENTER,
         UnitTypeId.ORBITALCOMMAND,
         UnitTypeId.PLANETARYFORTRESS,
         UnitTypeId.COMMANDCENTERFLYING,
         UnitTypeId.ORBITALCOMMANDFLYING,
     },
-    Race.Zerg: {UnitTypeId.HATCHERY, UnitTypeId.LAIR, UnitTypeId.HIVE},
-    Race.Random: {
+    RACE.Zerg: {UnitTypeId.HATCHERY, UnitTypeId.LAIR, UnitTypeId.HIVE},
+    RACE.Random: {
         # Protoss
         UnitTypeId.NEXUS,
         # Terran
@@ -74,8 +74,8 @@ warpgate_abilities: Dict[AbilityId, AbilityId] = {
     AbilityId.TRAIN_ADEPT: AbilityId.TRAINWARP_ADEPT,
 }
 
-race_gas: Dict[Race, UnitTypeId] = {
-    Race.Protoss: UnitTypeId.ASSIMILATOR,
-    Race.Terran: UnitTypeId.REFINERY,
-    Race.Zerg: UnitTypeId.EXTRACTOR,
+race_gas: Dict[RACE, UnitTypeId] = {
+    RACE.Protoss: UnitTypeId.ASSIMILATOR,
+    RACE.Terran: UnitTypeId.REFINERY,
+    RACE.Zerg: UnitTypeId.EXTRACTOR,
 }

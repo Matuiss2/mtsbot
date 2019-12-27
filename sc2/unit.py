@@ -41,12 +41,12 @@ from .constants import (
     UNIT_COLOSSUS,
 )
 from .data import (
-    Alliance,
-    Attribute,
-    CloakState,
-    Race,
+    ALLIANCE,
+    ATTRIBUTE,
+    CLOAK_STATE,
+    RACE,
     warpgate_abilities,
-    Target,
+    TARGET,
     race_gas,
 )
 from .ids.ability_id import AbilityId
@@ -127,9 +127,9 @@ class Unit:
         return self.type_data.name
 
     @property
-    def race(self) -> Race:
+    def race(self) -> RACE:
         """ Returns the race of the unit """
-        return Race(self.type_data.proto.race)
+        return RACE(self.type_data.proto.race)
 
     @property
     def tag(self) -> int:
@@ -272,7 +272,7 @@ class Unit:
             for weapon in self._weapons:
                 if weapon.damage_bonus:
                     weapon_bonus = weapon.damage_bonus[0]
-                    return weapon_bonus.bonus, Attribute(weapon_bonus.attribute).name
+                    return weapon_bonus.bonus, ATTRIBUTE(weapon_bonus.attribute).name
             return None
         return None
 
@@ -396,7 +396,7 @@ class Unit:
         return self.proto.display_type == IS_VISIBLE and not self.is_snapshot
 
     @property
-    def alliance(self) -> Alliance:
+    def alliance(self) -> ALLIANCE:
         """ Returns the team the unit belongs to. """
         return self.proto.alliance
 
@@ -480,13 +480,13 @@ class Unit:
             raise AssertionError(f"Checking for an ability ({ability_id}) that has no cast range")
         ability_target_type = self.bot_object.game_data_local.abilities[ability_id.value].proto.target
         # For casting abilities that target other units, like transfuse, feedback, snipe, yamato
-        if ability_target_type in {Target.Unit.value, Target.PointOrUnit.value} and isinstance(target, Unit):
+        if ability_target_type in {TARGET.Unit.value, TARGET.PointOrUnit.value} and isinstance(target, Unit):
             return (
                 self.bot_object.distance_squared_unit_to_unit(self, target)
                 <= (cast_range + self.radius + target.radius + bonus_distance) ** 2
             )
         # For casting abilities on the ground, like queen creep tumor, ravager bile, HT storm
-        if ability_target_type in {Target.Point.value, Target.PointOrUnit.value} and isinstance(
+        if ability_target_type in {TARGET.Point.value, TARGET.PointOrUnit.value} and isinstance(
             target, (Point2, tuple)
         ):
             return (
@@ -756,7 +756,7 @@ class Unit:
         return self.build_progress == 1
 
     @property
-    def cloak(self) -> CloakState:
+    def cloak(self) -> CLOAK_STATE:
         """ Returns cloak state. """
         return self.proto.cloak
 

@@ -5,7 +5,7 @@ from collections import Counter
 from typing import Dict, List, Set, Union, TYPE_CHECKING
 
 from sc2.cache import property_cache_once_per_frame
-from sc2.data import Alert, Race, Result
+from sc2.data import ALERT, RACE, RESULT
 from sc2.distances import DistanceCalculation
 from sc2.game_data import GameData
 
@@ -145,7 +145,7 @@ class ObserverAI(DistanceCalculation):
         """ See client.py """
         return self._client
 
-    def alert(self, alert_code: Alert) -> bool:
+    def alert(self, alert_code: ALERT) -> bool:
         """
         Check if alert is triggered in the current step.
 
@@ -182,7 +182,7 @@ class ObserverAI(DistanceCalculation):
 
         :param alert_code:
         """
-        if not isinstance(alert_code, Alert):
+        if not isinstance(alert_code, ALERT):
             raise AssertionError(f"alert_code {alert_code} is no Alert")
         return alert_code.value in self.state.alerts
 
@@ -226,7 +226,7 @@ class ObserverAI(DistanceCalculation):
             for order in unit.orders:
                 abilities_amount[order.ability] += 1
             if not unit.is_ready:
-                if self.race != Race.Terran or not unit.is_structure:
+                if self.race != RACE.Terran or not unit.is_structure:
                     # If an SCV is constructing a building, already_pending would count this structure twice
                     # (once from the SCV order, and once from "not structure.is_ready")
                     abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
@@ -400,7 +400,7 @@ class ObserverAI(DistanceCalculation):
         """
         raise NotImplementedError
 
-    async def on_end(self, game_result: Result):
+    async def on_end(self, game_result: RESULT):
         """ Override this in your bot class. This function is called at the end of a game.
 
         :param game_result: """

@@ -24,7 +24,7 @@ from .constants import (
     EQUIVALENTS_FOR_TECH_PROGRESS,
     TERRAN_STRUCTURES_REQUIRE_SCV,
 )
-from .data import ActionResult, Alert, Race, Result, Target, race_townhalls, race_worker
+from .data import ACTION_RESULT, ALERT, RACE, RESULT, TARGET, race_townhalls, race_worker
 from .dicts.unit_research_abilities import RESEARCH_INFO
 from .dicts.unit_train_build_abilities import TRAIN_INFO
 from .dicts.unit_trained_from import UNIT_TRAINED_FROM
@@ -108,8 +108,8 @@ class BotAI(DistanceCalculation):
         self.player_id: int = None
         self._game_info: GameInfo = None
         self.game_data_local: GameData = None
-        self.race: Race = None
-        self.enemy_race: Race = None
+        self.race: RACE = None
+        self.enemy_race: RACE = None
 
     def initialize_variables(self):
         """ Called from main.py internally """
@@ -216,7 +216,7 @@ class BotAI(DistanceCalculation):
         """ See client.py """
         return self._client
 
-    def alert(self, alert_code: Alert) -> bool:
+    def alert(self, alert_code: ALERT) -> bool:
         """
         Check if alert is triggered in the current step. Possible alerts are listed here
         https://github.com/Blizzard/s2client-proto/blob/e38efed74c03bec90f74b330ea1adda9215e655f/s2clientprotocol
@@ -255,7 +255,7 @@ class BotAI(DistanceCalculation):
 
         :param alert_code:
         """
-        if not isinstance(alert_code, Alert):
+        if not isinstance(alert_code, ALERT):
             raise AssertionError(f"alert_code {alert_code} is no Alert")
         return alert_code.value in self.state.alerts
 
@@ -435,9 +435,9 @@ class BotAI(DistanceCalculation):
         if not building:
             # self.race is never Race.Random
             start_townhall_type = {
-                Race.Protoss: UnitTypeId.NEXUS,
-                Race.Terran: UnitTypeId.COMMANDCENTER,
-                Race.Zerg: UnitTypeId.HATCHERY,
+                RACE.Protoss: UnitTypeId.NEXUS,
+                RACE.Terran: UnitTypeId.COMMANDCENTER,
+                RACE.Zerg: UnitTypeId.HATCHERY,
             }
             building = start_townhall_type[self.race]
 
@@ -674,21 +674,21 @@ class BotAI(DistanceCalculation):
             # Check if target is in range (or is a self cast like stimpack)
             if (
                 ability_target == 1
-                or ability_target == Target.PointOrNone.value
+                or ability_target == TARGET.PointOrNone.value
                 and isinstance(target, (Point2, Point3))
                 and unit.distance_to(target) <= unit.radius + target.radius + cast_range
             ):  # cant replace 1 with "Target.None.value" because ".None" doesnt seem to be a valid enum name
                 return True
             # Check if able to use ability on a unit
             if (
-                ability_target in {Target.Unit.value, Target.PointOrUnit.value}
+                ability_target in {TARGET.Unit.value, TARGET.PointOrUnit.value}
                 and isinstance(target, Unit)
                 and unit.distance_to(target) <= unit.radius + target.radius + cast_range
             ):
                 return True
             # Check if able to use ability on a position
             if (
-                ability_target in {Target.Point.value, Target.PointOrUnit.value}
+                ability_target in {TARGET.Point.value, TARGET.PointOrUnit.value}
                 and isinstance(target, (Point2, Point3))
                 and unit.distance_to(target) <= unit.radius + cast_range
             ):
@@ -746,7 +746,7 @@ class BotAI(DistanceCalculation):
             building = self.game_data_local.abilities[building.value]
 
         action_result = await self._client.query_building_placement(building, [position])
-        return action_result[0] == ActionResult.Success
+        return action_result[0] == ACTION_RESULT.Success
 
     async def find_placement(
         self,
@@ -797,7 +797,7 @@ class BotAI(DistanceCalculation):
                 )
             ]
             res = await self._client.query_building_placement(building, possible_positions)
-            possible = [p for r, p in zip(res, possible_positions) if r == ActionResult.Success]
+            possible = [p for r, p in zip(res, possible_positions) if r == ACTION_RESULT.Success]
             if not possible:
                 continue
 
@@ -842,7 +842,7 @@ class BotAI(DistanceCalculation):
             for order in unit.orders:
                 abilities_amount[order.ability] += 1
             if not unit.is_ready:
-                if self.race != Race.Terran or not unit.is_structure:
+                if self.race != RACE.Terran or not unit.is_structure:
                     # If an SCV is constructing a building, already_pending would count this structure twice
                     # (once from the SCV order, and once from "not structure.is_ready")
                     creation_ability: AbilityData = self.game_data_local.units[unit.type_id.value].creation_ability
@@ -923,9 +923,9 @@ class BotAI(DistanceCalculation):
 
         :param structure_type: """
         race_dict = {
-            Race.Protoss: PROTOSS_TECH_REQUIREMENT,
-            Race.Terran: TERRAN_TECH_REQUIREMENT,
-            Race.Zerg: ZERG_TECH_REQUIREMENT,
+            RACE.Protoss: PROTOSS_TECH_REQUIREMENT,
+            RACE.Terran: TERRAN_TECH_REQUIREMENT,
+            RACE.Zerg: ZERG_TECH_REQUIREMENT,
         }
         unit_info_id = race_dict[self.race][structure_type]
         unit_info_id_value = unit_info_id.value
@@ -1066,9 +1066,9 @@ class BotAI(DistanceCalculation):
         # Tech requirement not met
         if self.tech_requirement_progress(unit_type) < 1:
             race_dict = {
-                Race.Protoss: PROTOSS_TECH_REQUIREMENT,
-                Race.Terran: TERRAN_TECH_REQUIREMENT,
-                Race.Zerg: ZERG_TECH_REQUIREMENT,
+                RACE.Protoss: PROTOSS_TECH_REQUIREMENT,
+                RACE.Terran: TERRAN_TECH_REQUIREMENT,
+                RACE.Zerg: ZERG_TECH_REQUIREMENT,
             }
             unit_info_id = race_dict[self.race][unit_type]
             LOGGER.warning(
@@ -1085,13 +1085,13 @@ class BotAI(DistanceCalculation):
         trained_amount = 0
         # All train structure types: queen can made from hatchery, lair, hive
         train_structure_type: Set[UnitTypeId] = UNIT_TRAINED_FROM[unit_type]
-        train_structures = self.structures if self.race != Race.Zerg else self.structures | self.larva
+        train_structures = self.structures if self.race != RACE.Zerg else self.structures | self.larva
         requires_techlab = any(
             TRAIN_INFO[structure_type][unit_type].get("requires_techlab", False)
             for structure_type in train_structure_type
         )
-        is_protoss = self.race == Race.Protoss
-        is_terran = self.race == Race.Terran
+        is_protoss = self.race == RACE.Protoss
+        is_terran = self.race == RACE.Terran
         can_have_addons = any(
             u in train_structure_type for u in {UnitTypeId.BARRACKS, UnitTypeId.FACTORY, UnitTypeId.STARPORT}
         )
@@ -1210,7 +1210,7 @@ class BotAI(DistanceCalculation):
         if not requirement_met:
             return False
 
-        is_protoss = self.race == Race.Protoss
+        is_protoss = self.race == RACE.Protoss
 
         equiv_structures = {
             UnitTypeId.GREATERSPIRE: {UnitTypeId.SPIRE, UnitTypeId.GREATERSPIRE},
@@ -1307,7 +1307,7 @@ class BotAI(DistanceCalculation):
             raise AssertionError(f"Given unit command is not a command, but instead of type {type(action)}")
         if not self.can_afford(action.ability):
             LOGGER.warning(f"Cannot afford action {action}")
-            return ActionResult.Error
+            return ACTION_RESULT.Error
         action_request = await self._client.actions(action)
         if not action_request:  # success
             cost = self.game_data_local.calculate_ability_cost(action.ability)
@@ -1454,10 +1454,10 @@ class BotAI(DistanceCalculation):
         self.game_data_local: GameData = game_data
         self.realtime: bool = realtime
 
-        self.race: Race = Race(self._game_info.player_races[self.player_id])
+        self.race: RACE = RACE(self._game_info.player_races[self.player_id])
 
         if len(self._game_info.player_races) == 2:
-            self.enemy_race: Race = Race(self._game_info.player_races[3 - self.player_id])
+            self.enemy_race: RACE = RACE(self._game_info.player_races[3 - self.player_id])
 
         self._distances_override_functions(self.distance_calculation_method)
 
@@ -1497,10 +1497,10 @@ class BotAI(DistanceCalculation):
         self.supply_used: int = state.common.food_used
         self.supply_left: int = self.supply_cap - self.supply_used
 
-        if self.race == Race.Zerg:
+        if self.race == RACE.Zerg:
             # Workaround Zerg supply rounding bug
             self._correct_zerg_supply()
-        elif self.race == Race.Protoss:
+        elif self.race == RACE.Protoss:
             self.warp_gate_count: int = state.common.warp_gate_count
 
         self.idle_worker_count: int = state.common.idle_worker_count
@@ -1849,7 +1849,7 @@ class BotAI(DistanceCalculation):
         """
         raise NotImplementedError
 
-    async def on_end(self, game_result: Result):
+    async def on_end(self, game_result: RESULT):
         """ Override this in your bot class. This function is called at the end of a game. Unsure if this function
         will be called on the laddermanager client as the bot process may forcefully be terminated.
 

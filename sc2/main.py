@@ -10,7 +10,7 @@ import six
 from s2clientprotocol import sc2api_pb2 as sc_pb
 
 from .client import Client
-from .data import CreateGameError, Result
+from .data import CREATE_GAME_ERROR, RESULT
 from .game_state import GameState
 from .player import Bot, Human
 from .portconfig import Portconfig
@@ -55,7 +55,7 @@ async def _play_game_human(client, player_id, realtime, game_time_limit):
 
         if game_time_limit and (state.observation.observation.game_loop * 0.725 * (1 / 16)) > game_time_limit:
             print(state.observation.game_loop, state.observation.game_loop * 0.14)
-            return Result.Tie
+            return RESULT.Tie
 
         if not realtime:
             await client.step()
@@ -120,8 +120,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     except Exception as error:
         LOGGER.exception(f"AI on_start threw an error - {error.__traceback__}")
         LOGGER.error(f"resigning due to previous error")
-        await ai.on_end(Result.Defeat)
-        return Result.Defeat
+        await ai.on_end(RESULT.Defeat)
+        return RESULT.Defeat
 
     iteration = 0
     while True:
@@ -143,8 +143,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
             LOGGER.debug(f"Score: {game_state.score.score}")
 
             if game_time_limit and (game_state.game_loop * 0.725 * (1 / 16)) > game_time_limit:
-                await ai.on_end(Result.Tie)
-                return Result.Tie
+                await ai.on_end(RESULT.Tie)
+                return RESULT.Tie
             proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
             ai.prepare_step(game_state, proto_game_info)
 
@@ -217,12 +217,12 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
             LOGGER.error(f"Error: {error}")
             LOGGER.error(f"Resigning due to previous error")
             try:
-                await ai.on_end(Result.Defeat)
+                await ai.on_end(RESULT.Defeat)
             except TypeError:
                 # print(f"caught type error {error}")
                 # print(f"return {Result.Defeat}")
-                return Result.Defeat
-            return Result.Defeat
+                return RESULT.Defeat
+            return RESULT.Defeat
 
         LOGGER.debug(f"Running AI step: done")
 
@@ -276,8 +276,8 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     except Exception as error:
         LOGGER.exception(f"AI on_start threw an error - {error.__traceback__}")
         LOGGER.error(f"resigning due to previous error")
-        await ai.on_end(Result.Defeat)
-        return Result.Defeat
+        await ai.on_end(RESULT.Defeat)
+        return RESULT.Defeat
 
     iteration = 0
     while True:
@@ -324,26 +324,26 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
                 # if result is None:
                 #     LOGGER.error("Game over, but no results gathered")
                 #     raise
-                await ai.on_end(Result.Victory)
+                await ai.on_end(RESULT.Victory)
                 return None
             # NOTE: this message is caught by pytest suite
             LOGGER.exception(f"AI step threw an error")  # DO NOT EDIT!
             LOGGER.error(f"Error: {error}")
             LOGGER.error(f"Resigning due to previous error")
             try:
-                await ai.on_end(Result.Defeat)
+                await ai.on_end(RESULT.Defeat)
             except TypeError:
                 # print(f"caught type error {error}")
                 # print(f"return {Result.Defeat}")
-                return Result.Defeat
-            return Result.Defeat
+                return RESULT.Defeat
+            return RESULT.Defeat
 
         LOGGER.debug(f"Running AI step: done")
 
         if not realtime:
             if not client.in_game:  # Client left (resigned) the game
-                await ai.on_end(Result.Victory)
-                return Result.Victory
+                await ai.on_end(RESULT.Victory)
+                return RESULT.Victory
 
         await client.step()  # un-indent one line to work in realtime
 
@@ -353,7 +353,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
 async def _setup_host_game(server, map_settings, players, realtime, random_seed=None):
     create_game_request = await server.create_game(map_settings, players, realtime, random_seed)
     if create_game_request.create_game.HasField("error"):
-        err = f"Could not create game: {CreateGameError(create_game_request.create_game.error)}"
+        err = f"Could not create game: {CREATE_GAME_ERROR(create_game_request.create_game.error)}"
         if create_game_request.create_game.HasField("error_details"):
             err += f": {create_game_request.create_game.error_details}"
         LOGGER.critical(err)

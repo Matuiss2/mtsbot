@@ -1,10 +1,10 @@
 from .bot_ai import BotAI
-from .data import AIBuild, Difficulty, PlayerType, Race
+from .data import AI_BUILD, DIFFICULTY, PLAYER_TYPE, RACE
 
 
 class AbstractPlayer:
     def __init__(self, p_type, race=None, name=None, difficulty=None, ai_build=None, fullscreen=False):
-        if not isinstance(p_type, PlayerType):
+        if not isinstance(p_type, PLAYER_TYPE):
             raise AssertionError(f"p_type is of type {type(p_type)}")
         if not (name is None or isinstance(name, str)):
             raise AssertionError(f"name is of type {type(name)}")
@@ -14,17 +14,17 @@ class AbstractPlayer:
         self.fullscreen = fullscreen
         if race is not None:
             self.race = race
-        if p_type == PlayerType.Computer:
-            if not isinstance(difficulty, Difficulty):
+        if p_type == PLAYER_TYPE.Computer:
+            if not isinstance(difficulty, DIFFICULTY):
                 raise AssertionError(f"difficulty is of type {type(difficulty)}")
             # Workaround, proto information does not carry ai_build info
             # We cant set that in the Player classmethod
-            if not (ai_build is None or isinstance(ai_build, AIBuild)):
+            if not (ai_build is None or isinstance(ai_build, AI_BUILD)):
                 raise AssertionError(f"ai_build is of type {type(ai_build)}")
             self.difficulty = difficulty
             self.ai_build = ai_build
 
-        elif p_type == PlayerType.Observer:
+        elif p_type == PLAYER_TYPE.Observer:
             if race is not None:
                 raise AssertionError()
             if difficulty is not None:
@@ -33,7 +33,7 @@ class AbstractPlayer:
                 raise AssertionError()
 
         else:
-            if not isinstance(race, Race):
+            if not isinstance(race, RACE):
                 raise AssertionError(f"race is of type {type(race)}")
             if difficulty is not None:
                 raise AssertionError()
@@ -44,7 +44,7 @@ class AbstractPlayer:
 # noinspection PyProtectedMember
 class Human(AbstractPlayer):
     def __init__(self, race, name=None, fullscreen=False):
-        super().__init__(PlayerType.Participant, race, name=name, fullscreen=fullscreen)
+        super().__init__(PLAYER_TYPE.Participant, race, name=name, fullscreen=fullscreen)
 
     def __str__(self):
         if self.name is not None:
@@ -61,7 +61,7 @@ class Bot(AbstractPlayer):
         """
         if not (isinstance(ai, BotAI) or ai is None):
             raise AssertionError(f"ai is of type {type(ai)}, inherit BotAI from bot_ai.py")
-        super().__init__(PlayerType.Participant, race, name=name, fullscreen=fullscreen)
+        super().__init__(PLAYER_TYPE.Participant, race, name=name, fullscreen=fullscreen)
         self.ai = ai
 
     # noinspection PyProtectedMember
@@ -72,8 +72,8 @@ class Bot(AbstractPlayer):
 
 
 class Computer(AbstractPlayer):
-    def __init__(self, race, difficulty=Difficulty.Easy, ai_build=AIBuild.RandomBuild):
-        super().__init__(PlayerType.Computer, race, difficulty=difficulty, ai_build=ai_build)
+    def __init__(self, race, difficulty=DIFFICULTY.Easy, ai_build=AI_BUILD.RandomBuild):
+        super().__init__(PLAYER_TYPE.Computer, race, difficulty=difficulty, ai_build=ai_build)
 
     def __str__(self):
         # noinspection PyProtectedMember,PyProtectedMember
@@ -82,7 +82,7 @@ class Computer(AbstractPlayer):
 
 class Observer(AbstractPlayer):
     def __init__(self):
-        super().__init__(PlayerType.Observer)
+        super().__init__(PLAYER_TYPE.Observer)
 
     def __str__(self):
         return f"Observer"
@@ -91,18 +91,18 @@ class Observer(AbstractPlayer):
 class Player(AbstractPlayer):
     @classmethod
     def from_proto(cls, proto):
-        if PlayerType(proto.type) == PlayerType.Observer:
-            return cls(proto.player_id, PlayerType(proto.type), None, None, None)
+        if PLAYER_TYPE(proto.type) == PLAYER_TYPE.Observer:
+            return cls(proto.player_id, PLAYER_TYPE(proto.type), None, None, None)
         return cls(
             proto.player_id,
-            PlayerType(proto.type),
-            Race(proto.race_requested),
-            Difficulty(proto.difficulty) if proto.HasField("difficulty") else None,
-            Race(proto.race_actual) if proto.HasField("race_actual") else None,
+            PLAYER_TYPE(proto.type),
+            RACE(proto.race_requested),
+            DIFFICULTY(proto.difficulty) if proto.HasField("difficulty") else None,
+            RACE(proto.race_actual) if proto.HasField("race_actual") else None,
             proto.player_name if proto.HasField("player_name") else None,
         )
 
     def __init__(self, player_id, p_type, requested_race, difficulty=None, actual_race=None, name=None, ai_build=None):
         super().__init__(p_type, requested_race, difficulty=difficulty, name=name, ai_build=ai_build)
         self.id: int = player_id
-        self.actual_race: Race = actual_race
+        self.actual_race: RACE = actual_race

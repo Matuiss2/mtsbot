@@ -4,7 +4,7 @@ import random
 from bot_main import Mtsbot
 from sc2 import maps
 from sc2.main import run_game
-from sc2.player import AIBuild, Bot, Computer, Difficulty, Race
+from sc2.player import AI_BUILD, Bot, Computer, DIFFICULTY, RACE
 
 if __name__ == "__main__":
     # Local game
@@ -22,9 +22,9 @@ if __name__ == "__main__":
                 "WorldofSleepersLE",
             ]
         )
-        BUILD = SECURE_RANDOM.choice([AIBuild.Macro, AIBuild.Rush, AIBuild.Timing, AIBuild.Power, AIBuild.Air])
-        DIFFICULTY = SECURE_RANDOM.choice([Difficulty.VeryEasy, Difficulty.Easy])
-        RACE = SECURE_RANDOM.choice([Race.Protoss, Race.Zerg, Race.Terran])
+        BUILD = SECURE_RANDOM.choice([AI_BUILD.Macro, AI_BUILD.Rush, AI_BUILD.Timing, AI_BUILD.Power, AI_BUILD.Air])
+        DIFFICULTY = SECURE_RANDOM.choice([DIFFICULTY.VeryEasy, DIFFICULTY.Easy])
+        RACE = SECURE_RANDOM.choice([RACE.Protoss, RACE.Zerg, RACE.Terran])
         """FINISHED_SETS = {
                 BUILD == AIBuild.Macro and DIFFICULTY == Difficulty.CheatVision and RACE == Race.Zerg,
             }

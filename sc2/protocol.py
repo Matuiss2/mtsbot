@@ -5,7 +5,7 @@ import sys
 from contextlib import suppress
 from s2clientprotocol import sc2api_pb2 as sc_pb
 
-from .data import Status
+from .data import STATUS
 
 LOGGER = logging.getLogger(__name__)
 
@@ -68,7 +68,7 @@ class Protocol:
 
         response = await self.__request(request)
 
-        new_status = Status(response.status)
+        new_status = STATUS(response.status)
         self._status = new_status
 
         if response.error:

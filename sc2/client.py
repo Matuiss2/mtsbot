@@ -11,7 +11,7 @@ from s2clientprotocol import sc2api_pb2 as sc_pb
 from s2clientprotocol import spatial_pb2 as spatial_pb
 
 from .action import combine_actions
-from .data import ActionResult, ChatChannel, Race, Result, Status
+from .data import ACTION_RESULT, CHAT_CHANNEL, RACE, RESULT, STATUS
 from .game_data import AbilityData, GameData
 from .game_info import GameInfo
 from .ids.ability_id import AbilityId
@@ -49,7 +49,7 @@ class Client(Protocol):
 
     @property
     def in_game(self):
-        return self._status in {Status.in_game, Status.in_replay}
+        return self._status in {STATUS.in_game, STATUS.in_replay}
 
     async def join_game(self, name=None, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None):
         interface_options = sc_pb.InterfaceOptions(
@@ -82,7 +82,7 @@ class Client(Protocol):
             # join as observer
             req = sc_pb.RequestJoinGame(observed_player_id=observed_player_id, options=interface_options)
         else:
-            if not isinstance(race, Race):
+            if not isinstance(race, RACE):
                 raise AssertionError()
             req = sc_pb.RequestJoinGame(race=race.value, options=interface_options)
 
@@ -113,7 +113,7 @@ class Client(Protocol):
         if is_resign:
             # For all clients that can leave, result of leaving the game either
             # loss, or the client will ignore the result
-            self.game_result = {self._player_id: Result.Defeat}
+            self.game_result = {self._player_id: RESULT.Defeat}
 
         try:
             await self.execute(leave_game=sc_pb.RequestLeaveGame())
@@ -145,7 +145,7 @@ class Client(Protocol):
 
             player_id_to_result = {}
             for player in result.observation.player_result:
-                player_id_to_result[player.player_id] = Result(player.result)
+                player_id_to_result[player.player_id] = RESULT(player.result)
             self.game_result = player_id_to_result
 
         # if render_data is available, then RGB rendering was requested
@@ -199,8 +199,8 @@ class Client(Protocol):
             action=sc_pb.RequestAction(actions=(sc_pb.Action(action_raw=a) for a in combine_actions(actions)))
         )
         if return_successes:
-            return [ActionResult(r) for r in res.action.result]
-        return [ActionResult(r) for r in res.action.result if ActionResult(r) != ActionResult.Success]
+            return [ACTION_RESULT(r) for r in res.action.result]
+        return [ACTION_RESULT(r) for r in res.action.result if ACTION_RESULT(r) != ACTION_RESULT.Success]
 
     async def query_pathway(
         self, start: Union[Unit, Point2, Point3], end: Union[Point2, Point3]
@@ -281,7 +281,7 @@ class Client(Protocol):
 
     async def query_building_placement(
         self, ability: AbilityData, positions: List[Union[Point2, Point3]], ignore_resources: bool = True
-    ) -> List[ActionResult]:
+    ) -> List[ACTION_RESULT]:
         if not isinstance(ability, AbilityData):
             raise AssertionError()
         result = await self.execute(
@@ -295,7 +295,7 @@ class Client(Protocol):
                 ignore_resource_requirements=ignore_resources,
             )
         )
-        return [ActionResult(p.result) for p in result.query.placements]
+        return [ACTION_RESULT(p.result) for p in result.query.placements]
 
     async def query_available_abilities(
         self, units: Union[List[Unit], Units], ignore_resource_requirements: bool = False
@@ -323,7 +323,7 @@ class Client(Protocol):
 
     async def chat_send(self, message: str, team_only: bool):
         """ Writes a message to the chat """
-        chat = ChatChannel.Team if team_only else ChatChannel.Broadcast
+        chat = CHAT_CHANNEL.Team if team_only else CHAT_CHANNEL.Broadcast
         await self.execute(
             action=sc_pb.RequestAction(
                 actions=[sc_pb.Action(action_chat=sc_pb.ActionChat(channel=chat.value, message=message))]

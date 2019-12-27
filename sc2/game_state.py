@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Set, Union
 
 from .constants import FakeEffectID, FakeEffectRadii
-from .data import Alliance, DisplayType
+from .data import ALLIANCE, DISPLAY_TYPE
 from .ids.effect_id import EffectId
 from .ids.upgrade_id import UpgradeId
 from .pixel_map import PixelMap
@@ -26,23 +26,23 @@ class Blip:
 
     @property
     def is_snapshot(self) -> bool:
-        return self.proto.display_type == DisplayType.Snapshot.value
+        return self.proto.display_type == DISPLAY_TYPE.Snapshot.value
 
     @property
     def is_visible(self) -> bool:
-        return self.proto.display_type == DisplayType.Visible.value
+        return self.proto.display_type == DISPLAY_TYPE.Visible.value
 
     @property
-    def alliance(self) -> Alliance:
+    def alliance(self) -> ALLIANCE:
         return self.proto.alliance
 
     @property
     def is_mine(self) -> bool:
-        return self.proto.alliance == Alliance.Self.value
+        return self.proto.alliance == ALLIANCE.Self.value
 
     @property
     def is_enemy(self) -> bool:
-        return self.proto.alliance == Alliance.Enemy.value
+        return self.proto.alliance == ALLIANCE.Enemy.value
 
     @property
     def position(self) -> Point2:
@@ -101,7 +101,7 @@ class EffectData:
         return {Point2.from_proto(p) for p in self.proto.pos}
 
     @property
-    def alliance(self) -> Alliance:
+    def alliance(self) -> ALLIANCE:
         return self.proto.alliance
 
     @property
