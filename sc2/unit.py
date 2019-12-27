@@ -437,7 +437,7 @@ class Unit:
         :param target: """
         if isinstance(target, Unit):
             return self.bot_object.distance_squared_unit_to_unit(self, target) ** 0.5
-        return self.bot_object.distance_math_hypot(self.position_tuple, target)
+        return self.bot_object.distance_math_dist(self.position_tuple, target)
 
     def distance_to_squared(self, target: Union[Unit, Point2, Point3]) -> float:
         """ Using the 2d distance squared between self and position. Slightly faster than distance_to,
@@ -447,7 +447,7 @@ class Unit:
         :param target: """
         if isinstance(target, Unit):
             return self.bot_object.distance_squared_unit_to_unit(self, target)
-        return self.bot_object.distance_math_hypot_squared(self.position_tuple, target)
+        return self.bot_object.distance_math_dist_squared(self.position_tuple, target)
 
     def target_in_range(self, target: Unit, bonus_distance: float = 0) -> bool:
         """ Checks if the target is in range.

@@ -164,15 +164,15 @@ class DistanceCalculation:
     # Fast and simple calculation functions
 
     @staticmethod
-    def distance_math_hypot(start_point: Tuple[float, float], destiny: Tuple[float, float]):
-        return math.hypot(start_point[0] - destiny[0], start_point[1] - destiny[1])
+    def distance_math_dist(start_point: Tuple[float, float], destiny: Tuple[float, float]):
+        return math.dist(start_point, destiny)
 
     @staticmethod
-    def distance_math_hypot_squared(start_point: Tuple[float, float], destiny: Tuple[float, float]):
-        return pow(start_point[0] - destiny[0], 2) + pow(start_point[1] - destiny[1], 2)
+    def distance_math_dist_squared(start_point: Tuple[float, float], destiny: Tuple[float, float]):
+        return math.dist(pow(start_point, 2), pow(destiny, 2))
 
     def _distance_squared_unit_to_unit_method0(self, unit1: Unit, unit2: Unit) -> float:
-        return self.distance_math_hypot_squared(unit1.position_tuple, unit2.position_tuple)
+        return self.distance_math_dist_squared(unit1.position_tuple, unit2.position_tuple)
 
     # Distance calculation using the pre-calculated matrix above
 
@@ -202,18 +202,18 @@ class DistanceCalculation:
     # Distance calculation using the fastest distance calculation functions
 
     def distance_pos_to_pos(self, pos1: Tuple[float, float], pos2: Tuple[float, float]) -> float:
-        return self.distance_math_hypot(pos1, pos2)
+        return self.distance_math_dist(pos1, pos2)
 
     def distance_units_to_pos(self, units: Units, pos: Tuple[float, float]) -> Generator[float, None, None]:
         """ This function does not scale well, if len(units) > 100 it gets fairly slow """
-        return (self.distance_math_hypot(u.position_tuple, pos) for u in units)
+        return (self.distance_math_dist(u.position_tuple, pos) for u in units)
 
     def _distance_unit_to_points(
         self, unit: Unit, points: Iterable[Tuple[float, float]]
     ) -> Generator[float, None, None]:
         """ This function does not scale well, if len(points) > 100 it gets fairly slow """
         pos = unit.position_tuple
-        return (self.distance_math_hypot(p, pos) for p in points)
+        return (self.distance_math_dist(p, pos) for p in points)
 
     def _distances_override_functions(self, method: int = 0):
         """ Overrides the internal distance calculation functions at game start in bot_ai.py self.prepare_start()
