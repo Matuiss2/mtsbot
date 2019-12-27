@@ -198,6 +198,7 @@ class Client(Protocol):
         return GameInfo(request.game_info)
 
     async def actions(self, actions, return_successes=False):
+        """ Send the given actions to the protocol and returns a list of the action_results for then"""
         if not actions:
             return None
         if not isinstance(actions, list):
@@ -737,7 +738,7 @@ class Client(Protocol):
 
 
 class DrawItem:
-    """ Helpers for conversions: API types -> protocol type"""
+    """ Helpers for conversions: API types -> protocol types"""
 
     @staticmethod
     def to_debug_point(point: Union[Unit, Point2, Point3]) -> common_pb.Point:
@@ -776,6 +777,7 @@ class DrawItemScreenText(DrawItem):
         self._font_size: int = font_size
 
     def to_proto(self):
+        """ Convert API types to protocol types """
         return debug_pb.DebugText(
             color=self.to_debug_color(self._color),
             text=self._text,
@@ -785,6 +787,7 @@ class DrawItemScreenText(DrawItem):
         )
 
     def __hash__(self):
+        """ Changes DrawItemScreenText hash value"""
         return hash((self._start_point, self._color, self._text, self._font_size))
 
 
@@ -798,6 +801,7 @@ class DrawItemWorldText(DrawItem):
         self._font_size: int = font_size
 
     def to_proto(self):
+        """ Convert API types to protocol types """
         return debug_pb.DebugText(
             color=self.to_debug_color(self._color),
             text=self._text,
@@ -819,6 +823,7 @@ class DrawItemLine(DrawItem):
         self._color: Point3 = color
 
     def to_proto(self):
+        """ Convert API types to protocol types """
         return debug_pb.DebugLine(
             line=debug_pb.Line(p0=self.to_debug_point(self._start_point), p1=self.to_debug_point(self._end_point)),
             color=self.to_debug_color(self._color),
@@ -837,6 +842,7 @@ class DrawItemBox(DrawItem):
         self._color: Point3 = color
 
     def to_proto(self):
+        """ Convert API types to protocol types """
         return debug_pb.DebugBox(
             min=self.to_debug_point(self._start_point),
             max=self.to_debug_point(self._end_point),
@@ -856,6 +862,7 @@ class DrawItemSphere(DrawItem):
         self._color: Point3 = color
 
     def to_proto(self):
+        """ Convert API types to protocol types """
         return debug_pb.DebugSphere(
             p=self.to_debug_point(self._start_point), r=self._radius, color=self.to_debug_color(self._color)
         )

@@ -157,14 +157,17 @@ class UnitTypeData:
 
     @property
     def id(self) -> UnitTypeId:
+        """ Returns the unit id"""
         return UnitTypeId(self.proto.unit_id)
 
     @property
     def name(self) -> str:
+        """ Returns the unit name"""
         return self.proto.name
 
     @property
     def creation_ability(self) -> Optional[AbilityData]:
+        """ Returns the ability responsible to create the unit """
         if self.proto.ability_id == 0:
             return None
         if self.proto.ability_id not in self._game_data.abilities:
@@ -173,19 +176,23 @@ class UnitTypeData:
 
     @property
     def attributes(self) -> List[ATTRIBUTE]:
+        """ Returns the unit attributes """
         return self.proto.attributes
 
     def has_attribute(self, attr) -> bool:
+        """ Returns True if the unit has given attribute """
         if not isinstance(attr, ATTRIBUTE):
             raise AssertionError()
         return attr in self.attributes
 
     @property
     def has_minerals(self) -> bool:
+        """ Returns True if the unit has minerals, only True for different types of mineral patches """
         return self.proto.has_minerals
 
     @property
     def has_vespene(self) -> bool:
+        """ Returns True if the unit has vespene, only True for different types of geysers """
         return self.proto.has_vespene
 
     @property
@@ -225,10 +232,12 @@ class UnitTypeData:
 
     @property
     def race(self) -> RACE:
+        """ Returns the race of the unit"""
         return RACE(self.proto.race)
 
     @property
     def cost(self) -> Cost:
+        """ Returns the cost of the unit"""
         return Cost(self.proto.mineral_cost, self.proto.vespene_cost, self.proto.build_time)
 
     @property
@@ -278,10 +287,12 @@ class UpgradeData:
 
     @property
     def name(self) -> str:
+        """ Returns the name of the upgrade"""
         return self.proto.name
 
     @property
     def research_ability(self) -> Optional[AbilityData]:
+        """ Returns the ability responsible to research the upgrade"""
         if self.proto.ability_id == 0:
             return None
         if self.proto.ability_id not in self._game_data.abilities:
@@ -290,6 +301,7 @@ class UpgradeData:
 
     @property
     def cost(self) -> Cost:
+        """ Returns the cost of the upgrade"""
         return Cost(self.proto.mineral_cost, self.proto.vespene_cost, self.proto.research_time)
 
 
