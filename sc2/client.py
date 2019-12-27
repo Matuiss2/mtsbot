@@ -1,3 +1,7 @@
+"""
+Groups the requests to the client and the debugger functions
+changed last: 27/12/2019
+"""
 from __future__ import annotations
 
 import logging
@@ -26,10 +30,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Client(Protocol):
+    """ Groups the requests to the client """
     def __init__(self, web_server):
-        """
-        :param web_server:
-        """
         super().__init__(web_server)
         # How many frames will be waited between iterations before the next one is called
         self.game_step = 8
@@ -49,6 +51,7 @@ class Client(Protocol):
 
     @property
     def in_game(self):
+        """ Returns True if it's in game or in replay"""
         return self._status in {STATUS.in_game, STATUS.in_replay}
 
     async def join_game(self, name=None, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None):
@@ -122,6 +125,7 @@ class Client(Protocol):
                 raise
 
     async def save_replay(self, path):
+        """ Save replay of the game on the given path"""
         LOGGER.debug(f"Requesting replay from server")
         result = await self.execute(save_replay=sc_pb.RequestSaveReplay())
         with open(path, "wb") as file:

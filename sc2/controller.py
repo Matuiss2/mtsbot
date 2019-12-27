@@ -1,3 +1,7 @@
+"""
+Very similar to the client.py it maybe can be absorbed by it
+changed last: 27/12/2019
+"""
 import logging
 
 from s2clientprotocol import sc2api_pb2 as sc_pb
@@ -9,12 +13,14 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Controller(Protocol):
+    """ Groups some leftovers requests to the client """
     def __init__(self, web_server, process):
         super().__init__(web_server)
         self.__process = process
 
     @property
     def running(self):
+        """ Check if the process is running"""
         return self.__process.process is not None
 
     async def create_game(self, game_map, players, realtime, random_seed=None):
@@ -35,6 +41,17 @@ class Controller(Protocol):
         return result
 
     async def start_replay(self, replay_path, observed_id=0):  # Added
+        """
+        Play the replay that is on given path
+        Parameters
+        ----------
+        replay_path: Get the replay path
+        observed_id: Changes the id of the player1
+
+        Returns
+        -------
+        True if the request was successful
+        """
         interface_options = sc_pb.InterfaceOptions(
             raw=True, score=True, show_cloaked=True, raw_affects_selection=False, raw_crop_to_playable_area=False
         )

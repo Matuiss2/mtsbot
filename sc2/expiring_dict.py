@@ -1,3 +1,7 @@
+"""
+Houses an expiring dict that uses the game_loop to only return items that are valid for a specific amount of time.
+changed last: 27/12/2019
+"""
 from collections import OrderedDict
 from contextlib import suppress
 from threading import RLock
@@ -9,9 +13,6 @@ if TYPE_CHECKING:
 
 class ExpiringDict(OrderedDict):
     """
-    An expiring dict that uses the bot.state.game_loop to only return items that are valid for a specific amount of
-    time.
-
     Example usages::
 
         async def on_step(iteration: int):
@@ -143,6 +144,7 @@ class ExpiringDict(OrderedDict):
             return None
 
     def update(self, other_dict: dict, **kwargs):
+        """ Update the last dict using the given keys and values in the parameter """
         with self.lock:
             for key, value in other_dict.items():
                 self[key] = value
