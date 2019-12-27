@@ -1,7 +1,13 @@
+"""
+Groups different kinds of decorators for caches
+changed last: 27/12/2019
+"""
 from functools import wraps
 
 
 def property_cache_forever(function):
+    """ This decorator caches the return value for the whole game, then clears after every game."""
+
     @wraps(function)
     def inner(self):
         property_cache = "_cache_" + function.__name__

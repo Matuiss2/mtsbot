@@ -1,3 +1,7 @@
+"""
+Base class for the bots
+changed last: 27/12/2019
+"""
 from __future__ import annotations
 
 import itertools
