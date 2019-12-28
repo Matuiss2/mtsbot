@@ -213,6 +213,7 @@ class SC2Process:
             await self._session.close()
 
     def clean(self):
+        """ Terminates the processes safely"""
         if self.process is not None:
             if self.process.poll() is None:
                 for _ in range(3):
