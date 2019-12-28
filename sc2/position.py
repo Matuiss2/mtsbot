@@ -348,6 +348,7 @@ class Point2(Pointlike):
 
 class Point3(Point2):
     """ Extends Point specifies it to Point3 its the same but includes the height"""
+
     @classmethod
     def from_proto(cls, data):
         """ Get necessary info from sc2 protocol"""
@@ -390,6 +391,7 @@ class Size(Point2):
 
 class Rect(tuple):
     """ Extends tuple specifies it to Rectangles it behaves like the pointlike, its used to get the playable area"""
+
     @classmethod
     def from_proto(cls, data):
         """ Get necessary info from sc2 protocol"""
