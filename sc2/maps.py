@@ -10,6 +10,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def get(name=None):
+    """ Get all available maps returns the one given as a parameter"""
     maps = []
     for map_directory in (p for p in Paths.MAPS.iterdir()):
         if map_directory.is_dir():
@@ -31,6 +32,7 @@ def get(name=None):
 
 
 class Map:
+    """Gets some info about the selected map"""
     def __init__(self, path):
         self.path = path
 
@@ -45,15 +47,19 @@ class Map:
 
     @property
     def name(self):
+        """Returns the name of the map"""
         return self.path.stem
 
     @property
     def data(self):
+        """ not sure what it does"""
         with open(self.path, "rb") as data:
             return data.read()
 
     def matches(self, name):
+        """ Check if the given name matches the path name"""
         return self.name.lower().replace(" ", "") == name.lower().replace(" ", "")
 
     def __repr__(self):
+        """ Prints the given path"""
         return f"Map({self.path})"

@@ -56,6 +56,7 @@ class Client(Protocol):
         return self._status in {STATUS.in_game, STATUS.in_replay}
 
     async def join_game(self, name=None, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None):
+        """ Logic to join the game with all the options for it, probably needs to be refactored since it's too big"""
         interface_options = sc_pb.InterfaceOptions(
             raw=True,
             score=True,
@@ -134,6 +135,7 @@ class Client(Protocol):
         LOGGER.info(f"Saved replay to {path}")
 
     async def observation(self, game_loop=None):
+        """ Gets the result of the game, and also the RGB renderer"""
         if game_loop is not None:
             result = await self.execute(observation=sc_pb.RequestObservation(game_loop=game_loop))
         else:
