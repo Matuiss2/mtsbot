@@ -50,6 +50,7 @@ class Ramp:
 
     @property_mutable_cache
     def points(self) -> Set[Point2]:
+        """Returns all points of a ramp """
         return self._points.copy()
 
     @property_mutable_cache
@@ -111,6 +112,7 @@ class Ramp:
 
 
 class GameInfo:
+    """ Groups the map terrain, path, destructible etc, data """
     def __init__(self, proto):
         self.proto = proto
         self.players: List[Player] = [Player.from_proto(p) for p in self.proto.player_info]
@@ -138,12 +140,11 @@ class GameInfo:
         and into vision blockers if they are. """
 
         def equal_height_around(tile):
-            # mask to slice array 1 around tile
+            """Check if the sliced tiles are same weight"""
             sliced = self.terrain_height.data_numpy[tile[1] - 1 : tile[1] + 2, tile[0] - 1 : tile[0] + 2]
             return len(np.unique(sliced)) == 1
 
         map_area = self.playable_area
-        # all points in the playable area that are passable but not placeable
         points = [
             Point2((a, b))
             for (b, a), value in np.ndenumerate(self.pathway_grid.data_numpy)
@@ -152,7 +153,6 @@ class GameInfo:
             and map_area.y <= b < map_area.y + map_area.height
             and self.placement_grid[(a, b)] == 0
         ]
-        # divide points into ramp points and vision blockers
         ramp_points = [point for point in points if not equal_height_around(point)]
         vision_blockers = set(point for point in points if equal_height_around(point))
         ramps = [Ramp(group, self) for group in self._find_groups(ramp_points)]

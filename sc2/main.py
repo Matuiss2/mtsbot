@@ -1,5 +1,5 @@
 """
-Groups all the actions related to the game(join, watch replay, host, etc)
+Groups all the actions related to the game(join, watch replay, host, etc) and it's appearance
 changed last: 27/12/2019
 """
 import asyncio
@@ -25,6 +25,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class SlidingTimeWindow:
+    """ Not sure what it does"""
     def __init__(self, size: int):
         if size <= 0:
             raise AssertionError()
@@ -33,21 +34,26 @@ class SlidingTimeWindow:
         self.window = []
 
     def push(self, value: float):
+        """ Not sure what it does"""
         self.window = (self.window + [value])[-self.window_size :]
 
     def clear(self):
+        """ Not sure what it does"""
         self.window = []
 
     @property
     def sum(self) -> float:
+        """ Not sure what it does"""
         return sum(self.window)
 
     @property
     def available(self) -> float:
+        """ Not sure what it does"""
         return sum(self.window[1:])
 
     @property
     def available_fmt(self) -> float:
+        """ Not sure what it does"""
         return ",".join(f"{w:.2f}" for w in self.window[1:])
 
 

@@ -39,9 +39,9 @@ def get_env():
 
 
 def get_runner_args(cwd):
+    """Get it to work on linux"""
     if "WINE" in os.environ:
         runner_dir = os.path.dirname(os.environ.get("WINE"))
-        # translate cwd from Unix to Windows path
         win_cwd = subprocess.run(
             [os.path.join(runner_dir, "winepath"), "-w", cwd], capture_output=True, text=True, check=True
         ).stdout.rstrip()
@@ -51,7 +51,7 @@ def get_runner_args(cwd):
 
 
 def latest_executable(versions_dir, base_build=None):
-
+    """ Returns the path to the latest sc2 binary"""
     if base_build is None:
         latest = max((int(p.name[4:]), p) for p in versions_dir.iterdir() if p.is_dir() and p.name.startswith("Base"))
     else:
