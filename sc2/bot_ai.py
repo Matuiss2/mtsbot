@@ -36,7 +36,6 @@ from .dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
 from .distances import DistanceCalculation
 from .game_data import AbilityData, GameData
 from .game_data import Cost
-
 # Imports for mypy and pycharm autocomplete as well as sphinx auto-documentation
 from .game_state import Blip, EffectData, GameState
 from .ids.ability_id import AbilityId
@@ -725,7 +724,7 @@ class BotAI(DistanceCalculation):
                 ):
                     return worker
 
-            return workers.random if force else None
+            return workers.random_unit if force else None
         return None
 
     async def can_place(self, building: Union[AbilityData, AbilityId, UnitTypeId], position: Point2) -> bool:
@@ -1137,7 +1136,7 @@ class BotAI(DistanceCalculation):
                 # Warp in at location
                 if structure.type_id == UnitTypeId.WARPGATE:
                     pylons = self.structures(UnitTypeId.PYLON)
-                    location = pylons.random.position.random_on_distance(4)
+                    location = pylons.random_unit.position.random_on_distance(4)
                     successfully_trained = self.do(
                         structure.warp_in(unit_type, location), subtract_cost=True, subtract_supply=True
                     )

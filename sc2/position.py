@@ -17,6 +17,8 @@ def _sign(num):
 
 
 class Pointlike(tuple):
+    """ Mother class for points it houses the shared functions"""
+
     @property
     def position(self) -> Pointlike:
         return self
@@ -147,6 +149,7 @@ class Pointlike(tuple):
 
     @property
     def to2(self) -> Point2:
+        """ Convert the point to point2 and returns it"""
         return Point2(self[:2])
 
     def __eq__(self, other):
@@ -161,6 +164,8 @@ class Pointlike(tuple):
 
 
 class Point2(Pointlike):
+    """ Extends Pointlike specifies it to Point2(its a tuple with the coordinates) """
+
     @classmethod
     def from_proto(cls, data) -> Point2:
         """ Get necessary info from sc2 protocol"""
@@ -168,6 +173,7 @@ class Point2(Pointlike):
 
     @property
     def rounded(self) -> Point2:
+        """ Rounds the x and y coordinates down"""
         return Point2((math.floor(self[0]), math.floor(self[1])))
 
     @property
@@ -193,11 +199,6 @@ class Point2(Pointlike):
     def y(self) -> Union[int, float]:
         """ Returns the second element of the Point2 tuple"""
         return self[1]
-
-    @property
-    def to2(self) -> Point2:
-        """ Convert the point to point2 and returns it"""
-        return Point2(self[:2])
 
     @property
     def to3(self) -> Point3:
@@ -348,14 +349,17 @@ class Point3(Point2):
 
     @property
     def rounded(self) -> Point3:
+        """ Rounds the x, y, z coordinates down"""
         return Point3((math.floor(self[0]), math.floor(self[1]), math.floor(self[2])))
 
     @property
     def z(self) -> Union[int, float]:
+        """ Returns the height(z coordinate) of the self point"""
         return self[2]
 
     @property
     def to3(self) -> Point3:
+        """ Convert the point to point3 and returns it"""
         return Point3(self)
 
     def __add__(self, other: Union[Point2, Point3]) -> Point3:
@@ -365,12 +369,16 @@ class Point3(Point2):
 
 
 class Size(Point2):
+    """ Extends the point2 class"""
+
     @property
     def width(self) -> Union[int, float]:
+        """ Returns the x coordinate of the object"""
         return self[0]
 
     @property
     def height(self) -> Union[int, float]:
+        """ Returns the y coordinate of the object"""
         return self[1]
 
 
@@ -384,27 +392,34 @@ class Rect(tuple):
 
     @property
     def x(self) -> Union[int, float]:
+        """ Returns the x coordinate"""
         return self[0]
 
     @property
     def y(self) -> Union[int, float]:
+        """ Returns the y coordinate"""
         return self[1]
 
     @property
     def width(self) -> Union[int, float]:
+        """ Returns the width of the rectangle"""
         return self[2]
 
     @property
     def height(self) -> Union[int, float]:
+        """ Returns the height of the rectangle"""
         return self[3]
 
     @property
     def size(self) -> Size:
+        """ Returns the width and the height of the rectangle"""
         return Size((self[2], self[3]))
 
     @property
     def center(self) -> Point2:
+        """ Returns the center of the rectangle"""
         return Point2((self.x + self.width / 2, self.y + self.height / 2))
 
     def offset(self, point):
+        """ Returns the offset(off by the point given) of the rectangle"""
         return self.__class__((self[0] + point[0], self[1] + point[1], self[2], self[3]))

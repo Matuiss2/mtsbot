@@ -89,15 +89,15 @@ class Units(list):
         return self.subgroup(self[:n])
 
     @property
-    def random(self) -> Unit:
+    def random_unit(self) -> Unit:
         """ Take a random unit from self group"""
         if not self:
             raise AssertionError("Units object is empty")
         return random.SystemRandom().choice(self)
 
-    def random_or(self, other: any) -> Unit:
+    def random_unit_or(self, other: any) -> Unit:
         """ Same as above, but instead of giving an error if self is empty returns the other parameter instead"""
-        return self.random() if self else other
+        return self.random_unit() if self else other
 
     def random_group_of(self, n: int) -> Units:
         """ Returns self if n >= self.amount. """
