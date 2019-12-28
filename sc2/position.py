@@ -1,3 +1,7 @@
+"""
+Everything about the Pointlike(coordinates) objects and their manipulation are here
+changed last: 28/12/2019
+"""
 from __future__ import annotations
 
 import itertools
@@ -21,6 +25,7 @@ class Pointlike(tuple):
 
     @property
     def position(self) -> Pointlike:
+        """ It returns the position of self"""
         return self
 
     def distance_to(self, target: Union[Unit, Point2]) -> float:
@@ -342,6 +347,7 @@ class Point2(Pointlike):
 
 
 class Point3(Point2):
+    """ Extends Point specifies it to Point3 its the same but includes the height"""
     @classmethod
     def from_proto(cls, data):
         """ Get necessary info from sc2 protocol"""
@@ -383,6 +389,7 @@ class Size(Point2):
 
 
 class Rect(tuple):
+    """ Extends tuple specifies it to Rectangles it behaves like the pointlike, its used to get the playable area"""
     @classmethod
     def from_proto(cls, data):
         """ Get necessary info from sc2 protocol"""

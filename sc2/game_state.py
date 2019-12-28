@@ -12,7 +12,6 @@ from .ids.effect_id import EffectId
 from .ids.upgrade_id import UpgradeId
 from .pixel_map import PixelMap
 from .position import Point2, Point3
-from .power_source import PsionicMatrix
 from .score import ScoreDetails
 
 
@@ -123,9 +122,6 @@ class GameState:
         self.player_result = response_observation.player_result
         self.chat = response_observation.chat
         self.common: Common = Common(self.observation.player_common)
-
-        # Area covered by Pylons and Warpprisms
-        self.psionic_matrix: PsionicMatrix = PsionicMatrix.from_proto(self.observation_raw.player.power_sources)
         self.game_loop: int = self.observation.game_loop  # 22.4 per second on faster game speed
 
         self.score: ScoreDetails = ScoreDetails(self.observation.score)

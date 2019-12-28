@@ -19,6 +19,7 @@ class ProtocolError(Exception):
 
     @property
     def is_game_over_error(self) -> bool:
+        """If the game ended connecting to the protocol is not needed"""
         return self.args[0] in ["['Game has already ended']", "['Not supported if game has already ended']"]
 
 
