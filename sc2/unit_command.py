@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
 class UnitCommand:
     """ Allows combining all possible abilities that every unit can do on every possible target"""
+
     def __init__(self, ability: AbilityId, unit: Unit, target: Union[Unit, Point2] = None, queue: bool = False):
         """
         :param ability:

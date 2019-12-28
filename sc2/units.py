@@ -41,9 +41,11 @@ class Units(list):
         return UnitSelection(self, *args, **kwargs)
 
     def select(self, *args, **kwargs):
+        """Not sur what it does"""
         return UnitSelection(self, *args, **kwargs)
 
     def copy(self):
+        """ Copies the units group"""
         return self.subgroup(self)
 
     def __or__(self, other: Units) -> Units:

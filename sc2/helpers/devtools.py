@@ -1,9 +1,14 @@
+"""
+Dev-tools for performance measurements
+changed last: 28/12/2019
+"""
 import time
 from contextlib import contextmanager
 
 
 @contextmanager
 def time_this(label):
+    """ Time the given function that the label represents"""
     start = time.perf_counter_ns()
     try:
         yield
