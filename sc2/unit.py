@@ -66,6 +66,8 @@ if TYPE_CHECKING:
 
 
 class UnitOrder:
+    """ Check the orders that the unit has(the ability it's using, the target of it and the progress)"""
+
     @classmethod
     def from_proto(cls, proto, bot_object: BotAI):
         """ Get necessary info from sc2 protocol"""
@@ -92,6 +94,8 @@ class UnitOrder:
 
 
 class Unit:
+    """ Info and helpers to assist in the control of individual units"""
+
     def __init__(self, proto_data, bot_object: BotAI):
         """
         :param proto_data:

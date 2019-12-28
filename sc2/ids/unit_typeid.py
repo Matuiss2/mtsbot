@@ -9,6 +9,8 @@ import enum
 
 
 class UnitTypeId(enum.Enum):
+    """ All unit ids"""
+
     NOTAUNIT = 0
     SYSTEM_SNAPSHOT_DUMMY = 1
     BALL = 2

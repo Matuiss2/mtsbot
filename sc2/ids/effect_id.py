@@ -9,6 +9,8 @@ import enum
 
 
 class EffectId(enum.Enum):
+    """ All effect ids"""
+
     NULL = 0
     PSISTORMPERSISTENT = 1
     GUARDIANSHIELDPERSISTENT = 2

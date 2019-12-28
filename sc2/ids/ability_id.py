@@ -9,6 +9,8 @@ import enum
 
 
 class AbilityId(enum.Enum):
+    """ All ability ids"""
+
     NULL_NULL = 0
     SMART = 1
     TAUNT_TAUNT = 2

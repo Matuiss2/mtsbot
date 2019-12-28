@@ -9,6 +9,8 @@ import enum
 
 
 class BuffId(enum.Enum):
+    """ All buff ids"""
+
     NULL = 0
     RADAR25 = 1
     TAUNTB = 2
