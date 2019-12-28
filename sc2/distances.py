@@ -42,7 +42,10 @@ class DistanceCalculation:
         """ As property, so it will be recalculated each time it is called, or return from cache if it is called
         multiple times in teh same game_loop. """
         if self._generated_frame != self.state.game_loop:
-            return self.generate_unit_indices()
+            if self._generated_frame != self.state.game_loop:
+                self._cached_unit_index_dict = {unit.tag: index for index, unit in enumerate(self.all_units)}
+                self._generated_frame = self.state.game_loop
+            return self._cached_unit_index_dict
         return self._cached_unit_index_dict
 
     @property
@@ -60,12 +63,6 @@ class DistanceCalculation:
         if self._generated_frame2 != self.state.game_loop:
             return self.calculate_distances()
         return self._cached_cdist
-
-    def generate_unit_indices(self) -> Dict[int, int]:
-        if self._generated_frame != self.state.game_loop:
-            self._cached_unit_index_dict = {unit.tag: index for index, unit in enumerate(self.all_units)}
-            self._generated_frame = self.state.game_loop
-        return self._cached_unit_index_dict
 
     def _calculate_distances_method1(self) -> np.ndarray:
         """ Use scipy's pdist condensed matrix (1d array) """

@@ -113,6 +113,7 @@ class Ramp:
 
 class GameInfo:
     """ Groups the map terrain, path, destructible etc, data """
+
     def __init__(self, proto):
         self.proto = proto
         self.players: List[Player] = [Player.from_proto(p) for p in self.proto.player_info]

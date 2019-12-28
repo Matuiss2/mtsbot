@@ -307,6 +307,7 @@ class UpgradeData:
 
 class Cost:
     """ Groups the cost of everything(vespene, minerals, and completion time) it misses the food cost tho"""
+
     def __init__(self, minerals: int, vespene: int, time: float = None):
         self.minerals = minerals
         self.vespene = vespene

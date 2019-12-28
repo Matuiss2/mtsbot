@@ -26,6 +26,7 @@ LOGGER = logging.getLogger(__name__)
 
 class SlidingTimeWindow:
     """ Not sure what it does"""
+
     def __init__(self, size: int):
         if size <= 0:
             raise AssertionError()

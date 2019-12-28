@@ -1,3 +1,7 @@
+"""
+It tries to get all the paths that this API will use
+changed last: 27/12/2019
+"""
 import logging
 import os
 import platform

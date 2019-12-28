@@ -1,3 +1,7 @@
+"""
+Groups all info about the map(it's different from game_info that gets info about the map TERRAIN)
+changed last: 27/12/2019
+"""
 from typing import Callable, FrozenSet, List, Set
 
 import matplotlib.pyplot as plt
@@ -8,6 +12,8 @@ from .position import Point2
 
 
 class PixelMap:
+    """ Groups all info about the map"""
+
     def __init__(self, proto, in_bits: bool = False, mirrored: bool = False):
         """
         :param proto:
@@ -30,18 +36,22 @@ class PixelMap:
 
     @property
     def width(self):
+        """Return the map width in pixels"""
         return self.proto.size.x
 
     @property
     def height(self):
+        """Return the map height in pixels"""
         return self.proto.size.y
 
     @property
     def bits_per_pixel(self):
+        """Return the amount of bits in 1 pixel"""
         return self.proto.bits_per_pixel
 
     @property
     def bytes_per_pixel(self):
+        """Return the amount of bytes in 1 pixel"""
         return self.proto.bits_per_pixel // 8
 
     def __getitem__(self, pos):
@@ -65,15 +75,19 @@ class PixelMap:
         self.data_numpy[pos[1], pos[0]] = value
 
     def is_set(self, position):
+        """ Not sure what it does"""
         return self[position] != 0
 
     def is_empty(self, position):
+        """ Not sure what it does"""
         return not self.is_set(position)
 
     def copy(self):
+        """ It makes a copy of the PixelMap"""
         return PixelMap(self.proto, in_bits=self._in_bits, mirrored=self._mirrored)
 
     def flood_fill(self, start_point: Point2, pred: Callable[[int], bool]) -> Set[Point2]:
+        """ Not sure what it does"""
         nodes: Set[Point2] = set()
         queue: List[Point2] = [start_point]
 
@@ -92,6 +106,7 @@ class PixelMap:
         return nodes
 
     def flood_fill_all(self, pred: Callable[[int], bool]) -> Set[FrozenSet[Point2]]:
+        """ Not sure what it does"""
         groups: Set[FrozenSet[Point2]] = set()
 
         for x in range(self.width):
@@ -105,12 +120,14 @@ class PixelMap:
         return groups
 
     def print(self, wide=False):
+        """ Not sure what it does"""
         for y in range(self.height):
             for x in range(self.width):
                 print("#" if self.is_set((x, y)) else " ", end=(" " if wide else ""))
             print("")
 
     def save_image(self, filename):
+        """ Save a print-screen of the map and whats in it, with the given name """
         data = [(0, 0, self[x, y]) for y in range(self.height) for x in range(self.width)]
 
         img = Image.new("RGB", (self.width, self.height))
