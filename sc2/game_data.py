@@ -35,6 +35,7 @@ class GameData:
 
     @lru_cache(maxsize=256)
     def calculate_ability_cost(self, ability) -> Cost:
+        """ Calculates cost info for the abilities, units and upgrades"""
         if isinstance(ability, AbilityId):
             ability = self.abilities[ability.value]
         elif isinstance(ability, UnitCommand):

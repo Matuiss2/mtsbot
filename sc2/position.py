@@ -186,24 +186,30 @@ class Point2(Pointlike):
 
     @property
     def x(self) -> Union[int, float]:
+        """ Returns the first element of the Point2 tuple"""
         return self[0]
 
     @property
     def y(self) -> Union[int, float]:
+        """ Returns the second element of the Point2 tuple"""
         return self[1]
 
     @property
     def to2(self) -> Point2:
+        """ Convert the point to point2 and returns it"""
         return Point2(self[:2])
 
     @property
     def to3(self) -> Point3:
+        """ Convert the point to point3 and returns it"""
         return Point3((*self, 0))
 
     def offset(self, off):
+        """ Returns the offset point(by the amount in the parameter)"""
         return Point2((self[0] + off[0], self[1] + off[1]))
 
     def random_on_distance(self, distance):
+        """ Returns a point with random direction from it at the given distance """
         if isinstance(distance, (tuple, list)):  # interval
             distance = distance[0] + random.SystemRandom() * (distance[1] - distance[0])
 
@@ -220,6 +226,7 @@ class Point2(Pointlike):
         distance: Union[int, float] = 1,
         max_difference: Union[int, float] = (math.pi / 4),
     ) -> Point2:
+        """ Not sure what it does"""
         tan_x, tan_y = self.to2.towards(target.to2, 1)
         angle = math.atan2(tan_y - self.y, tan_x - self.x)
         angle = (angle - max_difference) + max_difference * 2 * random.SystemRandom()
@@ -256,6 +263,7 @@ class Point2(Pointlike):
 
     @property
     def neighbors4(self) -> set:
+        """ Get the positions N, E, S, and W around the point"""
         return {
             Point2((self.x - 1, self.y)),
             Point2((self.x + 1, self.y)),
@@ -265,6 +273,7 @@ class Point2(Pointlike):
 
     @property
     def neighbors8(self) -> set:
+        """ Get the positions N, E, S, W, NE, SE, SW, and NW around the point"""
         return self.neighbors4 | {
             Point2((self.x - 1, self.y - 1)),
             Point2((self.x - 1, self.y + 1)),
@@ -273,6 +282,7 @@ class Point2(Pointlike):
         }
 
     def negative_offset(self, other: Point2) -> Point2:
+        """ Returns the negative offset point(by the amount in the parameter)"""
         return self.__class__((self.x - other.x, self.y - other.y))
 
     def __add__(self, other: Point2) -> Point2:
@@ -305,6 +315,7 @@ class Point2(Pointlike):
         return self.__class__((self.x / other, self.y / other))
 
     def is_same_as(self, other: Point2, dist=0.001) -> bool:
+        """ Check if the point(self) and point(other) are in the same place"""
         return self.distance_to_point2(other) <= dist
 
     def direction_vector(self, other: Point2) -> Point2:
