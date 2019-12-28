@@ -1,3 +1,9 @@
+"""
+Groups all scoring that can be done in SC2
+changed last: 27/12/2019
+"""
+
+
 class ScoreDetails:
     """ Accessible in self.state.score during step function
     For more information, see https://github.com/Blizzard/s2client-proto/blob/master/s2clientprotocol/score.proto

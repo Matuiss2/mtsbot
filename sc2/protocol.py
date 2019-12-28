@@ -1,8 +1,12 @@
+"""
+Groups the last level connection to the sc2 protocol and the error related to that
+changed last: 27/12/2019
+"""
 import asyncio
-
 import logging
 import sys
 from contextlib import suppress
+
 from s2clientprotocol import sc2api_pb2 as sc_pb
 
 from .data import STATUS
@@ -11,16 +15,22 @@ LOGGER = logging.getLogger(__name__)
 
 
 class ProtocolError(Exception):
+    """ Groups the errors that happens when talking to thew protocol """
+
     @property
     def is_game_over_error(self) -> bool:
         return self.args[0] in ["['Game has already ended']", "['Not supported if game has already ended']"]
 
 
 class ConnectionAlreadyClosed(ProtocolError):
+    """ Extension to the protocol error...its empty, so maybe absorb this as a method from protocol error """
+
     pass
 
 
 class Protocol:
+    """ Handles the connection and the requests to the protocol and also returns some server info"""
+
     def __init__(self, web_server):
         """
         :param web_server:
