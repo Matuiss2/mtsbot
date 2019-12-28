@@ -1,3 +1,8 @@
+"""
+Allows the combining of all possible abilities that every unit can do,
+in short all possible unit commands, I'm not sure a new file for this is needed
+changed last: 28/12/2019
+"""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -13,6 +18,7 @@ if TYPE_CHECKING:
 
 
 class UnitCommand:
+    """ Allows combining all possible abilities that every unit can do on every possible target"""
     def __init__(self, ability: AbilityId, unit: Unit, target: Union[Unit, Point2] = None, queue: bool = False):
         """
         :param ability:
@@ -35,6 +41,7 @@ class UnitCommand:
 
     @property
     def combining_tuple(self):
+        """ Combines the wanted ability, target, queue and ability for the bot """
         return self.ability, self.target, self.queue, self.ability in COMBINABLE_ABILITIES
 
     def __repr__(self):
