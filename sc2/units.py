@@ -76,30 +76,28 @@ class Units(list):
         return hash(unit.tag for unit in self)
 
     def find_by_tag(self, tag) -> Optional[Unit]:
+        """ Find an unit by giving it's tag, if None is found return None"""
         for unit in self:
             if unit.tag == tag:
                 return unit
         return None
 
-    def by_tag(self, tag):
-        unit = self.find_by_tag(tag)
-        if unit is None:
-            raise KeyError("Unit not found")
-        return unit
-
     def take(self, n: int) -> Units:
+        """ Take n units from self group or all of then if n >= len(self) """
         if n >= len(self):
             return self
         return self.subgroup(self[:n])
 
     @property
     def random(self) -> Unit:
+        """ Take a random unit from self group"""
         if not self:
             raise AssertionError("Units object is empty")
         return random.SystemRandom().choice(self)
 
     def random_or(self, other: any) -> Unit:
-        return random.SystemRandom().choice(self) if self else other
+        """ Same as above, but instead of giving an error if self is empty returns the other parameter instead"""
+        return self.random() if self else other
 
     def random_group_of(self, n: int) -> Units:
         """ Returns self if n >= self.amount. """
@@ -108,12 +106,6 @@ class Units(list):
         if n >= len(self):
             return self
         return self.subgroup(random.sample(self, n))
-
-    # @property_immutable_cache
-    # def positions(self) -> np.ndarray:
-    #     flat_units_positions = (coord for unit in self for coord in unit.position)
-    #     unit_position_np = np.fromiter(flat_units_positions, dtype=float, count=2 * len(self)).reshape((len(self), 2))
-    #     return unit_position_np
 
     def in_attack_range_of(self, unit: Unit, bonus_distance: Union[int, float] = 0) -> Units:
         """
@@ -451,6 +443,7 @@ class Units(list):
         return self.subgroup(filter(pred, self))
 
     def sorted(self, key: callable, reverse: bool = False) -> Units:
+        """ Sort it by the given function"""
         return self.subgroup(sorted(self, key=key, reverse=reverse))
 
     def _list_sorted_by_distance_to(self, position: Union[Unit, Point2], reverse: bool = False) -> List[Unit]:
@@ -709,6 +702,8 @@ class Units(list):
 
 
 class UnitSelection(Units):
+    """ Not sure what it does"""
+
     def __init__(self, parent, selection=None):
         if isinstance(selection, UnitTypeId):
             super().__init__((unit for unit in parent if unit.type_id == selection), parent.bot_object)

@@ -8,7 +8,8 @@ import portpicker
 
 
 class Portconfig:
-    "" "Connect, 'talk' and send the configurations to unused ports """
+    "" "Connect, 'talk' and send the configurations to unused ports " ""
+
     def __init__(self):
         self.shared = portpicker.pick_unused_port()
         self.server = [portpicker.pick_unused_port() for _ in range(2)]

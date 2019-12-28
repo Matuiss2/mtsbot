@@ -813,6 +813,7 @@ class Unit:
 
     @property
     def radar_range(self) -> float:
+        """ Checks if the unit is in radar range"""
         return self.proto.radar_range
 
     @property
@@ -1095,6 +1096,7 @@ class Unit:
 
     @property
     def engaged_target_tag(self) -> int:
+        """ Returns the tag tag of the unit that is fighting the self unit"""
         return self.proto.engaged_target_tag
 
     # Unit functions
