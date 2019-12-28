@@ -68,6 +68,7 @@ if TYPE_CHECKING:
 class UnitOrder:
     @classmethod
     def from_proto(cls, proto, bot_object: BotAI):
+        """ Get necessary info from sc2 protocol"""
         return cls(
             bot_object.game_data_local.abilities[proto.ability_id],
             (proto.target_world_space_pos if proto.HasField("target_world_space_pos") else proto.target_unit_tag),

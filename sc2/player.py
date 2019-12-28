@@ -108,6 +108,7 @@ class Player(AbstractPlayer):
 
     @classmethod
     def from_proto(cls, proto):
+        """ Get necessary info from sc2 protocol"""
         if PLAYER_TYPE(proto.type) == PLAYER_TYPE.Observer:
             return cls(proto.player_id, PLAYER_TYPE(proto.type), None, None, None)
         return cls(

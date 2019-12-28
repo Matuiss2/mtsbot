@@ -22,6 +22,7 @@ class Units(list):
 
     @classmethod
     def from_proto(cls, units, bot_object: BotAI):
+        """ Get necessary info from sc2 protocol"""
         return cls((Unit(u, bot_object=bot_object) for u in units))
 
     def __init__(self, units, bot_object: BotAI):

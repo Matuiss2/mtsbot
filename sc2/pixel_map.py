@@ -135,5 +135,6 @@ class PixelMap:
         img.save(filename)
 
     def plot(self):
+        """ Plot the flipped image data"""
         plt.imshow(self.data_numpy, origin="lower")
         plt.show()

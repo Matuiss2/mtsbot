@@ -4,6 +4,7 @@ from .position import Point2
 class PowerSource:
     @classmethod
     def from_proto(cls, proto):
+        """ Get necessary info from sc2 protocol"""
         return cls(Point2.from_proto(proto.pos), proto.radius, proto.tag)
 
     def __init__(self, position, radius, unit_tag):
@@ -25,6 +26,7 @@ class PowerSource:
 class PsionicMatrix:
     @classmethod
     def from_proto(cls, proto):
+        """ Get necessary info from sc2 protocol"""
         return cls([PowerSource.from_proto(p) for p in proto])
 
     def __init__(self, sources):
