@@ -33,6 +33,6 @@ if __name__ == "__main__":
                 continue"""
         break
     print(f"{DIFFICULTY.name} {RACE.name} {BUILD.name}")
-    BOT = Bot(RACE.Zerg, Mtsbot())
+    BOT = Bot(RACE.Zerg, Mtsbot(), name="Mtsbot")
     BUILTIN_BOT = Computer(RACE, DIFFICULTY, BUILD)
     run_game(maps.get(MAP), [BOT, BUILTIN_BOT], realtime=False)

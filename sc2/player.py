@@ -1,8 +1,15 @@
+"""
+All player types info
+changed last: 28/12/2019
+"""
+
 from .bot_ai import BotAI
 from .data import AI_BUILD, DIFFICULTY, PLAYER_TYPE, RACE
 
 
 class AbstractPlayer:
+    """ All info that is shared by all types of player"""
+
     def __init__(self, p_type, race=None, name=None, difficulty=None, ai_build=None, fullscreen=False):
         if not isinstance(p_type, PLAYER_TYPE):
             raise AssertionError(f"p_type is of type {type(p_type)}")
@@ -43,6 +50,8 @@ class AbstractPlayer:
 
 # noinspection PyProtectedMember
 class Human(AbstractPlayer):
+    """ Extends abstract player and specifies it for a human player"""
+
     def __init__(self, race, name=None, fullscreen=False):
         super().__init__(PLAYER_TYPE.Participant, race, name=name, fullscreen=fullscreen)
 
@@ -54,6 +63,8 @@ class Human(AbstractPlayer):
 
 # noinspection PyProtectedMember
 class Bot(AbstractPlayer):
+    """ Extends abstract player and specifies it for a bot player"""
+
     def __init__(self, race, ai, name=None, fullscreen=False):
         """
         AI can be None if this player object is just used to inform the
@@ -72,6 +83,8 @@ class Bot(AbstractPlayer):
 
 
 class Computer(AbstractPlayer):
+    """ Extends abstract player and specifies it for a computer player"""
+
     def __init__(self, race, difficulty=DIFFICULTY.Easy, ai_build=AI_BUILD.RandomBuild):
         super().__init__(PLAYER_TYPE.Computer, race, difficulty=difficulty, ai_build=ai_build)
 
@@ -81,6 +94,8 @@ class Computer(AbstractPlayer):
 
 
 class Observer(AbstractPlayer):
+    """ Extends abstract player and specifies it for an observer"""
+
     def __init__(self):
         super().__init__(PLAYER_TYPE.Observer)
 
@@ -89,6 +104,8 @@ class Observer(AbstractPlayer):
 
 
 class Player(AbstractPlayer):
+    """ Extends abstract player it groups all other player types"""
+
     @classmethod
     def from_proto(cls, proto):
         if PLAYER_TYPE(proto.type) == PLAYER_TYPE.Observer:

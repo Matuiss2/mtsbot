@@ -1,3 +1,8 @@
+"""
+Base class for the observers(almost a bot_ai copy)
+changed last: 28/12/2019
+"""
+
 from __future__ import annotations
 
 import logging
@@ -8,7 +13,6 @@ from sc2.cache import property_cache_once_per_frame
 from sc2.data import ALERT, RACE, RESULT
 from sc2.distances import DistanceCalculation
 from sc2.game_data import GameData
-
 # Imports for mypy and pycharm autocomplete as well as sphinx auto-documentation
 from sc2.game_state import Blip, GameState
 from sc2.ids.ability_id import AbilityId
@@ -26,9 +30,7 @@ if TYPE_CHECKING:
 
 
 class ObserverAI(DistanceCalculation):
-    """Base class for bots."""
-
-    EXPANSION_GAP_THRESHOLD = 15
+    """Base class for Observers."""
 
     def __init__(self):
         super().__init__()
