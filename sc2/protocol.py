@@ -1,6 +1,6 @@
 """
-Groups the last level connection to the sc2 protocol and the error related to that
-changed last: 27/12/2019
+Groups the last level connection to the sc2 protocol and the errors related to that
+changed last: 28/12/2019
 """
 import asyncio
 import logging
@@ -15,7 +15,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class ProtocolError(Exception):
-    """ Groups the errors that happens when talking to thew protocol """
+    """ Groups the errors that happens when 'talking' to thew protocol """
 
     @property
     def is_game_over_error(self) -> bool:
@@ -25,11 +25,9 @@ class ProtocolError(Exception):
 class ConnectionAlreadyClosed(ProtocolError):
     """ Extension to the protocol error...its empty, so maybe absorb this as a method from protocol error """
 
-    pass
-
 
 class Protocol:
-    """ Handles the connection and the requests to the protocol and also returns some server info"""
+    """ Handles the connection and the requests to the protocol"""
 
     def __init__(self, web_server):
         """
@@ -71,6 +69,7 @@ class Protocol:
         return response
 
     async def execute(self, **kwargs):
+        """ Execute the request calls"""
         if len(kwargs) != 1:
             raise AssertionError("Only one request allowed")
 
@@ -88,9 +87,11 @@ class Protocol:
         return response
 
     async def ping(self):
+        """ Request the ping from the protocol"""
         result = await self.execute(ping=sc_pb.RequestPing())
         return result
 
     async def quit(self):
+        """ Request to close the connection from the protocol"""
         with suppress(ConnectionAlreadyClosed):
             await self.execute(quit=sc_pb.RequestQuit())

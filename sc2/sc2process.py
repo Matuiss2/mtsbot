@@ -1,3 +1,8 @@
+"""
+Groups everything related to the processes used by the API and game and how to kill then
+changed last: 28/12/2019
+"""
+
 import asyncio
 import logging
 import os.path
@@ -21,20 +26,26 @@ LOGGER = logging.getLogger(__name__)
 
 
 class KillSwitch:
+    """ Kill the processes"""
+
     _to_kill: List[Any] = []
 
     @classmethod
     def add(cls, value):
+        """ Add processes that have to be killed"""
         LOGGER.debug("kill_switch: Add switch")
         cls._to_kill.append(value)
 
     @classmethod
     def kill_all(cls):
+        """ Kill all processes that were added by the function above"""
         for process in cls._to_kill:
             process.clean()
 
 
 class SC2Process:
+    """ Houses everything related to the processes used in this API"""
+
     def __init__(
         self,
         host: str = "127.0.0.1",
@@ -93,6 +104,7 @@ class SC2Process:
 
     @property
     def ws_url(self):
+        """ The URL that houses the sc2 API"""
         return f"ws://{self._host}:{self._port}/sc2api"
 
     @property
