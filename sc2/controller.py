@@ -25,6 +25,7 @@ class Controller(Protocol):
         return self.__process.process is not None
 
     async def create_game(self, game_map, players, realtime, random_seed=None):
+        """ Send the request to the protocol to create the game with the players info """
         if not isinstance(realtime, bool):
             raise AssertionError()
         req = sc_pb.RequestCreateGame(local_map=sc_pb.LocalMap(map_path=str(game_map.relative_path)), realtime=realtime)
@@ -38,8 +39,8 @@ class Controller(Protocol):
                 player_info.race = player.race.value
                 player_info.difficulty = player.difficulty.value
                 player_info.ai_build = player.ai_build.value
-        result = await self.execute(create_game=req)
-        return result
+        request = await self.execute(create_game=req)
+        return request
 
     async def start_replay(self, replay_path, observed_id=0):  # Added
         """
@@ -60,6 +61,6 @@ class Controller(Protocol):
             replay_path=replay_path, observed_player_id=observed_id, options=interface_options
         )
 
-        result = await self.execute(start_replay=req)
+        request = await self.execute(start_replay=req)
 
-        return result
+        return request

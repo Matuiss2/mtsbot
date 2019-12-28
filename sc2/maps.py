@@ -33,6 +33,7 @@ def get(name=None):
 
 class Map:
     """Gets some info about the selected map"""
+
     def __init__(self, path):
         self.path = path
 

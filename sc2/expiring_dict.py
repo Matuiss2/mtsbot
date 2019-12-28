@@ -46,6 +46,7 @@ class ExpiringDict(OrderedDict):
 
     @property
     def frame(self) -> int:
+        """ Get the game loops occurred until the call """
         return self.bot.state.game_loop
 
     def __contains__(self, key) -> bool:

@@ -41,6 +41,8 @@ class Blip:
 
 
 class Common:
+    """ It gets the common attributes"""
+
     ATTRIBUTES = [
         "player_id",
         "minerals",
@@ -64,16 +66,15 @@ class Common:
 
 
 class EffectData:
+    """ Groups useful data about Effects"""
+
     def __init__(self, proto, fake=False):
-        """
-        :param proto:
-        :param fake:
-        """
         self.proto = proto
         self.fake = fake
 
     @property
     def id(self) -> Union[EffectId, str]:
+        """ Returns the id of the effect"""
         if self.fake:
             # Returns the string from constants.py, e.g. "KD8CHARGE"
             return FakeEffectID[self.proto.unit_type]
@@ -81,33 +82,37 @@ class EffectData:
 
     @property
     def positions(self) -> Set[Point2]:
+        """ Returns the center of each part of the effect"""
         if self.fake:
             return {Point2.from_proto(self.proto.pos)}
         return {Point2.from_proto(p) for p in self.proto.pos}
 
     @property
     def alliance(self) -> ALLIANCE:
+        """ Returns the team ownership of the effect"""
         return self.proto.alliance
 
     @property
     def owner(self) -> int:
+        """ Same as above but instead of team ownership it returns the individual owner"""
         return self.proto.owner
 
     @property
     def radius(self) -> float:
+        """ Returns the effect radius"""
         if self.fake:
             return FakeEffectRadii[self.proto.unit_type]
         return self.proto.radius
 
     def __repr__(self) -> str:
+        """ Returns the representation of the effect showing it's id, radius and centers"""
         return f"{self.id} with radius {self.radius} at {self.positions}"
 
 
 class GameState:
+    """ Groups useful data about the game"""
+
     def __init__(self, response_observation):
-        """
-        :param response_observation:
-        """
         self.response_observation = response_observation
         self.actions = response_observation.actions  # successful actions since last loop
         self.action_errors = response_observation.action_errors  # error actions since last loop
