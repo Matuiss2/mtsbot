@@ -1,3 +1,7 @@
+"""
+Everything that controls, allows and changes the display of the game
+changed last: 28/12/2019
+"""
 import datetime
 
 from pyglet.image import ImageData
@@ -9,6 +13,8 @@ from .position import Point2
 
 
 class Renderer:
+    """ Control, allow and changes the display of the game """
+
     def __init__(self, client, map_size, minimap_size):
         self._client = client
 
@@ -25,6 +31,7 @@ class Renderer:
         self._text_time = None
 
     async def render(self, observation):
+        """ Updates and manipulates the display"""
         render_data = observation.observation.render_data
 
         map_size = render_data.map.size
