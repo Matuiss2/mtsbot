@@ -76,6 +76,8 @@ class ObserverAI(DistanceCalculation):
         self._game_data: GameData = None
 
     def initialize_variables(self):
+        """ initialize all variables...could be replaced by the __init__
+        but it would require more work than I want right now """
         super().__init__()
         # Specific opponent bot ID used in sc2ai ladder games http://sc2ai.net/
         # The bot ID will stay the same each game so your bot can "adapt" to the opponent

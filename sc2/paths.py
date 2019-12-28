@@ -38,10 +38,6 @@ CWD = {"Windows": "Support64", "Darwin": None, "Linux": None, "WineLinux": "Supp
 PF = os.environ.get("SC2PF", platform.system())
 
 
-def get_env():
-    return None
-
-
 def get_runner_args(cwd):
     """Get it to work on linux"""
     if "WINE" in os.environ:

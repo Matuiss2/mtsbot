@@ -496,6 +496,7 @@ async def _host_replay(replay_path, ai, realtime, base_build, data_version, obse
 
 
 def get_replay_version(replay_path):
+    """ Get the Sc2 patch version where this replay game was played """
     with open(replay_path, "rb") as file:
         replay_data = file.read()
         replay_io = six.BytesIO()
@@ -507,23 +508,25 @@ def get_replay_version(replay_path):
 
 
 def run_game(map_settings, players, **kwargs):
+    """ Last level request to start the game"""
     if sum(isinstance(p, (Human, Bot)) for p in players) > 1:
         host_only_args = ["save_replay_as", "rgb_render_config", "random_seed", "sc2_version"]
         join_kwargs = {k: v for k, v in kwargs.items() if k not in host_only_args}
 
         portconfig = Portconfig()
-        result = asyncio.get_event_loop().run_until_complete(
+        request = asyncio.get_event_loop().run_until_complete(
             asyncio.gather(
                 _host_game(map_settings, players, **kwargs, portconfig=portconfig),
                 _join_game(players, **join_kwargs, portconfig=portconfig),
             )
         )
     else:
-        result = asyncio.get_event_loop().run_until_complete(_host_game(map_settings, players, **kwargs))
-    return result
+        request = asyncio.get_event_loop().run_until_complete(_host_game(map_settings, players, **kwargs))
+    return request
 
 
 def run_replay(ai, replay_path, realtime=False, observed_id=0):
+    """ Last level request to start the replay"""
     if not os.path.isfile(replay_path):
         raise AssertionError(f"Replay does not exist at the given path: {replay_path}")
     if not os.path.isabs(replay_path):
@@ -532,7 +535,7 @@ def run_replay(ai, replay_path, realtime=False, observed_id=0):
             f' e.g. "C:/replays/my_replay.SC2Replay" but given path was "{replay_path}"'
         )
     base_build, data_version = get_replay_version(replay_path)
-    result = asyncio.get_event_loop().run_until_complete(
+    request = asyncio.get_event_loop().run_until_complete(
         _host_replay(replay_path, ai, realtime, base_build, data_version, observed_id)
     )
-    return result
+    return request
