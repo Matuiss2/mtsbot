@@ -177,7 +177,7 @@ class DistanceCalculation:
     @staticmethod
     def distance_math_dist_squared(start_point: Tuple[float, float], destiny: Tuple[float, float]):
         """ math.dist but with squared values, its untested, im not sure this method works the same way as with hypot"""
-        return math.dist(pow(start_point, 2), pow(destiny, 2))
+        return math.dist(start_point, destiny) ** 2
 
     def _distance_squared_unit_to_unit_method0(self, unit1: Unit, unit2: Unit) -> float:
         """ Use python's math.dist """

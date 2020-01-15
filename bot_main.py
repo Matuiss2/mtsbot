@@ -1,8 +1,8 @@
 """ Group all parts of the bot"""
+from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
-from sc2.bot_ai import BotAI
 
 
 class Mtsbot(BotAI):
@@ -46,10 +46,16 @@ class Mtsbot(BotAI):
 
     async def attacking_logic(self):
         """ Attacking logic
-        - improvements possible -> Add new units(later), add priority targets, add retreat logic(other function),
+        - improvements possible -> Add new units(later), add retreat logic(other function),
          add micro and probably much more"""
         if len(self.units(UnitTypeId.ZERGLING)) >= 6:
             for zergling in self.units(UnitTypeId.ZERGLING):
+                if self.enemy_units:
+                    self.do(zergling.attack(self.enemy_units.closest_to(zergling)))
+                    continue
+                if self.enemy_structures:
+                    self.do(zergling.attack(self.enemy_structures.closest_to(zergling)))
+                    continue
                 self.do(zergling.attack(self.enemy_start_locations[0]))
 
     async def train_overlord(self):
