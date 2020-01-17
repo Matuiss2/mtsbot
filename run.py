@@ -26,7 +26,7 @@ if __name__ == "__main__":
         DIFFICULTY = SECURE_RANDOM.choice(
             [DIFFICULTY.VeryEasy, DIFFICULTY.Easy, DIFFICULTY.Medium, DIFFICULTY.MediumHard]
         )
-        RACE = SECURE_RANDOM.choice([RACE.Protoss, RACE.Terran])  # RACE.Zerg
+        RACE = SECURE_RANDOM.choice([RACE.Protoss, RACE.Terran, RACE.Zerg])
         """FINISHED_SETS = {
                 BUILD == AIBuild.Macro and DIFFICULTY == Difficulty.CheatVision and RACE == Race.Zerg,
             }
