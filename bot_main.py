@@ -47,14 +47,14 @@ class Mtsbot(BotAI):
     async def attacking_logic(self):
         """ Attacking logic
         - improvements possible -> Add new units(later), add retreat logic(other function),
-         add micro and probably much more"""
+        add ignored targets(like larvae, eggs etc) add micro and probably much more"""
         if len(self.units(UnitTypeId.ZERGLING)) >= 6:
             for zergling in self.units(UnitTypeId.ZERGLING):
-                if self.enemy_units:
-                    self.do(zergling.attack(self.enemy_units.closest_to(zergling)))
+                if self.enemy_units.not_flying:
+                    self.do(zergling.attack(self.enemy_units.not_flying.closest_to(zergling)))
                     continue
-                if self.enemy_structures:
-                    self.do(zergling.attack(self.enemy_structures.closest_to(zergling)))
+                if self.enemy_structures.not_flying:
+                    self.do(zergling.attack(self.enemy_structures.not_flying.closest_to(zergling)))
                     continue
                 self.do(zergling.attack(self.enemy_start_locations[0]))
 
