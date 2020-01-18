@@ -21,9 +21,7 @@ class Mtsbot(BotAI):
 
     async def build_extractor(self):
         """ Build extractor logic
-        - improvements possible -> None that I can think of
-        - warnings -> Need the PR on the API to be accepted or it won't work using self.build(),
-        self.do(drone.build()) would have to be used instead"""
+        - improvements possible -> None that I can think of """
         if (
             not self.gas_buildings
             and self.already_pending(UnitTypeId.SPAWNINGPOOL)
