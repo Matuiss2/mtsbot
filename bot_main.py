@@ -1,4 +1,5 @@
-""" Group all parts of the bot"""
+""" Group all parts of the bot
+0.01 - first proper version (it only 12-pool now)"""
 from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
