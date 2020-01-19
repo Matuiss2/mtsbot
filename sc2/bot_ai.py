@@ -36,6 +36,7 @@ from .dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
 from .distances import DistanceCalculation
 from .game_data import AbilityData, GameData
 from .game_data import Cost
+
 # Imports for mypy and pycharm autocomplete as well as sphinx auto-documentation
 from .game_state import Blip, EffectData, GameState
 from .ids.ability_id import AbilityId
