@@ -1,5 +1,6 @@
 """ Group all parts of the bot
-0.01 - first proper version (it only 12-pool now)"""
+0.01 - first proper version (it only 12-pool now)
+0.02 - fix a bug on the ignored units implementation"""
 from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
