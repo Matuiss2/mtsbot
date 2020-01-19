@@ -51,7 +51,7 @@ class Mtsbot(BotAI):
         if len(self.units(UnitTypeId.ZERGLING)) >= 6:
             for zergling in self.units(UnitTypeId.ZERGLING):
                 if enemy_units.not_flying:
-                    self.do(zergling.attack(self.enemy_units.not_flying.closest_to(zergling)))
+                    self.do(zergling.attack(enemy_units.not_flying.closest_to(zergling)))
                     continue
                 if self.enemy_structures.not_flying:
                     self.do(zergling.attack(self.enemy_structures.not_flying.closest_to(zergling)))
