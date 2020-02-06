@@ -24,7 +24,14 @@ if __name__ == "__main__":
         )
         BUILD = SECURE_RANDOM.choice([AI_BUILD.Macro, AI_BUILD.Rush, AI_BUILD.Timing, AI_BUILD.Power, AI_BUILD.Air])
         DIFFICULTY = SECURE_RANDOM.choice(
-            [DIFFICULTY.VeryEasy, DIFFICULTY.Easy, DIFFICULTY.Medium, DIFFICULTY.MediumHard, DIFFICULTY.Hard]
+            [
+                DIFFICULTY.VeryEasy,
+                DIFFICULTY.Easy,
+                DIFFICULTY.Medium,
+                DIFFICULTY.MediumHard,
+                DIFFICULTY.Hard,
+                DIFFICULTY.Harder,
+            ]
         )
         RACE = SECURE_RANDOM.choice([RACE.Protoss, RACE.Terran, RACE.Zerg])
         """FINISHED_SETS = {
