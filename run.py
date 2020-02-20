@@ -31,6 +31,7 @@ if __name__ == "__main__":
                 DIFFICULTY.MediumHard,
                 DIFFICULTY.Hard,
                 DIFFICULTY.Harder,
+                DIFFICULTY.VeryHard,
             ]
         )
         RACE = SECURE_RANDOM.choice([RACE.Protoss, RACE.Terran, RACE.Zerg])
