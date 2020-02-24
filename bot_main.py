@@ -22,7 +22,8 @@ class Mtsbot(BotAI):
 
     async def build_extractor(self):
         """ Build extractor logic
-        - improvements possible -> None that I can think of """
+        - improvements possible -> Expand it, with this function it's only possible to build the first one
+        make it build more later(the requirement logic and the placement parameter will have to be expanded)"""
         if (
             not self.gas_buildings
             and self.already_pending(UnitTypeId.SPAWNINGPOOL)
