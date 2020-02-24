@@ -1033,7 +1033,7 @@ class BotAI(DistanceCalculation):
         if builder is None:
             return False
         if building in gas_buildings:
-            self.do(builder.build_gas(near))
+            self.do(builder.build_gas(near), subtract_cost=True)
             return True
         self.do(builder.build(building, placement), subtract_cost=True)
         return True
