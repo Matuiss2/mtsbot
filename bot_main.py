@@ -1,6 +1,8 @@
 """ Group all parts of the bot
 0.01 - first proper version (it only 12-pool now)
-0.02 - fix a bug on the ignored units implementation"""
+0.02 - fix a bug on the ignored units implementation
+0.03 - update testing logic to allow every difficulty and style(except cheater difficulties for now)
+"""
 from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
