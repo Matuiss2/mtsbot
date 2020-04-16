@@ -36,7 +36,7 @@ if __name__ == "__main__":
         )
         RACE = SECURE_RANDOM.choice([RACE.Protoss, RACE.Terran, RACE.Zerg])
         """FINISHED_SETS = {
-                BUILD == AIBuild.Macro and DIFFICULTY == Difficulty.CheatVision and RACE == Race.Zerg,
+            DIFFICULTY != DIFFICULTY.VeryHard or RACE != RACE.Terran or BUILD != BUILD.Timing,
             }
             if any(FINISHED_SETS):
                 print(f"{DIFFICULTY.name} {RACE.name} {BUILD.name} already done")
