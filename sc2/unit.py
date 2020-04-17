@@ -197,11 +197,7 @@ class Unit:
     @property_immutable_cache
     def _weapons(self):
         """ Returns the weapons of the unit. """
-        try:
-            return self.type_data.proto.weapons
-        except Exception as error:
-            print(f"An error occurred while trying to get the weapon of an unit - {error.__traceback__}")
-            return None
+        return self.type_data.proto.weapons
 
     @property_immutable_cache
     def can_attack(self) -> bool:
@@ -1266,11 +1262,7 @@ class Unit:
         return self.tag
 
     def __eq__(self, other):
-        try:
-            return self.tag == other.tag
-        except Exception as error:
-            print(f"An error occurred when comparing the tags - {error.__traceback__}")
-            return False
+        return self.tag == other.tag
 
     def __call__(self, ability, target=None, queue: bool = False):
         return UnitCommand(ability, self, target=target, queue=queue)
