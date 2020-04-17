@@ -1,10 +1,11 @@
 """Run the ladder or local game"""
 import random
 
-from bot_main import Mtsbot
 from sc2 import maps
 from sc2.main import run_game
 from sc2.player import AI_BUILD, Bot, Computer, DIFFICULTY, RACE
+from bot_main import Mtsbot
+
 
 if __name__ == "__main__":
     # Local game
