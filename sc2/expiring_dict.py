@@ -39,7 +39,7 @@ class ExpiringDict(OrderedDict):
             raise AssertionError()
 
         OrderedDict.__init__(self)
-        self.bot: BotAI = bot
+        self.bot = bot
         self.max_len: int = max_len
         self.max_age: Union[int, float] = max_age_frames
         self.lock: RLock = RLock()
