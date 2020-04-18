@@ -916,7 +916,7 @@ class Unit:
         """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position)
         from the first order, returns None if the unit is idle """
         if self.orders:
-            target = self.orders[0].target
+            target = list(self.orders)[0].target
             if isinstance(target, int):
                 return target
             return Point2.from_proto(target)
@@ -934,7 +934,7 @@ class Unit:
             return False
         if isinstance(abilities, AbilityId):
             abilities = {abilities}
-        return self.orders[0].ability.id in abilities
+        return list(self.orders)[0].ability.id in abilities
 
     @property_immutable_cache
     def is_moving(self) -> bool:
