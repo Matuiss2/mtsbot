@@ -76,7 +76,7 @@ class Mtsbot(BotAI):
             self.train(UnitTypeId.ZERGLING)
 
     async def train_queen(self):
-        """Train zergling logic
+        """Train queen logic
         - improvements possible -> Make the queen get created preferably on non-already-assigned bases
          and maybe create some extra for creep spread(don't limit it by bases)"""
         if (
