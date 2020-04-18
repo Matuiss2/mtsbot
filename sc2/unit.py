@@ -673,10 +673,10 @@ class Unit:
                     and UpgradeId.ADEPTPIERCINGATTACK in self.bot_object.state.upgrades
                 ):
                     weapon_speed /= 1.45
-                elif self.type_id == UnitTypeId.MARINE and BuffId.STIMPACK in self.buffs:
+                elif self.type_id == UnitTypeId.MARINE and BuffId.STIMPACK in set(self.buffs):
                     # Marine and marauder receive 50% attack speed bonus from stim
                     weapon_speed /= 1.5
-                elif self.type_id == UnitTypeId.MARAUDER and BuffId.STIMPACKMARAUDER in self.buffs:
+                elif self.type_id == UnitTypeId.MARAUDER and BuffId.STIMPACKMARAUDER in set(self.buffs):
                     weapon_speed /= 1.5
                 elif (
                     self.type_id == UnitTypeId.HYDRALISK
@@ -1105,7 +1105,7 @@ class Unit:
         """ Checks if unit has buff 'buff'. """
         if not isinstance(buff, BuffId):
             raise AssertionError(f"{buff} is no BuffId")
-        return buff in self.buffs
+        return buff in set(self.buffs)
 
     def train(self, unit: UnitTypeId, queue: bool = False) -> UnitCommand:
         """ Orders unit to train another 'unit'.
