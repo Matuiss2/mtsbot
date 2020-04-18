@@ -46,7 +46,7 @@ class Ramp:
 
     def height_at(self, position: Point2) -> int:
         """ returns the ramp height at given position"""
-        return self._height_map[position]
+        return self.__game_info.terrain_height[position]
 
     @property_mutable_cache
     def points(self) -> Set[Point2]:
