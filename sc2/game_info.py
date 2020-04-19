@@ -125,7 +125,7 @@ class GameInfo:
         self.pathway_grid: PixelMap = PixelMap(self.proto.start_raw.pathing_grid, in_bits=True, mirrored=False)
         # self.terrain_height[position]: returns the height in range of 0 to 255 at that position
         self.terrain_height: PixelMap = PixelMap(self.proto.start_raw.terrain_height, mirrored=False)
-        # self.placement_grid[position]: if 0, position is not placeable, if 1, position is passable
+        # self.placement_grid[position]: if 0, position is not buildable, if 1, position is passable
         self.placement_grid: PixelMap = PixelMap(self.proto.start_raw.placement_grid, in_bits=True, mirrored=False)
         self.playable_area = Rect.from_proto(self.proto.start_raw.playable_area)
         self.map_center = self.playable_area.center
@@ -136,7 +136,7 @@ class GameInfo:
         self.player_start_location: Point2 = None  # Filled later by BotAI.prepare_first_step
 
     def find_ramps_and_vision_blockers(self) -> Tuple[List[Ramp], Set[Point2]]:
-        """ Calculate points that are passable but not placeable.
+        """ Calculate points that are passable but not buildable.
         Then divide them into ramp points if not all points around the points are equal height
         and into vision blockers if they are. """
 

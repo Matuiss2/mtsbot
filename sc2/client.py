@@ -342,8 +342,8 @@ class Client(Protocol):
             )
         )
 
-    async def toggle_autocast(self, units: Union[List[Unit], Units], ability: AbilityId):
-        """ Toggle autocast of all specified units
+    async def toggle_auto_cast(self, units: Union[List[Unit], Units], ability: AbilityId):
+        """ Toggle auto cast of all specified units
 
         :param units:
         :param ability: """
@@ -734,9 +734,9 @@ class Client(Protocol):
     async def quick_load(self):
         """ Loads the game state from the previously stored in-memory bookmark.
         Caution:
-            - The SC2 Client will crash if the game wasn't quicksaved
+            - The SC2 Client will crash if the game wasn't quick-saved
             - The bot step iteration counter will not reset
-            - self.state.game_loop will be set to zero after the quickload, and self.time is dependant on it """
+            - self.state.game_loop will be set to zero after the quick-load, and self.time is dependant on it """
         await self.execute(quick_load=sc_pb.RequestQuickLoad())
 
 

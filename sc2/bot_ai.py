@@ -1005,7 +1005,7 @@ class BotAI(DistanceCalculation):
         placement_step: int = 2,
     ) -> bool:
         """ Not recommended as this function checks many positions if it "can place" on them until it found a valid
-        position. Also if the given position is not placeable, this function tries to find a nearby position to place
+        position. Also if the given position is not buildable, this function tries to find a nearby position to place
         the structure. Then uses 'self.do' to give the worker the order to start the construction.
 
         :param building:
@@ -1161,7 +1161,7 @@ class BotAI(DistanceCalculation):
                     ):
                         trained_amount += 1
                         # With one command queue=False and one queue=True,
-                        # you can queue 2 marines in a reactored barracks in one frame
+                        # you can queue 2 marines in a barrack with reactor in one frame
                         successfully_trained = self.do(
                             structure.train(unit_type, queue=True), subtract_cost=True, subtract_supply=True
                         )
@@ -1752,7 +1752,7 @@ class BotAI(DistanceCalculation):
         UnitTypeId of the unit, use 'unit.type_id'
 
         This may happen when a larva morphed to an egg, siege tank sieged, a zerg unit burrowed, a hatchery morphed
-        to lair, a corruptor morphed to broodlordcocoon, etc..
+        to lair, a corruptor morphed to broodlord cocoon, etc..
 
         Examples::
 

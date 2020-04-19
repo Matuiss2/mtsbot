@@ -396,7 +396,7 @@ DAMAGE_BONUS_PER_UPGRADE: Dict[int, UnitTypeId] = {
     UnitTypeId.STALKER: {TARGET_TYPE.Any.value: {IS_ARMORED: 1}},
     UnitTypeId.DARKTEMPLAR: {TARGET_TYPE.Ground.value: {None: 5}},
     UnitTypeId.ARCHON: {TARGET_TYPE.Any.value: {None: 3, IS_BIOLOGICAL: 1}},
-    # Robo Units
+    # Robotics bay Units
     UnitTypeId.IMMORTAL: {TARGET_TYPE.Ground.value: {None: 2, IS_ARMORED: 3}},
     UnitTypeId.COLOSSUS: {TARGET_TYPE.Ground.value: {IS_LIGHT: 1}},
     # Stargate Units
@@ -431,7 +431,7 @@ DAMAGE_BONUS_PER_UPGRADE: Dict[int, UnitTypeId] = {
     # Lair Tech Units (Hydra, Lurker, Ultra)
     UnitTypeId.LURKERMPBURROWED: {TARGET_TYPE.Ground.value: {None: 2, IS_ARMORED: 1}},
     UnitTypeId.ULTRALISK: {TARGET_TYPE.Ground.value: {None: 3}},
-    # Spire Units (Muta, Corruptor, BL)
+    # Spire Units (Mutalisks, Corruptor, BL)
     UnitTypeId.CORRUPTOR: {TARGET_TYPE.Air.value: {IS_MASSIVE: 1}},
     UnitTypeId.BROODLORD: {TARGET_TYPE.Ground.value: {None: 2}},
 }

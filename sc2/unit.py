@@ -605,7 +605,7 @@ class Unit:
                         if not self.attack_upgrade_level
                         else DAMAGE_BONUS_PER_UPGRADE.get(self.type_id, {}).get(weapon.type, {}).get(bonus.attribute, 0)
                     )
-                    # Hardcode blueflame damage bonus from hellions
+                    # Hardcoded blueflame damage bonus from hellions
                     if (
                         bonus.attribute == IS_LIGHT
                         and self.type_id == UnitTypeId.HELLION
@@ -1120,8 +1120,8 @@ class Unit:
         Usage::
 
             self.do(SCV.build(COMMANDCENTER, position))
-            # Target for refinery, assimilator and extractor needs to be the vespene geysir unit, not its position
-            self.do(SCV.build(REFINERY, target_vespene_geysir))
+            # Target for refinery, assimilator and extractor needs to be the vespene geyser unit, not its position
+            self.do(SCV.build(REFINERY, target_vespene_geyser))
 
         :param unit:
         :param position:
@@ -1131,29 +1131,29 @@ class Unit:
             if not isinstance(position, Unit):
                 raise AssertionError(
                     f"When building the gas structure, the target needs to be a unit"
-                    f" (the vespene geysir) not the position of the vespene geysir."
+                    f" (the vespene geyser) not the position of the vespene geyser."
                 )
         return self(self.bot_object.game_data_local.units[unit.value].creation_ability.id, target=position, queue=queue)
 
-    def build_gas(self, target_geysir: Unit, queue: bool = False) -> UnitCommand:
+    def build_gas(self, target_geyser: Unit, queue: bool = False) -> UnitCommand:
         """ Orders unit to build another 'unit' at 'position'.
         Usage::
 
-            # Target for refinery, assimilator and extractor needs to be the vespene geysir unit, not its position
-            self.do(SCV.build_gas(target_vespene_geysir))
+            # Target for refinery, assimilator and extractor needs to be the vespene geyser unit, not its position
+            self.do(SCV.build_gas(target_vespene_geyser))
 
-        :param target_geysir:
+        :param target_geyser:
         :param queue:
         """
         gas_structure_type_id: UnitTypeId = race_gas[self.bot_object.race]
-        if not isinstance(target_geysir, Unit):
+        if not isinstance(target_geyser, Unit):
             raise AssertionError(
-                f"When building the gas structure, the target needs to be a unit (the vespene geysir) "
-                f"not the position of the vespene geysir."
+                f"When building the gas structure, the target needs to be a unit (the vespene geyser) "
+                f"not the position of the vespene geyser."
             )
         return self(
             self.bot_object.game_data_local.units[gas_structure_type_id.value].creation_ability.id,
-            target=target_geysir,
+            target=target_geyser,
             queue=queue,
         )
 
