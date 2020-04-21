@@ -103,7 +103,7 @@ class _MetaPaths(type):
             sys.exit()
 
     def __getattr__(cls, attr):
-        cls().setup()
+        cls.setup()
         return getattr(cls, attr)
 
 
