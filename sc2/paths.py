@@ -70,7 +70,7 @@ def latest_executable(versions_dir, base_build=None):
 class _MetaPaths(type):
     """"Lazily loads paths to allow importing the library even if SC2 isn't installed."""
 
-    def __setup(cls):
+    def setup(cls):
         if PF not in BASEDIR:
             LOGGER.critical(f"Unsupported platform '{PF}'")
             sys.exit()
@@ -103,7 +103,7 @@ class _MetaPaths(type):
             sys.exit()
 
     def __getattr__(cls, attr):
-        cls.__setup()
+        cls().setup()
         return getattr(cls, attr)
 
 
