@@ -214,14 +214,14 @@ class Unit:
         """ Checks if the unit can attack ground units. """
         if self.type_id in {UNIT_BATTLECRUISER, UNIT_ORACLE}:
             return True
-        if self._weapons:
+        if bool(self._weapons):
             return any(weapon.type in TARGET_GROUND for weapon in self._weapons)
         return False
 
     @property_immutable_cache
     def ground_dps(self) -> float:
         """ Returns the dps against ground units. Does not include upgrades. """
-        if self.can_attack_ground:
+        if bool(self.can_attack_ground):
             weapon = next((weapon for weapon in self._weapons if weapon.type in TARGET_GROUND), None)
             if weapon:
                 return (weapon.damage * weapon.attacks) / weapon.speed
@@ -234,7 +234,7 @@ class Unit:
             return 4
         if self.type_id == UNIT_BATTLECRUISER:
             return 6
-        if self.can_attack_ground:
+        if bool(self.can_attack_ground):
             weapon = next((weapon for weapon in self._weapons if weapon.type in TARGET_GROUND), None)
             if weapon:
                 return weapon.range
@@ -245,14 +245,14 @@ class Unit:
         """ Checks if the unit can air attack at all. Does not include upgrades. """
         if self.type_id == UNIT_BATTLECRUISER:
             return True
-        if self._weapons:
+        if bool(self._weapons):
             return any(weapon.type in TARGET_AIR for weapon in self._weapons)
         return False
 
     @property_immutable_cache
     def air_dps(self) -> float:
         """ Returns the dps against air units. Does not include upgrades. """
-        if self.can_attack_air:
+        if bool(self.can_attack_air):
             weapon = next((weapon for weapon in self._weapons if weapon.type in TARGET_AIR), None)
             if weapon:
                 return (weapon.damage * weapon.attacks) / weapon.speed
@@ -263,7 +263,7 @@ class Unit:
         """ Returns the range against air units. Does not include upgrades. """
         if self.type_id == UNIT_BATTLECRUISER:
             return 6
-        if self.can_attack_air:
+        if bool(self.can_attack_air):
             weapon = next((weapon for weapon in self._weapons if weapon.type in TARGET_AIR), None)
             if weapon:
                 return weapon.range
@@ -273,7 +273,7 @@ class Unit:
     def bonus_damage(self):
         """ Returns a tuple of form '(bonus damage, armor type)' if unit does 'bonus damage' against 'armor type'.
         Possible armor types are: 'Light', 'Armored', 'Biological', 'Mechanical', 'Psionic', 'Massive', 'Structure'. """
-        if self._weapons:
+        if bool(self._weapons):
             for weapon in self._weapons:
                 if weapon.damage_bonus:
                     weapon_bonus = weapon.damage_bonus[0]
@@ -915,7 +915,7 @@ class Unit:
     def order_target(self) -> Optional[Union[int, Point2]]:
         """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position)
         from the first order, returns None if the unit is idle """
-        if self.orders:
+        if list(self.orders):
             target = list(self.orders)[0].target
             if isinstance(target, int):
                 return target
@@ -1090,7 +1090,7 @@ class Unit:
             self.do(unit.move(closest_allied_unit_because_cant_attack))
         else:
             self.do(unit.move(retreatPosition)) """
-        if self.can_attack:
+        if bool(self.can_attack):
             return self.proto.weapon_cooldown
         return -1
 

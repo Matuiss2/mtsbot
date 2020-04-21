@@ -83,7 +83,7 @@ class Ramp:
     @property_immutable_cache
     def top_center(self) -> Point2:
         """ Returns the center point of the upper points in a ramp. """
-        upper = self.upper
+        upper = set(self.upper)
         length = len(upper)
         pos = Point2((sum(p.x for p in upper) / length, sum(p.y for p in upper) / length))
         return pos
@@ -105,7 +105,7 @@ class Ramp:
     @property_immutable_cache
     def bottom_center(self) -> Point2:
         """ Returns the center point of the lower points in a ramp. """
-        lower = self.lower
+        lower = set(self.lower)
         length = len(lower)
         pos = Point2((sum(p.x for p in lower) / length, sum(p.y for p in lower) / length))
         return pos
