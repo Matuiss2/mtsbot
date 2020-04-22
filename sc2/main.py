@@ -247,7 +247,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         iteration += 1
 
 
-async def _play_game(
+async def play_game(
     player, client, realtime, portconfig, step_time_limit=None, game_time_limit=None, rgb_render_config=None
 ):
     if not isinstance(realtime, bool):
@@ -271,10 +271,8 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     game_data = await client.get_game_data()
     game_info = await client.get_game_info()
     client.game_step = 1
-    # This game_data will become self.game_data_local in botAI
     ai.prepare_start(client, player_id, game_info, game_data, realtime=realtime)
     state = await client.observation()
-    # Check game result every time we get the observation
     if client.game_result:
         await ai.on_end(client.game_result[player_id])
         return client.game_result[player_id]
@@ -292,7 +290,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
 
     iteration = 0
     while True:
-        if iteration != 0:
+        if iteration:
             if realtime:
                 state = await client.observation(game_state.game_loop + client.game_step)
             else:
@@ -403,7 +401,7 @@ async def _host_game(
             client.raw_affects_selection = players[0].ai.raw_affects_selection
 
         try:
-            result = await _play_game(
+            result = await play_game(
                 players[0], client, realtime, portconfig, step_time_limit, game_time_limit, rgb_render_config
             )
             if save_replay_as is not None:
@@ -435,7 +433,7 @@ async def _host_game_aiter(
                 client.raw_affects_selection = players[0].ai.raw_affects_selection
 
             try:
-                result = await _play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit)
+                result = await play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit)
 
                 if save_replay_as is not None:
                     await client.save_replay(save_replay_as)
@@ -470,7 +468,7 @@ async def _join_game(
             client.raw_affects_selection = players[1].ai.raw_affects_selection
 
         try:
-            result = await _play_game(players[1], client, realtime, portconfig, step_time_limit, game_time_limit)
+            result = await play_game(players[1], client, realtime, portconfig, step_time_limit, game_time_limit)
             if save_replay_as is not None:
                 await client.save_replay(save_replay_as)
             await client.leave()
