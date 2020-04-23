@@ -249,6 +249,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 async def play_game(
     player, client, realtime, portconfig, step_time_limit=None, game_time_limit=None, rgb_render_config=None
 ):
+    """ Join the client to play a game vs human or vs ai"""
     if not isinstance(realtime, bool):
         raise AssertionError(repr(realtime))
 
