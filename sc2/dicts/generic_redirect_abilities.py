@@ -9,9 +9,6 @@ from typing import Dict
 
 from ..ids.ability_id import AbilityId
 
-# from ..ids.buff_id import BuffId
-# from ..ids.effect_id import EffectId
-
 GENERIC_REDIRECT_ABILITIES: Dict[AbilityId, AbilityId] = {
     AbilityId.ARMORYRESEARCH_TERRANSHIPWEAPONSLEVEL1: AbilityId.RESEARCH_TERRANSHIPWEAPONS,
     AbilityId.ARMORYRESEARCH_TERRANSHIPWEAPONSLEVEL2: AbilityId.RESEARCH_TERRANSHIPWEAPONS,

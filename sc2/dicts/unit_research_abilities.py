@@ -10,9 +10,6 @@ from ..ids.ability_id import AbilityId
 from ..ids.unit_typeid import UnitTypeId
 from ..ids.upgrade_id import UpgradeId
 
-# from ..ids.buff_id import BuffId
-# from ..ids.effect_id import EffectId
-
 RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool, UnitTypeId]]]] = {
     UnitTypeId.ARMORY: {
         UpgradeId.TERRANSHIPWEAPONSLEVEL1: {"ability": AbilityId.ARMORYRESEARCH_TERRANSHIPWEAPONSLEVEL1},

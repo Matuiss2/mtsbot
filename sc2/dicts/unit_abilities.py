@@ -9,9 +9,6 @@ from typing import Dict, Set
 from ..ids.ability_id import AbilityId
 from ..ids.unit_typeid import UnitTypeId
 
-# from ..ids.buff_id import BuffId
-# from ..ids.effect_id import EffectId
-
 UNIT_ABILITIES: Dict[UnitTypeId, Set[AbilityId]] = {
     UnitTypeId.ADEPT: {
         AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT,

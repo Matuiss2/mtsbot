@@ -9,9 +9,6 @@ from typing import Dict
 
 from ..ids.unit_typeid import UnitTypeId
 
-# from ..ids.buff_id import BuffId
-# from ..ids.effect_id import EffectId
-
 UNIT_UNIT_ALIAS: Dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.ADEPTPHASESHIFT: UnitTypeId.ADEPT,
     UnitTypeId.ASSIMILATORRICH: UnitTypeId.ASSIMILATOR,

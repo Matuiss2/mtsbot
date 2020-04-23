@@ -9,9 +9,6 @@ from typing import Dict, Union
 from ..ids.ability_id import AbilityId
 from ..ids.unit_typeid import UnitTypeId
 
-# from ..ids.buff_id import BuffId
-# from ..ids.effect_id import EffectId
-
 TRAIN_INFO: Dict[UnitTypeId, Dict[UnitTypeId, Dict[str, Union[AbilityId, bool, UnitTypeId]]]] = {
     UnitTypeId.BARRACKS: {
         UnitTypeId.GHOST: {

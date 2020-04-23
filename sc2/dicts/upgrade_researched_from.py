@@ -9,9 +9,6 @@ from typing import Dict
 from ..ids.unit_typeid import UnitTypeId
 from ..ids.upgrade_id import UpgradeId
 
-# from ..ids.buff_id import BuffId
-# from ..ids.effect_id import EffectId
-
 UPGRADE_RESEARCHED_FROM: Dict[UpgradeId, UnitTypeId] = {
     UpgradeId.ADEPTPIERCINGATTACK: UnitTypeId.TWILIGHTCOUNCIL,
     UpgradeId.ANABOLICSYNTHESIS: UnitTypeId.ULTRALISKCAVERN,

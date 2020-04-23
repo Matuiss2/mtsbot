@@ -8,9 +8,6 @@ from typing import Dict, Set
 
 from ..ids.unit_typeid import UnitTypeId
 
-# from ..ids.buff_id import BuffId
-# from ..ids.effect_id import EffectId
-
 UNIT_TRAINED_FROM: Dict[UnitTypeId, Set[UnitTypeId]] = {
     UnitTypeId.ADEPT: {UnitTypeId.GATEWAY, UnitTypeId.WARPGATE},
     UnitTypeId.ARMORY: {UnitTypeId.SCV},
