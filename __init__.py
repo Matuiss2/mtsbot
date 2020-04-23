@@ -42,7 +42,7 @@ def run_ladder_game(bot):
 async def join_ladder_game(
     host, port, players, realtime, portconfig, save_replay_as=None, step_time_limit=None, game_time_limit=None
 ):
-    ws_url = "ws://{}:{}/sc2api".format(host, port)
+    ws_url = f"ws://{host}:{port}/sc2api"
     ws_connection = await aiohttp.ClientSession().ws_connect(ws_url, timeout=120)
     client = Client(ws_connection)
     try:
