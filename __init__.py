@@ -1,3 +1,5 @@
+""" Groups all needed logic to connect with sc2AI ladder"""
+
 import argparse
 import asyncio
 import logging
@@ -43,7 +45,7 @@ def run_ladder_game(bot):
 async def join_ladder_game(
     host, port, players, realtime, portconfig, save_replay_as=None, step_time_limit=None, game_time_limit=None
 ):
-    """ Logic to join the ladder client and play the game """
+    """ Logic to join the sc2 ladder client and play the game """
     ws_url = f"ws://{host}:{port}/sc2api"
     ws_connection = await aiohttp.ClientSession().ws_connect(ws_url, timeout=120)
     client = Client(ws_connection)
