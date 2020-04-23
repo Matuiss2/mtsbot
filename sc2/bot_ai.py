@@ -1076,9 +1076,8 @@ class BotAI(DistanceCalculation):
             }
             unit_info_id = race_dict[self.race][unit_type]
             LOGGER.warning(
-                "{} Trying to produce unit {} in self.train() but tech requirement is not met: {}".format(
-                    self.time_formatted, unit_type, unit_info_id
-                )
+                f"{self.time_formatted} Trying to produce unit {unit_type} "
+                f"in self.train() but tech requirement is not met: {unit_info_id}"
             )
             return 0
 
