@@ -41,12 +41,10 @@ def combine_actions(action_iter):
         ability, target, queue, combinable = key
 
         if combinable:
-            # Combine actions with no target, e.g. lift, burrowup, burrowdown, siege, unsiege, uproot spines
             if target is None:
                 cmd = raw_pb.ActionRawUnitCommand(
                     ability_id=ability.value, unit_tags={u.unit.tag for u in items}, queue_command=queue
                 )
-            # Combine actions with target position, e.g. attack_move or move commands on a position
             elif isinstance(target, Point2):
                 cmd = raw_pb.ActionRawUnitCommand(
                     ability_id=ability.value,
@@ -54,7 +52,6 @@ def combine_actions(action_iter):
                     queue_command=queue,
                     target_world_space_pos=common_pb.Point2D(x=target.x, y=target.y),
                 )
-            # Combine actions with target unit, e.g. attack commands directly on a unit
             elif isinstance(target, Unit):
                 cmd = raw_pb.ActionRawUnitCommand(
                     ability_id=ability.value,

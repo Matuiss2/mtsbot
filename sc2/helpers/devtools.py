@@ -16,6 +16,7 @@ def time_this(label):
         print(f"TIME {label}: {(end-start)/1000000000} sec")
 
 
+# example of usage
 if __name__ == "__main__":
     with time_this("square rooting"):
         for n in range(10 ** 7):
