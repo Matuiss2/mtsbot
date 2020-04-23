@@ -1,6 +1,5 @@
 """
 Groups different kinds of decorators for caches
-changed last: 27/12/2019
 """
 from functools import wraps
 

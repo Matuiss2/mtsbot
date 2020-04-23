@@ -1,6 +1,5 @@
 """
 Everything that controls, allows and changes the display of the game
-changed last: 28/12/2019
 """
 import datetime
 

@@ -1,6 +1,5 @@
 """
 Very similar to the client.py it maybe can be absorbed by it
-changed last: 27/12/2019
 """
 import logging
 

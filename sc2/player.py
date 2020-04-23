@@ -1,6 +1,5 @@
 """
 All player types info
-changed last: 28/12/2019
 """
 
 from .bot_ai import BotAI

@@ -1,7 +1,6 @@
 """
 Allows the combining of all possible abilities that every unit can do,
 in short all possible unit commands, I'm not sure a new file for this is needed
-changed last: 28/12/2019
 """
 from __future__ import annotations
 

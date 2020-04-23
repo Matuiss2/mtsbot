@@ -1,6 +1,5 @@
 """
 Groups useful data from the map
-changed last: 27/12/2019
 """
 from __future__ import annotations
 

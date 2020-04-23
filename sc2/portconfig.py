@@ -1,6 +1,5 @@
 """
 Connect and send it's configurations to unused ports
-changed last: 28/12/2019
 """
 import json
 

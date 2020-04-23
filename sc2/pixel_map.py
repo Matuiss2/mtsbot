@@ -1,6 +1,5 @@
 """
 Groups all info about the map(it's different from game_info that gets info about the map TERRAIN)
-changed last: 27/12/2019
 """
 from typing import Callable, FrozenSet, List, Set
 

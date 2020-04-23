@@ -1,6 +1,5 @@
 """
 Groups useful data about elements of the game, very similar to game_info.py maybe merge both
-changed last: 27/12/2019
 """
 from __future__ import annotations
 

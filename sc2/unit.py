@@ -1,6 +1,5 @@
 """
 Groups a lot of info and methods to control individual units
-changed last: 27/12/2019
 """
 from __future__ import annotations
 

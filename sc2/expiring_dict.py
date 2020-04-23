@@ -1,6 +1,5 @@
 """
 Houses an expiring dict that uses the game_loop to only return items that are valid for a specific amount of time.
-changed last: 27/12/2019
 """
 from collections import OrderedDict
 from contextlib import suppress

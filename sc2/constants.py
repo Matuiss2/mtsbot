@@ -1,6 +1,5 @@
 """
 Groups and transforms all ids and data
-changed last: 27/12/2019
 """
 from collections import defaultdict
 from typing import Dict, Set

@@ -1,6 +1,5 @@
 """
 Base class for the observers(almost a bot_ai copy)
-changed last: 28/12/2019
 """
 
 from __future__ import annotations

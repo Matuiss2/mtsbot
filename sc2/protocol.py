@@ -1,6 +1,5 @@
 """
 Groups the last level connection to the sc2 protocol and the errors related to that
-changed last: 28/12/2019
 """
 import asyncio
 import logging

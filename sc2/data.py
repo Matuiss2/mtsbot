@@ -1,6 +1,5 @@
 """
 Groups the primary data
-changed last: 27/12/2019
 """
 import enum
 from typing import Dict, Set  # mypy type checking

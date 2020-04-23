@@ -1,6 +1,5 @@
 """
 Houses combine_actions, can maybe be absorbed by client.py
-changed last: 27/12/2019
 """
 from __future__ import annotations
 from typing import Union, TYPE_CHECKING

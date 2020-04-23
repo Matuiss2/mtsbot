@@ -1,6 +1,5 @@
 """
 Everything about the Pointlike(coordinates) objects and their manipulation are here
-changed last: 28/12/2019
 """
 from __future__ import annotations
 

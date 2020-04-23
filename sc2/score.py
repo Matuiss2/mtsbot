@@ -1,6 +1,5 @@
 """
 Groups all scoring that can be done in SC2(the comments might be all wrong, since this was never tested)
-changed last: 28/12/2019
 """
 
 

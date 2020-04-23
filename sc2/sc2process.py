@@ -1,6 +1,5 @@
 """
 Groups everything related to the processes used by the API and game and how to kill then
-changed last: 28/12/2019
 """
 
 import asyncio

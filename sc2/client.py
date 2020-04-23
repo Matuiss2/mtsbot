@@ -1,6 +1,5 @@
 """
 Groups the requests to the client or protocol and also houses debugger functions
-changed last: 27/12/2019
 """
 from __future__ import annotations
 

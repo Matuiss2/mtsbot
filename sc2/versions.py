@@ -1,6 +1,5 @@
 """
 Groups all sc2 versions, it's hashes and labels
-changed last: 28/12/2019
 """
 
 VERSIONS = [
