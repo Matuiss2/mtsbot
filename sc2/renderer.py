@@ -107,16 +107,17 @@ class Renderer:
             self._minimap_image.set_data("RGB", minimap_pitch, minimap_data)
             self._text_time.text = str(datetime.timedelta(seconds=(observation.observation.game_loop * 0.725) // 16))
             if observation.observation.HasField("player_common"):
-                self._text_supply.text = "{} / {}".format(
-                    observation.observation.player_common.food_used, observation.observation.player_common.food_cap
+                self._text_supply.text = (
+                    f"{observation.observation.player_common.food_used} / "
+                    f"{observation.observation.player_common.food_cap}"
                 )
                 self._text_vespene.text = str(observation.observation.player_common.vespene)
                 self._text_minerals.text = str(observation.observation.player_common.minerals)
             if observation.observation.HasField("score"):
                 # noinspection PyProtectedMember
-                self._text_score.text = "{} score: {}".format(
-                    score_pb._SCORE_SCORETYPE.values_by_number[observation.observation.score.score_type].name,
-                    observation.observation.score.score,
+                self._text_score.text = (
+                    f"{score_pb._SCORE_SCORETYPE.values_by_number[observation.observation.score.score_type].name} "
+                    f"score: {observation.observation.score.score}"
                 )
 
         await self._update_window()
