@@ -117,11 +117,8 @@ class BotAI(DistanceCalculation):
     def initialize_variables(self):
         """ Called from main.py internally """
         super().__init__()
-        # Specific opponent bot ID used in sc2ai ladder games http://sc2ai.net/ and on ai arena https://ai-arena.net
         # The bot ID will stay the same each game so your bot can "adapt" to the opponent
         if not hasattr(self, "opponent_id"):
-            # Prevent overwriting the opponent_id which is set here
-            # https://github.com/Hannessa/python-sc2-ladderbot/blob/master/__init__.py#L40 otherwise set it to None
             self.opponent_id: str = None
         # Select distance calculation method, see distances.py: _distances_override_functions function
         if not hasattr(self, "distance_calculation_method"):
@@ -171,14 +168,13 @@ class BotAI(DistanceCalculation):
         self._last_step_step_time: float = 0
         self._total_time_in_on_step: float = 0
         self._total_steps_iterations: int = 0
-        # Internally used to keep track which units received an action in this frame, so that self.train() function
         # does not give the same larva two orders - cleared every frame
         self.unit_tags_received_action: Set[int] = set()
 
     @property
     def time(self) -> float:
         """ Returns time in seconds, assumes the game is played on 'faster' """
-        return self.state.game_loop / 22.4  # / (1/1.4) * (1/16)
+        return self.state.game_loop / 22.4
 
     @property
     def time_formatted(self) -> str:
@@ -306,64 +302,44 @@ class BotAI(DistanceCalculation):
         Returns dict with the correct expansion position Point2 object as key,
         resources (mineral field and vespene geyser) as value.
         """
-
-        # Idea: create a group for every resource, then merge these groups if
-        # any resource in a group is closer than a threshold to any resource of another group
-
-        # Distance we group resources by
         resource_spread_threshold = 8.5
         geysers = self.vespene_geyser
-        # Create a group for every resource
         resource_groups = [
             [resource]
             for resource in self.resources
-            if resource.name != "MineralField450"  # don't use low mineral count patches
+            if resource.name != "MineralField450"
         ]
-        # Loop the merging process as long as we change something
         merged_group = True
         while merged_group:
             merged_group = False
-            # Check every combination of two groups
             for group_a, group_b in itertools.combinations(resource_groups, 2):
-                # Check if any pair of resource of these groups is closer than threshold together
                 if any(
                     resource_a.distance_to(resource_b) <= resource_spread_threshold
                     for resource_a, resource_b in itertools.product(group_a, group_b)
                 ):
-                    # Remove the single groups and add the merged group
                     resource_groups.remove(group_a)
                     resource_groups.remove(group_b)
                     resource_groups.append(group_a + group_b)
                     merged_group = True
                     break
-        # Distance offsets we apply to center of each resource group to find expansion position
         offset_range = 7
         offsets = [
             (x, y)
             for x, y in itertools.product(range(-offset_range, offset_range + 1), repeat=2)
             if math.hypot(x, y) <= 8
         ]
-        # Dict we want to return
         centers = {}
-        # For every resource group:
         for resources in resource_groups:
-            # Possible expansion points
             amount = len(resources)
-            # Calculate center, round and add 0.5 because expansion location will have (x.5, y.5)
-            # coordinates because bases have size 5.
             center_x = int(sum(resource.position.x for resource in resources) / amount) + 0.5
             center_y = int(sum(resource.position.y for resource in resources) / amount) + 0.5
             possible_points = (Point2((offset[0] + center_x, offset[1] + center_y)) for offset in offsets)
-            # Filter out points that are too near
             possible_points = (
                 point
                 for point in possible_points
-                # Check if position can be built on
                 if self._game_info.placement_grid[point.rounded] == 1
-                # Check if all resources have enough space to position
                 and all(point.distance_to(resource) > (7 if resource in geysers else 6) for resource in resources)
             )
-            # Choose best fitting position
             result = min(possible_points, key=lambda point: sum(point.distance_to(resource) for resource in resources))
             centers[result] = resources
         return centers
@@ -450,7 +426,6 @@ class BotAI(DistanceCalculation):
         if not location:
             location = await self.get_next_expansion()
         if not location:
-            # All expansions are used up or mined out
             LOGGER.warning("Trying to expand_now() but bot is out of locations to expand to")
             return
         await self.build(building, near=location, max_distance=max_distance, random_alternative=False, placement_step=1)
@@ -464,7 +439,6 @@ class BotAI(DistanceCalculation):
 
             taken_expansion = [th for th in self.townhalls if th.distance_to(expansion_location) < 15]
             if any(taken_expansion):
-                # already taken
                 continue
 
             start_position = self._game_info.player_start_location
@@ -507,7 +481,7 @@ class BotAI(DistanceCalculation):
             return 1
         unit_supply_cost = self.game_data_local.units[unit_type.value].proto.food_required
         if unit_supply_cost > 0 and unit_type in UNIT_TRAINED_FROM and len(UNIT_TRAINED_FROM[unit_type]) == 1:
-            for producer in UNIT_TRAINED_FROM[unit_type]:  # type: UnitTypeId
+            for producer in UNIT_TRAINED_FROM[unit_type]:
                 producer_unit_data = self.game_data.units[producer.value]
                 if producer_unit_data.proto.food_required <= unit_supply_cost:
                     producer_supply_cost = producer_unit_data.proto.food_required
@@ -526,7 +500,6 @@ class BotAI(DistanceCalculation):
 
         :param unit_type: """
         required = self.calculate_supply_cost(unit_type)
-        # "required <= 0" in case self.supply_left is negative
         return required <= 0 or self.supply_left >= required
 
     def calculate_unit_value(self, unit_type: UnitTypeId) -> Cost:
@@ -577,7 +550,6 @@ class BotAI(DistanceCalculation):
         :param item_id:
         """
         if isinstance(item_id, UnitTypeId):
-            # Fix cost for reactor and techlab where the API returns 0 for both
             if item_id in {UnitTypeId.REACTOR, UnitTypeId.TECHLAB, UnitTypeId.ARCHON}:
                 if item_id == UnitTypeId.REACTOR:
                     return Cost(50, 50)
@@ -586,12 +558,10 @@ class BotAI(DistanceCalculation):
                 if item_id == UnitTypeId.ARCHON:
                     return self.calculate_unit_value(UnitTypeId.ARCHON)
             unit_data = self.game_data_local.units[item_id.value]
-            # Cost of structure morphs is automatically correctly calculated by 'calculate_ability_cost'
             cost = self.game_data_local.calculate_ability_cost(unit_data.creation_ability)
-            # Fix non-structure morph cost: check if is morph, then subtract the original cost
             unit_supply_cost = unit_data.proto.food_required
             if unit_supply_cost > 0 and item_id in UNIT_TRAINED_FROM and len(UNIT_TRAINED_FROM[item_id]) == 1:
-                for producer in UNIT_TRAINED_FROM[item_id]:  # type: UnitTypeId
+                for producer in UNIT_TRAINED_FROM[item_id]:
                     producer_unit_data = self.game_data.units[producer.value]
                     if 0 < producer_unit_data.proto.food_required <= unit_supply_cost:
                         if producer == UnitTypeId.ZERGLING:
@@ -603,7 +573,6 @@ class BotAI(DistanceCalculation):
         elif isinstance(item_id, UpgradeId):
             cost = self.game_data_local.upgrades[item_id.value].cost
         else:
-            # Is already AbilityId
             cost = self.game_data_local.calculate_ability_cost(item_id)
         return cost
 
@@ -663,7 +632,6 @@ class BotAI(DistanceCalculation):
             raise AssertionError(f"{ability_id} is no AbilityId")
         if not isinstance(target, (type(None), Unit, Point2, Point3)):
             raise AssertionError()
-        # check if unit has enough energy to cast or if ability is on cooldown
         if cached_abilities_of_unit:
             abilities = cached_abilities_of_unit
         else:
@@ -674,22 +642,19 @@ class BotAI(DistanceCalculation):
                 return True
             cast_range = self.game_data_local.abilities[ability_id.value].proto.cast_range
             ability_target = self.game_data_local.abilities[ability_id.value].proto.target
-            # Check if target is in range (or is a self cast like stimpack)
             if (
                 ability_target == 1
                 or ability_target == TARGET.PointOrNone.value
                 and isinstance(target, (Point2, Point3))
                 and unit.distance_to(target) <= unit.radius + target.radius + cast_range
-            ):  # cant replace 1 with "Target.None.value" because ".None" doesnt seem to be a valid enum name
+            ):
                 return True
-            # Check if able to use ability on a unit
             if (
                 ability_target in {TARGET.Unit.value, TARGET.PointOrUnit.value}
                 and isinstance(target, Unit)
                 and unit.distance_to(target) <= unit.radius + target.radius + cast_range
             ):
                 return True
-            # Check if able to use ability on a position
             if (
                 ability_target in {TARGET.Point.value, TARGET.PointOrUnit.value}
                 and isinstance(target, (Point2, Point3))
@@ -780,7 +745,7 @@ class BotAI(DistanceCalculation):
 
         if isinstance(building, UnitTypeId):
             building = self.game_data_local.units[building.value].creation_ability
-        else:  # AbilityId
+        else:
             building = self.game_data_local.abilities[building.value]
 
         if await self.can_place(building, near):
@@ -932,9 +897,7 @@ class BotAI(DistanceCalculation):
         }
         unit_info_id = race_dict[self.race][structure_type]
         unit_info_id_value = unit_info_id.value
-        # The following commented out line is unreliable for ghost / thor as they return 0 which is incorrect
-        # unit_info_id_value = self.game_data_local.units[structure_type.value].proto.tech_requirement
-        if not unit_info_id_value:  # Equivalent to "if unit_info_id_value == 0:"
+        if not unit_info_id_value:
             return 1
         progresses: List[int] = [self.structure_type_build_progress(unit_info_id_value)]
         for equiv_structure in EQUIVALENTS_FOR_TECH_PROGRESS.get(unit_info_id, []):
@@ -972,8 +935,6 @@ class BotAI(DistanceCalculation):
                 structures_in_production.add(structure.tag)
         for worker in self.workers:
             for order in worker.orders:
-                # Skip if the SCV is constructing (not isinstance(order.target, int))
-                # or resuming construction (isinstance(order.target, int))
                 is_int = isinstance(order.target, int)
                 if (
                     is_int
@@ -1066,7 +1027,6 @@ class BotAI(DistanceCalculation):
         :param amount:
         :param closest_to:
         :param train_only_idle_buildings: """
-        # Tech requirement not met
         if self.tech_requirement_progress(unit_type) < 1:
             race_dict = {
                 RACE.Protoss: PROTOSS_TECH_REQUIREMENT,
@@ -1080,12 +1040,10 @@ class BotAI(DistanceCalculation):
             )
             return 0
 
-        # Not affordable
         if not self.can_afford(unit_type):
             return 0
 
         trained_amount = 0
-        # All train structure types: queen can made from hatchery, lair, hive
         train_structure_type: Set[UnitTypeId] = UNIT_TRAINED_FROM[unit_type]
         train_structures = self.structures if self.race != RACE.Zerg else self.structures | self.larva
         requires_techlab = any(
@@ -1097,7 +1055,6 @@ class BotAI(DistanceCalculation):
         can_have_addons = any(
             u in train_structure_type for u in {UnitTypeId.BARRACKS, UnitTypeId.FACTORY, UnitTypeId.STARPORT}
         )
-        # Sort structures closest to a position
         if closest_to is not None:
             train_structures = train_structures.sorted_by_distance_to(closest_to)
         elif can_have_addons:
@@ -1110,29 +1067,19 @@ class BotAI(DistanceCalculation):
 
         structure: Unit
         for structure in train_structures:
-            # Exit early if we can't afford
             if not self.can_afford(unit_type):
                 return trained_amount
             if (
-                # If structure hasn't received an action/order this frame
                 structure.tag not in self.unit_tags_received_action
-                # If structure can train this unit at all
                 and structure.type_id in train_structure_type
-                # Structure has to be completed to be able to train
                 and structure.build_progress == 1
-                # If structure is protoss, it needs to be powered to train
                 and (not is_protoss or structure.is_powered)
-                # Either parameter "train_only_idle_buildings" is False or structure is idle or structure has less
-                # than 2 orders and has reactor
                 and (
                     not train_only_idle_buildings
                     or len(structure.orders) < 1 + int(structure.add_on_tag in self.reactor_tags)
                 )
-                # If structure type_id does not accept addons, it cant require a techlab
-                # Else we have to check if building has techlab as addon
                 and (not requires_techlab or structure.add_on_tag in self.techlab_tags)
             ):
-                # Warp in at location
                 if structure.type_id == UnitTypeId.WARPGATE:
                     pylons = self.structures(UnitTypeId.PYLON)
                     location = pylons.random_unit.position.random_on_distance(4)
@@ -1140,21 +1087,13 @@ class BotAI(DistanceCalculation):
                         structure.warp_in(unit_type, location), subtract_cost=True, subtract_supply=True
                     )
                 else:
-                    # Normal train a unit from larva or inside a structure
                     successfully_trained = self.do(structure.train(unit_type), subtract_cost=True, subtract_supply=True)
-                    # Check if structure has reactor: queue same unit again
                     if (
-                        # Only terran can have reactors
                         is_terran
-                        # Check if we have enough cost or supply for this unit type
                         and self.can_afford(unit_type)
-                        # Structure needs to be idle in the current frame
                         and not structure.orders
-                        # We are at least 2 away from goal
                         and trained_amount + 1 < amount
-                        # Unit type does not require techlab
                         and not requires_techlab
-                        # Train structure has reactor
                         and structure.add_on_tag in self.reactor_tags
                     ):
                         trained_amount += 1
@@ -1167,10 +1106,8 @@ class BotAI(DistanceCalculation):
                 if successfully_trained:
                     trained_amount += 1
                     if trained_amount == amount:
-                        # Target unit train amount reached
                         return trained_amount
                 else:
-                    # Some error occurred and we couldn't train the unit
                     return trained_amount
         return trained_amount
 
@@ -1196,7 +1133,6 @@ class BotAI(DistanceCalculation):
         if upgrade_type not in UPGRADE_RESEARCHED_FROM:
             raise AssertionError(f"Could not find upgrade {upgrade_type} in 'research from'-dictionary")
 
-        # Not affordable
         if not self.can_afford(upgrade_type):
             return False
 
@@ -1208,7 +1144,6 @@ class BotAI(DistanceCalculation):
         requirement_met = (
             required_tech_building is None or self.structure_type_build_progress(required_tech_building) == 1
         )
-        # Requirement not met
         if not requirement_met:
             return False
 
