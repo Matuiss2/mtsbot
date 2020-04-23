@@ -1,6 +1,5 @@
 """
 Dev-tools for performance measurements
-changed last: 28/12/2019
 """
 import time
 from contextlib import contextmanager

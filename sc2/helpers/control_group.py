@@ -1,6 +1,5 @@
 """
 Group everything about the simulation of the sc2 control groups
-changed last: 28/12/2019
 """
 
 
