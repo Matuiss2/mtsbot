@@ -100,7 +100,7 @@ transforming: Dict[UnitTypeId, AbilityId] = {
     UnitTypeId.ZERGLING: AbilityId.BURROWUP_ZERGLING,
     UnitTypeId.ZERGLINGBURROWED: AbilityId.BURROWDOWN_ZERGLING,
 }
-# For now only contains units that cost supply, used in bot_ai.do()
+
 abilityid_to_unittypeid: Dict[AbilityId, UnitTypeId] = {
     # Protoss
     AbilityId.NEXUSTRAIN_PROBE: UnitTypeId.PROBE,
@@ -223,7 +223,7 @@ IS_DETECTOR: Set[UnitTypeId] = {
 }
 UNIT_PHOTONCANNON: UnitTypeId = UnitTypeId.PHOTONCANNON
 UNIT_COLOSSUS: UnitTypeId = UnitTypeId.COLOSSUS
-# Used in unit_command.py and action.py to combine only certain abilities
+
 COMBINABLE_ABILITIES: Set[AbilityId] = {
     AbilityId.MOVE,
     AbilityId.ATTACK,
@@ -283,8 +283,6 @@ def return_not_an_unit():
     return UnitTypeId.NOTAUNIT
 
 
-# Hotfix for structures and units as the API does not seem to return the correct values,
-# e.g. ghost and thor have None in the requirements
 TERRAN_TECH_REQUIREMENT: Dict[UnitTypeId, UnitTypeId] = defaultdict(
     return_not_an_unit,
     {
@@ -361,7 +359,7 @@ ZERG_TECH_REQUIREMENT: Dict[UnitTypeId, UnitTypeId] = defaultdict(
         UnitTypeId.BROODLORD: UnitTypeId.GREATERSPIRE,
     },
 )
-# Required in 'tech_requirement_progress' bot_ai.py function
+
 EQUIVALENTS_FOR_TECH_PROGRESS: Dict[UnitTypeId, Set[UnitTypeId]] = {
     UnitTypeId.SUPPLYDEPOT: {UnitTypeId.SUPPLYDEPOTLOWERED},
     UnitTypeId.BARRACKS: {UnitTypeId.BARRACKSFLYING},
@@ -386,9 +384,7 @@ ALL_GAS: Set[UnitTypeId] = {
     UnitTypeId.EXTRACTORRICH,
 }
 DAMAGE_BONUS_PER_UPGRADE: Dict[int, UnitTypeId] = {
-    #
     # Protoss
-    #
     UnitTypeId.PROBE: {TARGET_TYPE.Ground.value: {None: 0}},
     # Gateway Units
     UnitTypeId.ADEPT: {TARGET_TYPE.Ground.value: {IS_LIGHT: 1}},
@@ -401,9 +397,7 @@ DAMAGE_BONUS_PER_UPGRADE: Dict[int, UnitTypeId] = {
     # Stargate Units
     UnitTypeId.ORACLE: {TARGET_TYPE.Ground.value: {None: 0}},
     UnitTypeId.TEMPEST: {TARGET_TYPE.Ground.value: {None: 4}, TARGET_TYPE.Air.value: {None: 3, IS_MASSIVE: 2}},
-    #
     # Terran
-    #
     UnitTypeId.SCV: {TARGET_TYPE.Ground.value: {None: 0}},
     # Barracks Units
     UnitTypeId.MARAUDER: {TARGET_TYPE.Ground.value: {IS_ARMORED: 1}},
@@ -419,9 +413,7 @@ DAMAGE_BONUS_PER_UPGRADE: Dict[int, UnitTypeId] = {
     # Starport Units
     UnitTypeId.VIKINGASSAULT: {TARGET_TYPE.Ground.value: {IS_MECHANICAL: 1}},
     UnitTypeId.LIBERATORAG: {TARGET_TYPE.Ground.value: {None: 5}},
-    #
     # Zerg
-    #
     UnitTypeId.DRONE: {TARGET_TYPE.Ground.value: {None: 0}},
     # Hatch Tech Units (Queen, Ling, Bane, Roach, Ravager)
     UnitTypeId.BANELING: {TARGET_TYPE.Ground.value: {None: 2, IS_LIGHT: 2, IS_STRUCTURE: 3}},
