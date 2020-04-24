@@ -37,8 +37,6 @@ class Client(Protocol):
         self.game_step = 8
         self._player_id = None
         self.game_result = None
-        # Store a hash value of all the debug requests to prevent sending the same ones again if they haven't changed
-        # last frame
         self._debug_hash_tuple_last_iteration: Tuple[int, int, int, int] = (0, 0, 0, 0)
         self._debug_draw_last_frame = False
         self._debug_texts = []
@@ -116,8 +114,6 @@ class Client(Protocol):
         is_resign = self.game_result is None
 
         if is_resign:
-            # For all clients that can leave, result of leaving the game either
-            # loss, or the client will ignore the result
             self.game_result = {self._player_id: RESULT.Defeat}
 
         try:
@@ -144,7 +140,6 @@ class Client(Protocol):
             raise AssertionError()
 
         if not self.in_game or result.observation.player_result:
-            # Sometimes game ends one step before results are available
             if not result.observation.player_result:
                 result = await self.execute(observation=sc_pb.RequestObservation())
                 if not result.observation.player_result:
@@ -155,7 +150,6 @@ class Client(Protocol):
                 player_id_to_result[player.player_id] = RESULT(player.result)
             self.game_result = player_id_to_result
 
-        # if render_data is available, then RGB rendering was requested
         if self._renderer and result.observation.observation.HasField("render_data"):
             await self._renderer.render(result.observation)
 
@@ -327,7 +321,6 @@ class Client(Protocol):
                 ignore_resource_requirements=ignore_resource_requirements,
             )
         )
-        # Fix for bots that only query a single unit, may be removed soon
         if not input_was_a_list:
             return [[AbilityId(a.ability_id) for a in b.abilities] for b in result.query.abilities][0]
         return [[AbilityId(a.ability_id) for a in b.abilities] for b in result.query.abilities]
@@ -611,7 +604,6 @@ class Client(Protocol):
             self._debug_boxes.clear()
             self._debug_spheres.clear()
         elif self._debug_draw_last_frame:
-            # Clear drawing if we drew last frame but nothing to draw this frame
             self._debug_hash_tuple_last_iteration = (0, 0, 0, 0)
             await self.execute(
                 debug=sc_pb.RequestDebug(
@@ -754,10 +746,8 @@ class DrawItem:
         """ Helper function for color conversion """
         if color is None:
             return debug_pb.Color(r=255, g=255, b=255)
-        # Need to check if not of type Point3 because Point3 inherits from tuple
         if isinstance(color, (tuple, list)) and not isinstance(color, Point3) and len(color) == 3:
             return debug_pb.Color(r=color[0], g=color[1], b=color[2])
-        # In case color is of type Point3
         red = getattr(color, "r", getattr(color, "x", 255))
         green = getattr(color, "g", getattr(color, "y", 255))
         blue = getattr(color, "b", getattr(color, "z", 255))
