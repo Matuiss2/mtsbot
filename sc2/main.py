@@ -113,10 +113,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     game_data = await client.get_game_data()
     game_info = await client.get_game_info()
 
-    # This game_data will become self.game_data_local in botAI
     ai.prepare_start(client, player_id, game_info, game_data, realtime=realtime)
     state = await client.observation()
-    # check game result every time we get the observation
     if client.game_result:
         await ai.on_end(client.game_result[player_id])
         return client.game_result[player_id]
@@ -140,13 +138,10 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                 state = await client.observation(game_state.game_loop + client.game_step)
             else:
                 state = await client.observation()
-            # check game result every time we get the observation
             if client.game_result:
                 try:
                     await ai.on_end(client.game_result[player_id])
                 except TypeError:
-                    # print(f"caught type error {error}")
-                    # print(f"return {client.game_result[player_id]}")
                     return client.game_result[player_id]
                 return client.game_result[player_id]
             game_state = GameState(state.observation)
@@ -162,7 +157,6 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
         try:
             if realtime:
-                # Issue event like unit created or unit destroyed
                 await ai.issue_events()
                 await ai.on_step(iteration)
                 await ai.after_step()
@@ -170,9 +164,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                 if time_penalty_cooldown > 0:
                     time_penalty_cooldown -= 1
                     LOGGER.warning(f"Running AI step: penalty cooldown: {time_penalty_cooldown}")
-                    iteration -= 1  # Do not increment the iteration on this round
+                    iteration -= 1
                 elif time_limit is None:
-                    # Issue event like unit created or unit destroyed
                     await ai.issue_events()
                     await ai.on_step(iteration)
                     await ai.after_step()
@@ -180,7 +173,6 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                     out_of_budget = False
                     budget = time_limit - time_window.available
 
-                    # Tell the bot how much time it has left attribute
                     ai.time_budget_available = budget
 
                     if budget < 0:
@@ -222,22 +214,19 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                     raise
                 await ai.on_end(result)
                 return result
-            # NOTE: this message is caught by pytest suite
             LOGGER.exception(f"AI step threw an error")  # DO NOT EDIT!
             LOGGER.error(f"Error: {error}")
             LOGGER.error(f"Resigning due to previous error")
             try:
                 await ai.on_end(RESULT.Defeat)
             except TypeError:
-                # print(f"caught type error {error}")
-                # print(f"return {Result.Defeat}")
                 return RESULT.Defeat
             return RESULT.Defeat
 
         LOGGER.debug(f"Running AI step: done")
 
         if not realtime:
-            if not client.in_game:  # Client left (resigned) the game
+            if not client.in_game:
                 await ai.on_end(client.game_result[player_id])
                 return client.game_result[player_id]
 
@@ -295,13 +284,10 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
                 state = await client.observation(game_state.game_loop + client.game_step)
             else:
                 state = await client.observation()
-            # check game result every time we get the observation
             if client.game_result:
                 try:
                     await ai.on_end(client.game_result[player_id])
                 except TypeError:
-                    # print(f"caught type error {error}")
-                    # print(f"return {client.game_result[player_id]}")
                     return client.game_result[player_id]
                 return client.game_result[player_id]
             game_state = GameState(state.observation)
@@ -314,13 +300,10 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
 
         try:
             if realtime:
-                # Issue event like unit created or unit destroyed
                 await ai.issue_events()
                 await ai.on_step(iteration)
                 await ai.after_step()
             else:
-
-                # Issue event like unit created or unit destroyed
                 await ai.issue_events()
                 await ai.on_step(iteration)
                 await ai.after_step()
@@ -329,32 +312,25 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
             if isinstance(error, ProtocolError) and error.is_game_over_error:
                 if realtime:
                     return None
-                # result = client.game_result[player_id]
-                # if result is None:
-                #     LOGGER.error("Game over, but no results gathered")
-                #     raise
                 await ai.on_end(RESULT.Victory)
                 return None
-            # NOTE: this message is caught by pytest suite
             LOGGER.exception(f"AI step threw an error")  # DO NOT EDIT!
             LOGGER.error(f"Error: {error}")
             LOGGER.error(f"Resigning due to previous error")
             try:
                 await ai.on_end(RESULT.Defeat)
             except TypeError:
-                # print(f"caught type error {error}")
-                # print(f"return {Result.Defeat}")
                 return RESULT.Defeat
             return RESULT.Defeat
 
         LOGGER.debug(f"Running AI step: done")
 
         if not realtime:
-            if not client.in_game:  # Client left (resigned) the game
+            if not client.in_game:
                 await ai.on_end(RESULT.Victory)
                 return RESULT.Victory
 
-        await client.step()  # un-indent one line to work in realtime
+        await client.step()
 
         iteration += 1
 
@@ -396,7 +372,6 @@ async def _host_game(
         await server.ping()
 
         client = await _setup_host_game(server, map_settings, players, realtime, random_seed)
-        # Bot can decide if it wants to launch with 'raw_affects_selection=True'
         if not isinstance(players[0], Human) and getattr(players[0].ai, "raw_affects_selection", None) is not None:
             client.raw_affects_selection = players[0].ai.raw_affects_selection
 
@@ -463,7 +438,6 @@ async def _join_game(
         await server.ping()
 
         client = Client(server.ws)
-        # Bot can decide if it wants to launch with 'raw_affects_selection=True'
         if not isinstance(players[1], Human) and getattr(players[1].ai, "raw_affects_selection", None) is not None:
             client.raw_affects_selection = players[1].ai.raw_affects_selection
 
