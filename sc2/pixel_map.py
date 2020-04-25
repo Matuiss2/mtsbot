@@ -20,7 +20,6 @@ class PixelMap:
         :param mirrored:
         """
         self.proto = proto
-        # Used for copying pixelmaps
         self._in_bits: bool = in_bits
         self._mirrored: bool = mirrored
 

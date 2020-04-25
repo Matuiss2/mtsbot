@@ -23,8 +23,6 @@ class AbstractPlayer:
         if p_type == PLAYER_TYPE.Computer:
             if not isinstance(difficulty, DIFFICULTY):
                 raise AssertionError(f"difficulty is of type {type(difficulty)}")
-            # Workaround, proto information does not carry ai_build info
-            # We cant set that in the Player classmethod
             if not (ai_build is None or isinstance(ai_build, AI_BUILD)):
                 raise AssertionError(f"ai_build is of type {type(ai_build)}")
             self.difficulty = difficulty
@@ -88,7 +86,7 @@ class Computer(AbstractPlayer):
         super().__init__(PLAYER_TYPE.Computer, race, difficulty=difficulty, ai_build=ai_build)
 
     def __str__(self):
-        # noinspection PyProtectedMember,PyProtectedMember
+        # noinspection PyProtectedMember
         return f"Computer {self.difficulty._name_}({self.race._name_}, {self.ai_build.name})"
 
 

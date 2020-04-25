@@ -139,10 +139,8 @@ class Pointlike(tuple):
         :param limit:
         """
         target = target.position
-        # assert self != position, f"self is {self}, position is {position}"
         if self == target:
             return self
-        # end of test
         distance_to_target = self.distance_to(target)
         if limit:
             distance = min(distance_to_target, distance)
@@ -185,7 +183,6 @@ class Point2(Pointlike):
     def normalized(self) -> Point2:
         """ This property exists in case Point2 is used as a vector. """
         length = self.length
-        # Cannot normalize if length is zero
         if not length:
             raise AssertionError()
         return self.__class__((self[0] / length, self[1] / length))
@@ -244,9 +241,7 @@ class Point2(Pointlike):
         distance_between_points = self.distance_to(center)
         if radius < distance_between_points / 2:
             raise AssertionError()
-        # remaining distance from center towards the intersection, using pythagoras
         remaining_distance_from_center = (radius ** 2 - (distance_between_points / 2) ** 2) ** 0.5
-        # center of both points
         offset_to_center = Point2(((center.x - self.x) / 2, (center.y - self.y) / 2))
         center = self.offset(offset_to_center)
 
