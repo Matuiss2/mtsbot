@@ -12,8 +12,6 @@ from .ids.ability_id import AbilityId
 from .ids.unit_typeid import UnitTypeId
 from .unit_command import UnitCommand
 
-# Set of parts of names of abilities that have no cost
-# E.g every ability that has 'Hold' in its name is free
 FREE_ABILITIES = {"Lower", "Raise", "Land", "Lift", "Hold", "Harvest"}
 
 
@@ -28,8 +26,6 @@ class GameData:
         self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
-        # Cached UnitTypeIds so that conversion does not take long.
-        # This needs to be moved elsewhere if a new GameData object is created multiple times per game
         self.unit_types: Dict[int, UnitTypeId] = {}
 
     @lru_cache(maxsize=256)
@@ -55,13 +51,10 @@ class GameData:
 
             if unit.creation_ability == ability:
                 if unit.id == UnitTypeId.ZERGLING:
-                    # HARD CODED: zerglings are generated in pairs
                     return Cost(unit.cost.minerals * 2, unit.cost.vespene * 2, unit.cost.time)
-                # Correction for morphing units, e.g. orbital would return 550/0 instead of actual 150/0
                 morph_cost = unit.morph_cost
-                if morph_cost:  # can be None
+                if morph_cost:
                     return morph_cost
-                # Correction for zerg structures without morph: Extractor would return 75 instead of actual 25
                 return unit.cost_zerg_corrected
 
         for upgrade in self.upgrades.values():
@@ -74,7 +67,7 @@ class GameData:
 class AbilityData:
     """ Some info about abilities"""
 
-    ability_ids: List[int] = [ability_id.value for ability_id in AbilityId][1:]  # sorted list
+    ability_ids: List[int] = [ability_id.value for ability_id in AbilityId][1:]
 
     @classmethod
     def id_exists(cls, ability_id):
@@ -83,7 +76,7 @@ class AbilityData:
             raise AssertionError(f"Wrong type: {ability_id} is not int")
         if ability_id == 0:
             return False
-        i = bisect_left(cls.ability_ids, ability_id)  # quick binary search
+        i = bisect_left(cls.ability_ids, ability_id)
         return i != len(cls.ability_ids) and cls.ability_ids[i] == ability_id
 
     def __init__(self, game_data, proto):
@@ -244,20 +237,14 @@ class UnitTypeData:
     def cost_zerg_corrected(self) -> Cost:
         """ This returns 25 for extractor and 200 for spawning pool instead of 75 and 250 respectively """
         if self.race == RACE.Zerg and ATTRIBUTE.Structure.value in self.attributes:
-            # a = self.game_data_local.units(UnitTypeId.ZERGLING)
-            # print(a)
-            # print(vars(a))
             return Cost(self.proto.mineral_cost - 50, self.proto.vespene_cost, self.proto.build_time)
         return self.cost
 
     @property
     def morph_cost(self) -> Optional[Cost]:
         """ This returns 150 minerals for OrbitalCommand instead of 550 """
-        # Fix for BARRACKSREACTOR which has tech alias [REACTOR] which has (0, 0) cost
         if self.tech_alias is None or self.tech_alias[0] in {UnitTypeId.TECHLAB, UnitTypeId.REACTOR}:
             return None
-        # Morphing a HIVE would have HATCHERY and LAIR in the tech alias
-        # - now subtract HIVE cost from LAIR cost instead of from HATCHERY cost
         tech_alias_cost_minerals = max(
             self._game_data.units[tech_alias.value].cost.minerals for tech_alias in self.tech_alias
         )
