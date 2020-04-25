@@ -112,8 +112,8 @@ class GameState:
 
     def __init__(self, response_observation):
         self.response_observation = response_observation
-        self.actions = response_observation.actions  # successful actions since last loop
-        self.action_errors = response_observation.action_errors  # error actions since last loop
+        self.actions = response_observation.actions
+        self.action_errors = response_observation.action_errors
 
         self.observation = response_observation.observation
         self.observation_raw = self.observation.raw_data
@@ -121,18 +121,16 @@ class GameState:
         self.player_result = response_observation.player_result
         self.chat = response_observation.chat
         self.common: Common = Common(self.observation.player_common)
-        self.game_loop: int = self.observation.game_loop  # 22.4 per second on faster game speed
+        self.game_loop: int = self.observation.game_loop
 
         self.score: ScoreDetails = ScoreDetails(self.observation.score)
-        self.abilities = self.observation.abilities  # abilities of selected units
+        self.abilities = self.observation.abilities
         self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation_raw.player.upgrade_ids}
 
-        # Set of unit tags that died this step
         self.dead_units: Set[int] = set(self.observation_raw.event.dead_units)
         # self.visibility[position]: 0=Hidden, 1=Fogged, 2=Visible
         self.visibility: PixelMap = PixelMap(self.observation_raw.map_state.visibility, mirrored=False)
         # self.creep[position]: 0=No creep, 1=creep
         self.creep: PixelMap = PixelMap(self.observation_raw.map_state.creep, in_bits=True, mirrored=False)
 
-        # Effects like ravager bile shot, lurker attack, everything in effect_id.py
         self.effects: Set[EffectData] = {EffectData(effect) for effect in self.observation_raw.effects}

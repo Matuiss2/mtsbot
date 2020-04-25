@@ -24,11 +24,8 @@ class Ramp:
         """
         self._points: Set[Point2] = points
         self.__game_info = game_info
-        # Tested by printing actual building locations vs calculated depot positions
         self.x_offset = 0.5
         self.y_offset = 0.5
-        # Can this be removed?
-        self.cache = {}
 
     @property_immutable_cache
     def _height_map(self):
@@ -71,8 +68,7 @@ class Ramp:
         """ Returns the 2 upper ramp points of the main base ramp required for the supply depot and barracks
         placement properties used in this file. """
         if len(self.upper) > 5:
-            # NOTE: this was way too slow on large ramps
-            return set()  # HACK: makes this work for now
+            return set()
 
         upper2 = sorted(list(self.upper), key=lambda x: x.distance_to_point2(self.bottom_center), reverse=True)
         while len(upper2) > 2:
@@ -128,11 +124,11 @@ class GameInfo:
         self.placement_grid: PixelMap = PixelMap(self.proto.start_raw.placement_grid, in_bits=True, mirrored=False)
         self.playable_area = Rect.from_proto(self.proto.start_raw.playable_area)
         self.map_center = self.playable_area.center
-        self.map_ramps: List[Ramp] = None  # Filled later by BotAI.prepare_first_step
-        self.vision_blockers: Set[Point2] = None  # Filled later by BotAI.prepare_first_step
+        self.map_ramps: List[Ramp] = None
+        self.vision_blockers: Set[Point2] = None
         self.player_races = {p.player_id: p.race_actual or p.race_requested for p in self.proto.player_info}
         self.start_locations: List[Point2] = [Point2.from_proto(sl) for sl in self.proto.start_raw.start_locations]
-        self.player_start_location: Point2 = None  # Filled later by BotAI.prepare_first_step
+        self.player_start_location: Point2 = None
 
     def find_ramps_and_vision_blockers(self) -> Tuple[List[Ramp], Set[Point2]]:
         """ Calculate points that are passable but not buildable.
