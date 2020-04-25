@@ -119,14 +119,12 @@ class ObserverAI(DistanceCalculation):
         self._units_previous_map: Dict[int, Unit] = dict()
         self._structures_previous_map: Dict[int, Unit] = dict()
         self._previous_upgrades: Set[UpgradeId] = set()
-        # Internally used to keep track which units received an action in this frame,
-        # so that self.train() function does not give the same larva two orders - cleared every frame
         self.unit_tags_received_action: Set[int] = set()
 
     @property
     def time(self) -> float:
         """ Returns time in seconds, assumes the game is played on 'faster' """
-        return self.state.game_loop / 22.4  # / (1/1.4) * (1/16)
+        return self.state.game_loop / 22.4
 
     @property
     def time_formatted(self) -> str:
@@ -226,7 +224,7 @@ class ObserverAI(DistanceCalculation):
         """ Cache for the already_pending function, includes protoss units warping in,
         all units in production and all structures, and all morphs """
         abilities_amount = Counter()
-        for unit in self.units + self.structures:  # type: Unit
+        for unit in self.units + self.structures:
             for order in unit.orders:
                 abilities_amount[order.ability] += 1
             if not unit.is_ready:
@@ -263,16 +261,13 @@ class ObserverAI(DistanceCalculation):
         """
         :param state:
         """
-        # Set attributes from new state before on_step."""
-        self.state: GameState = state  # See game_state.py
-        # Required for events, needs to be before self.units are initialized so the old units are stored
+        self.state: GameState = state
         self._units_previous_map: Dict = {unit.tag: unit for unit in self.units}
         self._structures_previous_map: Dict = {structure.tag: structure for structure in self.structures}
 
         self._prepare_units()
 
     def _prepare_units(self):
-        # Set of enemy units detected by own sensor tower, as blips have less unit information than normal visible units
         self.blips: Set[Blip] = set()
         self.units: Units = Units([], self)
         self.structures: Units = Units([], self)
@@ -295,7 +290,6 @@ class ObserverAI(DistanceCalculation):
             if unit.is_blip:
                 self.blips.add(Blip(unit))
             else:
-                # Convert these units to effects: reaper grenade, parasitic bomb dummy, forcefield
                 unit_obj = Unit(unit, self)
                 self.units.append(unit_obj)
 
@@ -333,15 +327,11 @@ class ObserverAI(DistanceCalculation):
 
     async def _issue_building_events(self):
         for structure in self.structures:
-            # Check build_progress < 1 to exclude starting townhall
             if structure.tag not in self._structures_previous_map and structure.build_progress < 1:
                 await self.on_building_construction_started(structure)
                 continue
-            # From here on, only check completed structure, so we ignore structures with build_progress < 1
             if structure.build_progress < 1:
                 continue
-            # Using get function in case somehow the previous structure map (from last frame)
-            # does not contain this structure
             structure_prev = self._structures_previous_map.get(structure.tag, None)
             if structure_prev and structure_prev.build_progress < 1:
                 await self.on_building_construction_complete(structure)
