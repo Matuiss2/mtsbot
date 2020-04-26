@@ -751,7 +751,7 @@ class BotAI(DistanceCalculation):
         if await self.can_place(building, near):
             return near
 
-        if max_distance == 0:
+        if not max_distance:
             return None
 
         for distance in range(placement_step, max_distance, placement_step):

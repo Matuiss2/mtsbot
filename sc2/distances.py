@@ -216,7 +216,7 @@ class DistanceCalculation:
         messages, but maybe slightly faster) """
         if not 0 <= method <= 3:
             raise AssertionError(f"Selected method was: {method}")
-        if method == 0:
+        if not method:
             self.distance_squared_unit_to_unit = self._distance_squared_unit_to_unit_method0
         elif method == 1:
             self.distance_squared_unit_to_unit = self._distance_squared_unit_to_unit_method1

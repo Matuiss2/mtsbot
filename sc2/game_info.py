@@ -147,7 +147,7 @@ class GameInfo:
             if value == 1
             and map_area.x <= a < map_area.x + map_area.width
             and map_area.y <= b < map_area.y + map_area.height
-            and self.placement_grid[(a, b)] == 0
+            and not self.placement_grid[(a, b)]
         ]
         ramp_points = [point for point in points if not equal_height_around(point)]
         vision_blockers = set(point for point in points if equal_height_around(point))
