@@ -22,7 +22,7 @@ class GameData:
         """
         :param data:
         """
-        ids = set(a.value for a in AbilityId if a.value != 0)
+        ids = set(a.value for a in AbilityId if a.value)
         self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}

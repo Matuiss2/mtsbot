@@ -133,7 +133,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
     iteration = 0
     while True:
-        if iteration != 0:
+        if iteration:
             if realtime:
                 state = await client.observation(game_state.game_loop + client.game_step)
             else:
