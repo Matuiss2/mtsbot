@@ -169,7 +169,7 @@ class GameInfo:
         def paint(pnt: Point2) -> None:
             picture[pnt.y][pnt.x] = current_color
 
-        nearby = [(a, b) for a in [-1, 0, 1] for b in [-1, 0, 1] if a != 0 or b != 0]
+        nearby = [(a, b) for a in [-1, 0, 1] for b in [-1, 0, 1] if a or b]
 
         remaining: Set[Point2] = set(points)
         for point in remaining:

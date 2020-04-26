@@ -310,7 +310,7 @@ class Cost:
         return self.minerals != other.minerals or self.vespene != other.vespene
 
     def __bool__(self) -> bool:
-        return self.minerals != 0 or self.vespene != 0
+        return bool(self.minerals) or bool(self.vespene)
 
     def __add__(self, other) -> Cost:
         if not other:
