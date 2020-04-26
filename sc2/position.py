@@ -245,12 +245,10 @@ class Point2(Pointlike):
         offset_to_center = Point2(((center.x - self.x) / 2, (center.y - self.y) / 2))
         center = self.offset(offset_to_center)
 
-        # stretch offset vector in the ratio of remaining distance from center to intersection
         vector_stretch_factor = remaining_distance_from_center / (distance_between_points / 2)
         vector = offset_to_center
         offset_to_center_stretched = Point2((vector.x * vector_stretch_factor, vector.y * vector_stretch_factor))
 
-        # rotate vector by 90° and -90°
         vector_rotated1 = Point2((offset_to_center_stretched.y, -offset_to_center_stretched.x))
         vector_rotated2 = Point2((-offset_to_center_stretched.y, offset_to_center_stretched.x))
         intersect1 = center.offset(vector_rotated1)
