@@ -74,7 +74,7 @@ class PixelMap:
 
     def is_set(self, position):
         """ Not sure what it does"""
-        return self[position] != 0
+        return bool(self[position])
 
     def is_empty(self, position):
         """ Not sure what it does"""
