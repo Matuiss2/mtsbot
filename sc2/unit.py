@@ -83,8 +83,6 @@ class UnitOrder:
         :param progress:
         """
         self.ability: AbilityData = ability
-        # This can be an int (if target is unit) or proto Point2 object,
-        # which needs to be converted using 'Point2.from_proto(target)'
         self.target = target
         self.progress: float = progress
 
@@ -102,7 +100,6 @@ class Unit:
         """
         self.proto = proto_data
         self.bot_object: BotAI = bot_object
-        # Used by property_immutable_cache
         self.cache = {}
         self.game_loop: int = bot_object.state.game_loop
 
@@ -483,13 +480,11 @@ class Unit:
         if cast_range <= 0:
             raise AssertionError(f"Checking for an ability ({ability_id}) that has no cast range")
         ability_target_type = self.bot_object.game_data_local.abilities[ability_id.value].proto.target
-        # For casting abilities that target other units, like transfuse, feedback, snipe, yamato
         if ability_target_type in {TARGET.Unit.value, TARGET.PointOrUnit.value} and isinstance(target, Unit):
             return (
                 self.bot_object.distance_squared_unit_to_unit(self, target)
                 <= (cast_range + self.radius + target.radius + bonus_distance) ** 2
             )
-        # For casting abilities on the ground, like queen creep tumor, ravager bile, HT storm
         if ability_target_type in {TARGET.Point.value, TARGET.PointOrUnit.value} and isinstance(
             target, (Point2, tuple)
         ):
@@ -527,7 +522,6 @@ class Unit:
                     return 0, 0, 0
                 if not self.can_attack_air and target.is_flying:
                     return 0, 0, 0
-        # Enemy structures that are not completed can't attack
         if not target.is_ready:
             return 0, 0, 0
         target_has_guardian_shield: bool = False
@@ -537,22 +531,18 @@ class Unit:
         else:
             enemy_armor: float = target.armor + target.armor_upgrade_level
             enemy_shield_armor: float = target.shield_upgrade_level
-            # Ultralisk armor upgrade, only works if target belongs to the bot calling this function
             if (
                 target.type_id in {UnitTypeId.ULTRALISK, UnitTypeId.ULTRALISKBURROWED}
                 and target.is_mine
                 and UpgradeId.CHITINOUSPLATING in target.bot_object.state.upgrades
             ):
                 enemy_armor += 2
-            # Guardian shield adds 2 armor
             if BuffId.GUARDIANSHIELD in target.buffs:
                 target_has_guardian_shield = True
-            # Anti armor missile of raven
             if BuffId.RAVENSHREDDERMISSILETINT in target.buffs:
                 enemy_armor -= 2
                 enemy_shield_armor -= 2
 
-        # Fast return for battlecruiser because they have no weapon in the API
         if self.type_id == UnitTypeId.BATTLECRUISER:
             if target_has_guardian_shield:
                 enemy_armor += 2
@@ -561,11 +551,9 @@ class Unit:
             weapon_damage = weapon_damage - enemy_shield_armor if target.shield else weapon_damage - enemy_armor
             return weapon_damage, 0.224, 6
 
-        # Fast return for bunkers, since they don't have a weapon similar to BCs
         if self.type_id == UnitTypeId.BUNKER:
             if self.is_enemy:
                 if self.is_active:
-                    # Expect fully loaded bunker with marines
                     return 24, 0.854, 6
                 return 0, 0, 0
 
@@ -576,7 +564,6 @@ class Unit:
             if not target.is_flying
             else TARGET_AIR
         )
-        # Contains total damage, attack speed and attack range
         damages: List[Tuple[float, float, float]] = []
         for weapon in list(self._weapons):
             if weapon.type not in required_target_type:
@@ -592,10 +579,8 @@ class Unit:
                 else DAMAGE_BONUS_PER_UPGRADE.get(self.type_id, {}).get(weapon.type, {}).get(None, 1)
             )
             damage_per_attack: float = weapon.damage + self.attack_upgrade_level * bonus_damage_per_upgrade
-            # Remaining damage after all damage is dealt to shield
             remaining_damage: float = 0
 
-            # Calculate bonus damage against target
             bonuses: List[float] = []
             for bonus in weapon.damage_bonus:
                 if bonus.attribute in target.type_data.attributes:
@@ -604,7 +589,6 @@ class Unit:
                         if not self.attack_upgrade_level
                         else DAMAGE_BONUS_PER_UPGRADE.get(self.type_id, {}).get(weapon.type, {}).get(bonus.attribute, 0)
                     )
-                    # Hardcoded blueflame damage bonus from hellions
                     if (
                         bonus.attribute == IS_LIGHT
                         and self.type_id == UnitTypeId.HELLION
@@ -615,37 +599,28 @@ class Unit:
             if bonuses:
                 damage_per_attack += max(bonuses)
 
-            # Subtract enemy unit's shield
             if target.shield > 0:
-                # Fix for ranged units + guardian shield
                 enemy_shield_armor_temp = (
                     enemy_shield_armor + 2 if target_has_guardian_shield and weapon_range >= 2 else enemy_shield_armor
                 )
-                # Shield-armor has to be applied
                 while total_attacks > 0 and enemy_shield > 0:
-                    # Guardian shield correction
                     enemy_shield -= max(0.5, damage_per_attack - enemy_shield_armor_temp)
                     total_attacks -= 1
                 if enemy_shield < 0:
                     remaining_damage = -enemy_shield
                     enemy_shield = 0
 
-            # Fix for ranged units if enemy has guardian shield buff
             enemy_armor_temp = enemy_armor + 2 if target_has_guardian_shield and weapon_range >= 2 else enemy_armor
-            # Subtract enemy unit's HP
             if remaining_damage > 0:
                 enemy_health -= max(0.5, remaining_damage - enemy_armor_temp)
             while total_attacks > 0 and (include_overkill_damage or enemy_health > 0):
-                # Guardian shield correction
                 enemy_health -= max(0.5, damage_per_attack - enemy_armor_temp)
                 total_attacks -= 1
 
-            # Calculate the final damage
             if not include_overkill_damage:
                 enemy_health = max(0, enemy_health)
                 enemy_shield = max(0, enemy_shield)
             total_damage_dealt = target.health + target.shield - enemy_health - enemy_shield
-            # Unit modifiers: buffs and upgrades that affect weapon speed and weapon range
             if self.type_id in {
                 UnitTypeId.ZERGLING,
                 UnitTypeId.MARINE,
@@ -659,21 +634,17 @@ class Unit:
             }:
                 if (
                     self.type_id == UnitTypeId.ZERGLING
-                    # Attack speed calculation only works for our unit
                     and self.is_mine
                     and UpgradeId.ZERGLINGATTACKSPEED in self.bot_object.state.upgrades
                 ):
-                    # 0.696 for zerglings divided through 1.4 equals (+40% attack speed bonus from the upgrade):
                     weapon_speed /= 1.4
                 elif (
-                    # Adept receives 45% attack speed bonus from glaives
                     self.type_id == UnitTypeId.ADEPT
                     and self.is_mine
                     and UpgradeId.ADEPTPIERCINGATTACK in self.bot_object.state.upgrades
                 ):
                     weapon_speed /= 1.45
                 elif self.type_id == UnitTypeId.MARINE and BuffId.STIMPACK in set(self.buffs):
-                    # Marine and marauder receive 50% attack speed bonus from stim
                     weapon_speed /= 1.5
                 elif self.type_id == UnitTypeId.MARAUDER and BuffId.STIMPACKMARAUDER in set(self.buffs):
                     weapon_speed /= 1.5
@@ -696,10 +667,8 @@ class Unit:
                 ):
                     weapon_range += 1
 
-            # Append it to the list of damages, e.g. both thor and queen attacks work on colossus
             damages.append((total_damage_dealt, weapon_speed, weapon_range))
 
-        # If no attack was found, return (0, 0, 0)
         if not damages:
             return 0, 0, 0
         # Returns: total potential damage, attack speed, attack range
