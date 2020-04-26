@@ -355,7 +355,6 @@ class Units(list):
         """
         if not self:
             raise AssertionError("Units object is empty")
-        # Return self because there are no enemies
         if not self:
             return self
         distance_squared = distance ** 2
