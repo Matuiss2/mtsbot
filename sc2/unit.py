@@ -315,7 +315,7 @@ class Unit:
     @property
     def health_percentage(self) -> float:
         """ Returns the percentage of health the unit has. Does not include shields. """
-        if self.proto.health_max == 0:
+        if not self.proto.health_max:
             return 0
         return self.proto.health / self.proto.health_max
 
@@ -332,7 +332,7 @@ class Unit:
     @property
     def shield_percentage(self) -> float:
         """ Returns the percentage of shield points the unit has. Returns 0 for non-protoss units. """
-        if self.proto.shield_max == 0:
+        if not self.proto.shield_max:
             return 0
         return self.proto.shield / self.proto.shield_max
 
@@ -340,10 +340,10 @@ class Unit:
     def shield_health_percentage(self) -> float:
         """ Returns the percentage of combined shield + hp points the unit has.
         Also takes build progress into account. """
-        max_ = (self.proto.shield_max + self.proto.health_max) * self.build_progress
-        if max_ == 0:
+        max_shield_plus_health = (self.proto.shield_max + self.proto.health_max) * self.build_progress
+        if not max_shield_plus_health:
             return 0
-        return (self.proto.shield + self.proto.health) / max_
+        return (self.proto.shield + self.proto.health) / max_shield_plus_health
 
     @property
     def energy(self) -> float:
@@ -358,7 +358,7 @@ class Unit:
     @property
     def energy_percentage(self) -> float:
         """ Returns the percentage of amount of energy the unit has. Returns 0 for units without energy. """
-        if self.proto.energy_max == 0:
+        if not self.proto.energy_max:
             return 0
         return self.proto.energy / self.proto.energy_max
 
@@ -681,7 +681,7 @@ class Unit:
         calc_tuple: Tuple[float, float, float] = self.calculate_damage_vs_target(
             target, ignore_armor, include_overkill_damage
         )
-        if calc_tuple[1] == 0:
+        if not calc_tuple[1]:
             return 0
         return calc_tuple[0] / calc_tuple[1]
 
@@ -1052,7 +1052,7 @@ class Unit:
         """ Returns the time until the unit can fire again,
         returns -1 for units that can't attack.
         Usage:
-        if unit.weapon_cooldown == 0:
+        if not unit.weapon_cooldown:
             self.do(unit.attack(target))
         elif unit.weapon_cooldown < 0:
             self.do(unit.move(closest_allied_unit_because_cant_attack))
