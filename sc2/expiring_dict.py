@@ -4,10 +4,7 @@ Houses an expiring dict that uses the game_loop to only return items that are va
 from collections import OrderedDict
 from contextlib import suppress
 from threading import RLock
-from typing import Iterable, Union, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from sc2.bot_ai import BotAI
+from typing import Iterable, Union
 
 
 class ExpiringDict(OrderedDict):
@@ -29,7 +26,7 @@ class ExpiringDict(OrderedDict):
                     print("test is not anymore in dict")
     """
 
-    def __init__(self, bot: "BotAI", max_len: int = 1, max_age_frames: int = 1):
+    def __init__(self, bot, max_len: int = 1, max_age_frames: int = 1):
         if max_age_frames <= 0:
             raise AssertionError()
         if max_len <= 0:
