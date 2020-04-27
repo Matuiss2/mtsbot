@@ -74,7 +74,7 @@ class AbilityData:
         """Check if the given AbilityID exists"""
         if not isinstance(ability_id, int):
             raise AssertionError(f"Wrong type: {ability_id} is not int")
-        if ability_id == 0:
+        if not ability_id:
             return False
         i = bisect_left(cls.ability_ids, ability_id)
         return i != len(cls.ability_ids) and cls.ability_ids[i] == ability_id
@@ -82,7 +82,7 @@ class AbilityData:
     def __init__(self, game_data, proto):
         self._game_data = game_data
         self.proto = proto
-        if self.id == 0:
+        if not self.id:
             raise AssertionError()
 
     def __repr__(self) -> str:
@@ -161,7 +161,7 @@ class UnitTypeData:
     @property
     def creation_ability(self) -> Optional[AbilityData]:
         """ Returns the ability responsible to create the unit """
-        if self.proto.ability_id == 0:
+        if not self.proto.ability_id:
             return None
         if self.proto.ability_id not in self._game_data.abilities:
             return None
@@ -196,7 +196,7 @@ class UnitTypeData:
     @property
     def tech_requirement(self) -> Optional[UnitTypeId]:
         """ Tech-building requirement of buildings - may work for units but unreliably """
-        if self.proto.tech_requirement == 0:
+        if not self.proto.tech_requirement:
             return None
         if self.proto.tech_requirement not in self._game_data.units:
             return None
@@ -216,7 +216,7 @@ class UnitTypeData:
     @property
     def unit_alias(self) -> Optional[UnitTypeId]:
         """ Building type equality, e.g. FlyingOrbitalCommand is the same as OrbitalCommand """
-        if self.proto.unit_alias == 0:
+        if not self.proto.unit_alias:
             return None
         if self.proto.unit_alias not in self._game_data.units:
             return None
@@ -280,7 +280,7 @@ class UpgradeData:
     @property
     def research_ability(self) -> Optional[AbilityData]:
         """ Returns the ability responsible to research the upgrade"""
-        if self.proto.ability_id == 0:
+        if not self.proto.ability_id:
             return None
         if self.proto.ability_id not in self._game_data.abilities:
             return None
