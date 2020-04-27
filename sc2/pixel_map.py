@@ -100,7 +100,7 @@ class PixelMap:
 
             if pred(self[x, y]):
                 nodes.add(Point2((x, y)))
-                queue += [Point2((x + a, y + b)) for a in [-1, 0, 1] for b in [-1, 0, 1] if not (a == 0 and b == 0)]
+                queue += [Point2((x + a, y + b)) for a in [-1, 0, 1] for b in [-1, 0, 1] if a or b]
         return nodes
 
     def flood_fill_all(self, pred: Callable[[int], bool]) -> Set[FrozenSet[Point2]]:
