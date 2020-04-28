@@ -159,7 +159,6 @@ class DistanceCalculation:
         """ Converts a single position to a 2d numpy array with 1 row and 2 columns. """
         return np.fromiter(pos, dtype=float, count=2).reshape((1, 2))
 
-
     @staticmethod
     def distance_math_dist(start_point: Tuple[float, float], destiny: Tuple[float, float]):
         """ math.dist(), its about the same speed as math.hypot but it's cleaner, also there is no need for slices

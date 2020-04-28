@@ -246,11 +246,7 @@ class BotAI(DistanceCalculation):
         """
         resource_spread_threshold = 8.5
         geysers = self.vespene_geyser
-        resource_groups = [
-            [resource]
-            for resource in self.resources
-            if resource.name != "MineralField450"
-        ]
+        resource_groups = [[resource] for resource in self.resources if resource.name != "MineralField450"]
         merged_group = True
         while merged_group:
             merged_group = False

@@ -94,6 +94,7 @@ async def _handle_and_informs_untreated_errors(ai, error):
         return True
     return True
 
+
 async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_time_limit):
     if realtime:
         if step_time_limit is not None:
