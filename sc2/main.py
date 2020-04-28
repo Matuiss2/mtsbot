@@ -71,6 +71,21 @@ async def _play_game_human(client, player_id, realtime, game_time_limit):
             await client.step()
 
 
+async def _initialize_information_and_ai(client, player_id, ai, game_state, realtime, single_step=False):
+    game_data = await client.get_game_data()
+    game_info = await client.get_game_info()
+    if single_step:
+        client.game_step = 1
+    ai.prepare_start(client, player_id, game_info, game_data, realtime=realtime)
+    if client.game_result:
+        await ai.on_end(client.game_result[player_id])
+        return client.game_result[player_id]
+    proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
+    ai.prepare_step(game_state, proto_game_info)
+
+
+
+
 async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_time_limit):
     if realtime:
         if step_time_limit is not None:
@@ -107,18 +122,9 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         time_penalty = step_time_limit.get("penalty", None)
         time_window = SlidingTimeWindow(int(step_time_limit.get("window_size", 1)))
         time_limit = float(step_time_limit.get("time_limit", None))
-
-    game_data = await client.get_game_data()
-    game_info = await client.get_game_info()
-
-    ai.prepare_start(client, player_id, game_info, game_data, realtime=realtime)
     state = await client.observation()
-    if client.game_result:
-        await ai.on_end(client.game_result[player_id])
-        return client.game_result[player_id]
     game_state = GameState(state.observation)
-    proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
-    ai.prepare_step(game_state, proto_game_info)
+    await _initialize_information_and_ai(client, player_id, ai, game_state, realtime)
     await ai.on_before_start()
     ai.prepare_first_step()
     try:
@@ -253,17 +259,9 @@ async def play_game(
 
 
 async def _play_replay(client, ai, realtime=False, player_id=0):
-    game_data = await client.get_game_data()
-    game_info = await client.get_game_info()
-    client.game_step = 1
-    ai.prepare_start(client, player_id, game_info, game_data, realtime=realtime)
     state = await client.observation()
-    if client.game_result:
-        await ai.on_end(client.game_result[player_id])
-        return client.game_result[player_id]
     game_state = GameState(state.observation)
-    proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
-    ai.prepare_step(game_state, proto_game_info)
+    await _initialize_information_and_ai(client, player_id, ai, game_state, realtime, single_step=True)
     ai.prepare_first_step()
     try:
         await ai.on_start()
