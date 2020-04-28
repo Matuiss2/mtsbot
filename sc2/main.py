@@ -84,7 +84,15 @@ async def _initialize_information_and_ai(client, player_id, ai, game_state, real
     ai.prepare_step(game_state, proto_game_info)
 
 
-
+async def _handle_and_informs_untreated_errors(ai, error):
+    LOGGER.exception(f"AI step threw an error")  # DO NOT EDIT!
+    LOGGER.error(f"Error: {error}")
+    LOGGER.error(f"Resigning due to previous error")
+    try:
+        await ai.on_end(RESULT.Defeat)
+    except TypeError:
+        return True
+    return True
 
 async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_time_limit):
     if realtime:
@@ -218,14 +226,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                     raise
                 await ai.on_end(result)
                 return result
-            LOGGER.exception(f"AI step threw an error")  # DO NOT EDIT!
-            LOGGER.error(f"Error: {error}")
-            LOGGER.error(f"Resigning due to previous error")
-            try:
-                await ai.on_end(RESULT.Defeat)
-            except TypeError:
+            if await _handle_and_informs_untreated_errors(ai, error):
                 return RESULT.Defeat
-            return RESULT.Defeat
 
         LOGGER.debug(f"Running AI step: done")
 
@@ -308,14 +310,8 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
                     return None
                 await ai.on_end(RESULT.Victory)
                 return None
-            LOGGER.exception(f"AI step threw an error")  # DO NOT EDIT!
-            LOGGER.error(f"Error: {error}")
-            LOGGER.error(f"Resigning due to previous error")
-            try:
-                await ai.on_end(RESULT.Defeat)
-            except TypeError:
+            if await _handle_and_informs_untreated_errors(ai, error):
                 return RESULT.Defeat
-            return RESULT.Defeat
 
         LOGGER.debug(f"Running AI step: done")
 
