@@ -108,8 +108,6 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         time_window = SlidingTimeWindow(int(step_time_limit.get("window_size", 1)))
         time_limit = float(step_time_limit.get("time_limit", None))
 
-    ai.initialize_variables()
-
     game_data = await client.get_game_data()
     game_info = await client.get_game_info()
 
@@ -255,8 +253,6 @@ async def play_game(
 
 
 async def _play_replay(client, ai, realtime=False, player_id=0):
-    ai.initialize_variables()
-
     game_data = await client.get_game_data()
     game_info = await client.get_game_info()
     client.game_step = 1

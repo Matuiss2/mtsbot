@@ -75,52 +75,6 @@ class ObserverAI(DistanceCalculation):
         self._game_info: GameInfo = None
         self._game_data: GameData = None
 
-    def initialize_variables(self):
-        """ initialize all variables...could be replaced by the __init__
-        but it would require more work than I want right now """
-        super().__init__()
-        # Specific opponent bot ID used in sc2ai ladder games http://sc2ai.net/
-        # The bot ID will stay the same each game so your bot can "adapt" to the opponent
-        self.opponent_id: int = None
-        # This value will be set to True by main.py in self.prepare_start if game is played in realtime
-        # (if true, the bot will have limited time per step)
-        self.realtime: bool = False
-        self.all_units: Units = Units([], self)
-        self.units: Units = Units([], self)
-        self.workers: Units = Units([], self)
-        self.townhalls: Units = Units([], self)
-        self.structures: Units = Units([], self)
-        self.gas_buildings: Units = Units([], self)
-        self.enemy_units: Units = Units([], self)
-        self.enemy_structures: Units = Units([], self)
-        self.resources: Units = Units([], self)
-        self.destructible: Units = Units([], self)
-        self.watchtowers: Units = Units([], self)
-        self.mineral_field: Units = Units([], self)
-        self.vespene_geyser: Units = Units([], self)
-        self.larva: Units = Units([], self)
-        self.techlab_tags: Set[int] = set()
-        self.reactor_tags: Set[int] = set()
-        self.minerals: int = None
-        self.vespene: int = None
-        self.supply_army: Union[float, int] = None
-        # Doesn't include workers in production
-        self.supply_workers: Union[float, int] = None
-        self.supply_cap: Union[float, int] = None
-        self.supply_used: Union[float, int] = None
-        self.supply_left: Union[float, int] = None
-        self.idle_worker_count: int = None
-        self.army_count: int = None
-        self.warp_gate_count: int = None
-        self.larva_count: int = None
-        self.actions: List[UnitCommand] = []
-        self.blips: Set[Blip] = set()
-        self._unit_tags_seen_this_game: Set[int] = set()
-        self._units_previous_map: Dict[int, Unit] = dict()
-        self._structures_previous_map: Dict[int, Unit] = dict()
-        self._previous_upgrades: Set[UpgradeId] = set()
-        self.unit_tags_received_action: Set[int] = set()
-
     @property
     def time(self) -> float:
         """ Returns time in seconds, assumes the game is played on 'faster' """
