@@ -61,7 +61,6 @@ class BotAI(DistanceCalculation):
         super().__init__()
         self.opponent_id: str = None
         self.realtime: bool = False
-        self.realtime: bool = False
         self.all_units: Units = Units([], self)
         self.units: Units = Units([], self)
         self.workers: Units = Units([], self)
@@ -113,63 +112,6 @@ class BotAI(DistanceCalculation):
         self.game_data_local: GameData = None
         self.race: RACE = None
         self.enemy_race: RACE = None
-
-    def initialize_variables(self):
-        """ Called from main.py internally """
-        super().__init__()
-        # The bot ID will stay the same each game so your bot can "adapt" to the opponent
-        if not hasattr(self, "opponent_id"):
-            self.opponent_id: str = None
-        # Select distance calculation method, see distances.py: _distances_override_functions function
-        if not hasattr(self, "distance_calculation_method"):
-            self.distance_calculation_method: int = 2
-        # This value will be set to True by main.py in self.prepare_start if game is played in realtime
-        # (if true, the bot will have limited time per step)
-        self.realtime: bool = False
-        self.all_units: Units = Units([], self)
-        self.units: Units = Units([], self)
-        self.workers: Units = Units([], self)
-        self.townhalls: Units = Units([], self)
-        self.structures: Units = Units([], self)
-        self.gas_buildings: Units = Units([], self)
-        self.enemy_units: Units = Units([], self)
-        self.enemy_structures: Units = Units([], self)
-        self.resources: Units = Units([], self)
-        self.destructible: Units = Units([], self)
-        self.watchtowers: Units = Units([], self)
-        self.mineral_field: Units = Units([], self)
-        self.vespene_geyser: Units = Units([], self)
-        self.larva: Units = Units([], self)
-        self.techlab_tags: Set[int] = set()
-        self.reactor_tags: Set[int] = set()
-        self.minerals: int = None
-        self.vespene: int = None
-        self.supply_army: float = None
-        self.supply_workers: float = None  # Doesn't include workers in production
-        self.supply_cap: float = None
-        self.supply_used: float = None
-        self.supply_left: float = None
-        self.idle_worker_count: int = None
-        self.army_count: int = None
-        self.warp_gate_count: int = None
-        self.actions: List[UnitCommand] = []
-        self.blips: Set[Blip] = set()
-        self._units_created: Counter = Counter()
-        self._unit_tags_seen_this_game: Set[int] = set()
-        self._units_previous_map: Dict[int, Unit] = dict()
-        self._structures_previous_map: Dict[int, Unit] = dict()
-        self._enemy_units_previous_map: Dict[int, Unit] = dict()
-        self._enemy_structures_previous_map: Dict[int, Unit] = dict()
-        self._previous_upgrades: Set[UpgradeId] = set()
-        self._time_before_step: float = None
-        self._time_after_step: float = None
-        self._min_step_time: float = math.inf
-        self._max_step_time: float = 0
-        self._last_step_step_time: float = 0
-        self._total_time_in_on_step: float = 0
-        self._total_steps_iterations: int = 0
-        # does not give the same larva two orders - cleared every frame
-        self.unit_tags_received_action: Set[int] = set()
 
     @property
     def time(self) -> float:
