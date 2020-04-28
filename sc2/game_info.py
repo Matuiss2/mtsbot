@@ -17,7 +17,7 @@ from .position import Point2, Rect, Size
 class Ramp:
     """ Groups useful data from the ramps"""
 
-    def __init__(self, points: Set[Point2], game_info: GameInfo):
+    def __init__(self, points: Set[Point2], game_info):
         """
         :param points:
         :param game_info:
