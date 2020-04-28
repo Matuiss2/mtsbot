@@ -198,7 +198,7 @@ class Point2(Pointlike):
         return self[1]
 
     @property
-    def to3(self) -> Point3:
+    def to3(self):
         """ Convert the point to point3 and returns it"""
         return Point3((*self, 0))
 
