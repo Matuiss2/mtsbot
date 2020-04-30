@@ -47,23 +47,17 @@ class Units(list):
         """ Copies the units group"""
         return self.subgroup(self)
 
-    def __or__(self, other: Units) -> Units:
+    def _merge_units(self, other_units):
         return Units(
-            chain(
-                iter(self),
-                (other_unit for other_unit in other if other_unit.tag not in (self_unit.tag for self_unit in self)),
-            ),
+            chain(iter(self), (unit for unit in other_units if unit.tag not in (self_unit.tag for self_unit in self)),),
             self.bot_object,
         )
 
+    def __or__(self, other: Units) -> Units:
+        return self._merge_units(other)
+
     def __add__(self, other: Units) -> Units:
-        return Units(
-            chain(
-                iter(self),
-                (other_unit for other_unit in other if other_unit.tag not in (self_unit.tag for self_unit in self)),
-            ),
-            self.bot_object,
-        )
+        return self._merge_units(other)
 
     def __and__(self, other: Units) -> Units:
         return Units(
