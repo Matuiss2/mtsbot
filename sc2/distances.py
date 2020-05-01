@@ -30,7 +30,7 @@ class DistanceCalculation:
         self.calculate_distances = None
         self.positions_array = None
 
-    def _check_frame_then_transform_and_convert_positions(self):
+    def _check_frame_then_store_positions(self):
         if self._generated_frame2 != self.state.game_loop:
             flat_positions = (coord for unit in self.all_units for coord in unit.position_tuple)
             self.positions_array: np.ndarray = np.fromiter(
@@ -75,13 +75,13 @@ class DistanceCalculation:
 
     def _calculate_distances_method1(self) -> np.ndarray:
         """ Use scipy's pdist condensed matrix (1d array) """
-        if self._check_frame_then_transform_and_convert_positions():
+        if self._check_frame_then_store_positions():
             self._cached_pdist = pdist(self.positions_array, "sqeuclidean")
         return self._cached_pdist
 
     def _calculate_distances_method2(self) -> np.ndarray:
         """ Use scipy's cdist square matrix (2d array) """
-        if self._check_frame_then_transform_and_convert_positions():
+        if self._check_frame_then_store_positions():
             self._cached_cdist = cdist(self.positions_array, self.positions_array, "sqeuclidean")
         return self._cached_cdist
 
