@@ -52,6 +52,15 @@ class Client(Protocol):
         """ Returns True if it's in game or in replay"""
         return self._status in {STATUS.in_game, STATUS.in_replay}
 
+    @staticmethod
+    def _assert_type_and_choose_target(position):
+        if not isinstance(position, (Unit, Units, Point2, Point3)):
+            raise AssertionError()
+        if isinstance(position, Units):
+            return position.center
+        if isinstance(position, Unit):
+            return position.position
+
     async def join_game(self, name=None, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None):
         """ Logic to join the game with all the options for it, probably needs to be refactored since it's too big"""
         interface_options = sc_pb.InterfaceOptions(
@@ -417,12 +426,7 @@ class Client(Protocol):
 
     async def move_camera(self, position: Union[Unit, Units, Point2, Point3]):
         """ Moves camera to the target position """
-        if not isinstance(position, (Unit, Units, Point2, Point3)):
-            raise AssertionError()
-        if isinstance(position, Units):
-            position = position.center
-        if isinstance(position, Unit):
-            position = position.position
+        position = self._assert_type_and_choose_target(position)
         await self.execute(
             action=sc_pb.RequestAction(
                 actions=[
@@ -439,12 +443,7 @@ class Client(Protocol):
 
     async def obs_move_camera(self, position: Union[Unit, Units, Point2, Point3]):
         """ Moves observer camera to the target position """
-        if not isinstance(position, (Unit, Units, Point2, Point3)):
-            raise AssertionError()
-        if isinstance(position, Units):
-            position = position.center
-        if isinstance(position, Unit):
-            position = position.position
+        position = self._assert_type_and_choose_target(position)
         await self.execute(
             obs_action=sc_pb.RequestObserverAction(
                 actions=[
