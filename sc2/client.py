@@ -37,13 +37,6 @@ class Client(Protocol):
         self.game_step = 8
         self._player_id = None
         self.game_result = None
-        self._debug_hash_tuple_last_iteration: Tuple[int, int, int, int] = (0, 0, 0, 0)
-        self._debug_draw_last_frame = False
-        self._debug_texts = []
-        self._debug_lines = []
-        self._debug_boxes = []
-        self._debug_spheres = []
-
         self._renderer = None
         self.raw_affects_selection = False
 
@@ -471,76 +464,6 @@ class Client(Protocol):
             )
         )
         await self.execute(action=sc_pb.RequestAction(actions=[action]))
-
-    def debug_text_2d(
-        self,
-        text: str,
-        pos: Union[Point2, Point3, tuple, list],
-        color: Union[tuple, list, Point3] = None,
-        size: int = 8,
-    ):
-        """Draw a text in 2d on the screen on the given position with given color and size"""
-        return self.debug_text_screen(text, pos, color, size)
-
-    def debug_text_3d(
-        self, text: str, pos: Union[Unit, Point2, Point3], color: Union[tuple, list, Point3] = None, size: int = 8
-    ):
-        """Draw a text in 3d on the screen on the given position with given color and size"""
-        return self.debug_text_world(text, pos, color, size)
-
-    async def send_debug(self):
-        """ Sends the debug draw execution. This is run by main.py now automatically, if there is any items in the
-        list. You do not need to run this manually any longer. Check examples/terran/ramp_wall.py for example
-        drawing. Each draw request needs to be sent again in every single on_step iteration.
-        """
-        debug_hash = (
-            sum(hash(item) for item in self._debug_texts),
-            sum(hash(item) for item in self._debug_lines),
-            sum(hash(item) for item in self._debug_boxes),
-            sum(hash(item) for item in self._debug_spheres),
-        )
-        if debug_hash != (0, 0, 0, 0):
-            if debug_hash != self._debug_hash_tuple_last_iteration:
-                # Something has changed, either more or less is to be drawn, or a position of a drawing changed
-                # (e.g. when drawing on a moving unit)
-                self._debug_hash_tuple_last_iteration = debug_hash
-                await self.execute(
-                    debug=sc_pb.RequestDebug(
-                        debug=[
-                            debug_pb.DebugCommand(
-                                draw=debug_pb.DebugDraw(
-                                    text=[text.to_proto() for text in self._debug_texts] if self._debug_texts else None,
-                                    lines=[line.to_proto() for line in self._debug_lines]
-                                    if self._debug_lines
-                                    else None,
-                                    boxes=[box.to_proto() for box in self._debug_boxes] if self._debug_boxes else None,
-                                    spheres=[sphere.to_proto() for sphere in self._debug_spheres]
-                                    if self._debug_spheres
-                                    else None,
-                                )
-                            )
-                        ]
-                    )
-                )
-            self._debug_draw_last_frame = True
-            self._debug_texts.clear()
-            self._debug_lines.clear()
-            self._debug_boxes.clear()
-            self._debug_spheres.clear()
-        elif self._debug_draw_last_frame:
-            self._debug_hash_tuple_last_iteration = (0, 0, 0, 0)
-            await self.execute(
-                debug=sc_pb.RequestDebug(
-                    debug=[
-                        debug_pb.DebugCommand(draw=debug_pb.DebugDraw(text=None, lines=None, boxes=None, spheres=None))
-                    ]
-                )
-            )
-            self._debug_draw_last_frame = False
-
-    async def debug_leave(self):
-        """Closes the debugger"""
-        await self.execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(end_game=debug_pb.DebugEndGame())]))
 
     async def debug_set_unit_value(self, unit_tags: Union[Iterable[int], Units, Unit], unit_value: int, value: float):
         """ Sets a "unit value" (Energy, Life or Shields) of the given units to the given value. Can't set the life

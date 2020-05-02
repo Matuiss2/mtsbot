@@ -251,7 +251,6 @@ class ObserverAI(DistanceCalculation):
         """ Executed by main.py after each on_step function. """
         self.unit_tags_received_action.clear()
         # Commit debug queries
-        await self._client.send_debug()
         return self.state.game_loop
 
     async def issue_events(self):

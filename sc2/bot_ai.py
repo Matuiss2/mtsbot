@@ -1461,7 +1461,6 @@ class BotAI(DistanceCalculation):
             await self._do_actions(self.actions)
             self.actions.clear()
         self.unit_tags_received_action.clear()
-        await self._client.send_debug()
 
         return self.state.game_loop
 
