@@ -84,6 +84,16 @@ async def _initialize_information_and_ai(client, player_id, ai, game_state, real
     ai.prepare_step(game_state, proto_game_info)
 
 
+async def _handle_ending_errors_and_inform_game_result(ai, client, player_id):
+    if client.game_result:
+        try:
+            await ai.on_end(client.game_result[player_id])
+        except TypeError:
+            return True
+        return True
+    return False
+
+
 async def _handle_and_inform_initialization_errors(ai):
     try:
         await ai.on_start()
@@ -157,11 +167,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                 state = await client.observation(game_state.game_loop + client.game_step)
             else:
                 state = await client.observation()
-            if client.game_result:
-                try:
-                    await ai.on_end(client.game_result[player_id])
-                except TypeError:
-                    return client.game_result[player_id]
+            if await _handle_ending_errors_and_inform_game_result(ai, client, player_id):
                 return client.game_result[player_id]
             game_state = GameState(state.observation)
             LOGGER.debug(f"Score: {game_state.score.score}")
@@ -282,11 +288,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
                 state = await client.observation(game_state.game_loop + client.game_step)
             else:
                 state = await client.observation()
-            if client.game_result:
-                try:
-                    await ai.on_end(client.game_result[player_id])
-                except TypeError:
-                    return client.game_result[player_id]
+            if await _handle_ending_errors_and_inform_game_result(ai, client, player_id):
                 return client.game_result[player_id]
             game_state = GameState(state.observation)
             LOGGER.debug(f"Score: {game_state.score.score}")
