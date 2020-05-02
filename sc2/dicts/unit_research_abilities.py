@@ -10,6 +10,30 @@ from ..ids.ability_id import AbilityId
 from ..ids.unit_typeid import UnitTypeId
 from ..ids.upgrade_id import UpgradeId
 
+
+def _spire_family_abilities_and_requirements():
+    return {
+        UpgradeId.ZERGFLYERARMORSLEVEL1: {"ability": AbilityId.RESEARCH_ZERGFLYERARMORLEVEL1},
+        UpgradeId.ZERGFLYERARMORSLEVEL2: {
+            "ability": AbilityId.RESEARCH_ZERGFLYERARMORLEVEL2,
+            "required_building": UnitTypeId.LAIR,
+        },
+        UpgradeId.ZERGFLYERARMORSLEVEL3: {
+            "ability": AbilityId.RESEARCH_ZERGFLYERARMORLEVEL3,
+            "required_building": UnitTypeId.HIVE,
+        },
+        UpgradeId.ZERGFLYERWEAPONSLEVEL1: {"ability": AbilityId.RESEARCH_ZERGFLYERATTACKLEVEL1},
+        UpgradeId.ZERGFLYERWEAPONSLEVEL2: {
+            "ability": AbilityId.RESEARCH_ZERGFLYERATTACKLEVEL2,
+            "required_building": UnitTypeId.LAIR,
+        },
+        UpgradeId.ZERGFLYERWEAPONSLEVEL3: {
+            "ability": AbilityId.RESEARCH_ZERGFLYERATTACKLEVEL3,
+            "required_building": UnitTypeId.HIVE,
+        },
+    }
+
+
 RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool, UnitTypeId]]]] = {
     UnitTypeId.ARMORY: {
         UpgradeId.TERRANSHIPWEAPONSLEVEL1: {"ability": AbilityId.ARMORYRESEARCH_TERRANSHIPWEAPONSLEVEL1},
@@ -180,26 +204,7 @@ RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool,
         UpgradeId.ENHANCEDSHOCKWAVES: {"ability": AbilityId.GHOSTACADEMYRESEARCH_RESEARCHENHANCEDSHOCKWAVES},
         UpgradeId.PERSONALCLOAKING: {"ability": AbilityId.RESEARCH_PERSONALCLOAKING},
     },
-    UnitTypeId.GREATERSPIRE: {
-        UpgradeId.ZERGFLYERARMORSLEVEL1: {"ability": AbilityId.RESEARCH_ZERGFLYERARMORLEVEL1},
-        UpgradeId.ZERGFLYERARMORSLEVEL2: {
-            "ability": AbilityId.RESEARCH_ZERGFLYERARMORLEVEL2,
-            "required_building": UnitTypeId.LAIR,
-        },
-        UpgradeId.ZERGFLYERARMORSLEVEL3: {
-            "ability": AbilityId.RESEARCH_ZERGFLYERARMORLEVEL3,
-            "required_building": UnitTypeId.HIVE,
-        },
-        UpgradeId.ZERGFLYERWEAPONSLEVEL1: {"ability": AbilityId.RESEARCH_ZERGFLYERATTACKLEVEL1},
-        UpgradeId.ZERGFLYERWEAPONSLEVEL2: {
-            "ability": AbilityId.RESEARCH_ZERGFLYERATTACKLEVEL2,
-            "required_building": UnitTypeId.LAIR,
-        },
-        UpgradeId.ZERGFLYERWEAPONSLEVEL3: {
-            "ability": AbilityId.RESEARCH_ZERGFLYERATTACKLEVEL3,
-            "required_building": UnitTypeId.HIVE,
-        },
-    },
+    UnitTypeId.GREATERSPIRE: _spire_family_abilities_and_requirements(),
     UnitTypeId.HATCHERY: {
         UpgradeId.BURROW: {"ability": AbilityId.RESEARCH_BURROW},
         UpgradeId.OVERLORDSPEED: {"ability": AbilityId.RESEARCH_PNEUMATIZEDCARAPACE},
@@ -243,26 +248,7 @@ RESEARCH_INFO: Dict[UnitTypeId, Dict[UpgradeId, Dict[str, Union[AbilityId, bool,
         },
         UpgradeId.ZERGLINGMOVEMENTSPEED: {"ability": AbilityId.RESEARCH_ZERGLINGMETABOLICBOOST},
     },
-    UnitTypeId.SPIRE: {
-        UpgradeId.ZERGFLYERARMORSLEVEL1: {"ability": AbilityId.RESEARCH_ZERGFLYERARMORLEVEL1},
-        UpgradeId.ZERGFLYERARMORSLEVEL2: {
-            "ability": AbilityId.RESEARCH_ZERGFLYERARMORLEVEL2,
-            "required_building": UnitTypeId.LAIR,
-        },
-        UpgradeId.ZERGFLYERARMORSLEVEL3: {
-            "ability": AbilityId.RESEARCH_ZERGFLYERARMORLEVEL3,
-            "required_building": UnitTypeId.HIVE,
-        },
-        UpgradeId.ZERGFLYERWEAPONSLEVEL1: {"ability": AbilityId.RESEARCH_ZERGFLYERATTACKLEVEL1},
-        UpgradeId.ZERGFLYERWEAPONSLEVEL2: {
-            "ability": AbilityId.RESEARCH_ZERGFLYERATTACKLEVEL2,
-            "required_building": UnitTypeId.LAIR,
-        },
-        UpgradeId.ZERGFLYERWEAPONSLEVEL3: {
-            "ability": AbilityId.RESEARCH_ZERGFLYERATTACKLEVEL3,
-            "required_building": UnitTypeId.HIVE,
-        },
-    },
+    UnitTypeId.SPIRE: _spire_family_abilities_and_requirements(),
     UnitTypeId.STARPORTTECHLAB: {
         UpgradeId.BANSHEECLOAK: {"ability": AbilityId.RESEARCH_BANSHEECLOAKINGFIELD},
         UpgradeId.BANSHEESPEED: {"ability": AbilityId.RESEARCH_BANSHEEHYPERFLIGHTROTORS},
