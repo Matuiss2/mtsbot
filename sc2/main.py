@@ -84,6 +84,17 @@ async def _initialize_information_and_ai(client, player_id, ai, game_state, real
     ai.prepare_step(game_state, proto_game_info)
 
 
+async def _handle_and_inform_initialization_errors(ai):
+    try:
+        await ai.on_start()
+    except Exception as error:
+        LOGGER.exception(f"AI on_start threw an error - {error.__traceback__}")
+        LOGGER.error(f"resigning due to previous error")
+        await ai.on_end(RESULT.Defeat)
+        return True
+    return False
+
+
 async def _handle_and_informs_untreated_errors(ai, error):
     LOGGER.exception(f"AI step threw an error")  # DO NOT EDIT!
     LOGGER.error(f"Error: {error}")
@@ -136,12 +147,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     await _initialize_information_and_ai(client, player_id, ai, game_state, realtime)
     await ai.on_before_start()
     ai.prepare_first_step()
-    try:
-        await ai.on_start()
-    except Exception as error:
-        LOGGER.exception(f"AI on_start threw an error - {error.__traceback__}")
-        LOGGER.error(f"resigning due to previous error")
-        await ai.on_end(RESULT.Defeat)
+    if await _handle_and_inform_initialization_errors(ai):
         return RESULT.Defeat
 
     iteration = 0
@@ -266,12 +272,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     game_state = GameState(state.observation)
     await _initialize_information_and_ai(client, player_id, ai, game_state, realtime, single_step=True)
     ai.prepare_first_step()
-    try:
-        await ai.on_start()
-    except Exception as error:
-        LOGGER.exception(f"AI on_start threw an error - {error.__traceback__}")
-        LOGGER.error(f"resigning due to previous error")
-        await ai.on_end(RESULT.Defeat)
+    if await _handle_and_inform_initialization_errors(ai):
         return RESULT.Defeat
 
     iteration = 0
