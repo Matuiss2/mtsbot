@@ -95,7 +95,7 @@ async def _handle_and_inform_initialization_errors(ai):
     return False
 
 
-async def _handle_and_informs_untreated_errors(ai, error):
+async def _handle_and_inform_untreated_errors(ai, error):
     LOGGER.exception(f"AI step threw an error")  # DO NOT EDIT!
     LOGGER.error(f"Error: {error}")
     LOGGER.error(f"Resigning due to previous error")
@@ -233,7 +233,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                     raise
                 await ai.on_end(result)
                 return result
-            if await _handle_and_informs_untreated_errors(ai, error):
+            if await _handle_and_inform_untreated_errors(ai, error):
                 return RESULT.Defeat
 
         LOGGER.debug(f"Running AI step: done")
@@ -312,7 +312,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
                     return None
                 await ai.on_end(RESULT.Victory)
                 return None
-            if await _handle_and_informs_untreated_errors(ai, error):
+            if await _handle_and_inform_untreated_errors(ai, error):
                 return RESULT.Defeat
 
         LOGGER.debug(f"Running AI step: done")
