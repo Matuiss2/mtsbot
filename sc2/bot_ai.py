@@ -46,6 +46,7 @@ from .position import Point2, Point3
 from .unit import Unit
 from .unit_command import UnitCommand
 from .units import Units
+from .ai import Ai
 
 LOGGER = logging.getLogger(__name__)
 
@@ -54,20 +55,12 @@ if TYPE_CHECKING:
     from .client import Client
 
 
-class BotAI(DistanceCalculation):
+class BotAI(Ai, DistanceCalculation):
     """Base class for bots."""
 
     def __init__(self):
-        super().__init__()
-        self.opponent_id: str = None
-        self.realtime: bool = False
-        self.all_units: Units = Units([], self)
-        self.units: Units = Units([], self)
-        self.workers: Units = Units([], self)
-        self.townhalls: Units = Units([], self)
-        self.structures: Units = Units([], self)
-        self.gas_buildings: Units = Units([], self)
-        self.enemy_units: Units = Units([], self)
+        DistanceCalculation.__init__(self)
+        Ai.__init__(self)
         self.enemy_structures: Units = Units([], self)
         self.resources: Units = Units([], self)
         self.destructible: Units = Units([], self)
