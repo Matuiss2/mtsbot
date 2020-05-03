@@ -36,16 +36,6 @@ class ObserverAI(Ai, DistanceCalculation):
     def __init__(self):
         DistanceCalculation.__init__(self)
         Ai.__init__(self)
-        self.larva: Units = Units([], self)
-        self.techlab_tags: Set[int] = set()
-        self.reactor_tags: Set[int] = set()
-        self.minerals: int = None
-        self.vespene: int = None
-        self.supply_army: Union[float, int] = None
-        self.supply_workers: Union[float, int] = None
-        self.supply_cap: Union[float, int] = None
-        self.supply_used: Union[float, int] = None
-        self.supply_left: Union[float, int] = None
         self.idle_worker_count: int = None
         self.army_count: int = None
         self.warp_gate_count: int = None

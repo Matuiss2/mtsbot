@@ -61,17 +61,7 @@ class BotAI(Ai, DistanceCalculation):
     def __init__(self):
         DistanceCalculation.__init__(self)
         Ai.__init__(self)
-        self.larva: Units = Units([], self)
-        self.techlab_tags: Set[int] = set()
-        self.reactor_tags: Set[int] = set()
         self.distance_calculation_method: int = 2
-        self.minerals: int = 0
-        self.vespene: int = 0
-        self.supply_army: float = 0
-        self.supply_workers: float = 0
-        self.supply_cap: float = 0
-        self.supply_used: float = 0
-        self.supply_left: float = 0
         self.idle_worker_count: int = None
         self.army_count: int = 0
         self.warp_gate_count: int = 0

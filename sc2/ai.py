@@ -21,3 +21,13 @@ class Ai:
         self.watchtowers: Units = Units([], self)
         self.mineral_field: Units = Units([], self)
         self.vespene_geyser: Units = Units([], self)
+        self.larva: Units = Units([], self)
+        self.techlab_tags: Set[int] = set()
+        self.reactor_tags: Set[int] = set()
+        self.minerals: int = 0
+        self.vespene: int = 0
+        self.supply_army: float = 0
+        self.supply_workers: float = 0
+        self.supply_cap: float = 0
+        self.supply_used: float = 0
+        self.supply_left: float = 0
