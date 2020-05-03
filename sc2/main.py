@@ -116,6 +116,12 @@ async def _handle_and_inform_untreated_errors(ai, error):
     return True
 
 
+async def _execute_game_events_and_bot_logic(ai, iteration):
+    await ai.issue_events()
+    await ai.on_step(iteration)
+    await ai.after_step()
+
+
 async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_time_limit):
     if realtime:
         if step_time_limit is not None:
@@ -178,22 +184,16 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
             proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
             ai.prepare_step(game_state, proto_game_info)
 
-        LOGGER.debug(f"Running AI step, it={iteration} {game_state.game_loop * 0.725 * (1 / 16):.2f}s")
-
         try:
             if realtime:
-                await ai.issue_events()
-                await ai.on_step(iteration)
-                await ai.after_step()
+                await _execute_game_events_and_bot_logic(ai, iteration)
             else:
                 if time_penalty_cooldown > 0:
                     time_penalty_cooldown -= 1
                     LOGGER.warning(f"Running AI step: penalty cooldown: {time_penalty_cooldown}")
                     iteration -= 1
                 elif time_limit is None:
-                    await ai.issue_events()
-                    await ai.on_step(iteration)
-                    await ai.after_step()
+                    await _execute_game_events_and_bot_logic(ai, iteration)
                 else:
                     out_of_budget = False
                     budget = time_limit - time_window.available
@@ -296,18 +296,8 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
             proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
             ai.prepare_step(game_state, proto_game_info)
 
-        LOGGER.debug(f"Running AI step, it={iteration} {game_state.game_loop * 0.725 * (1 / 16):.2f}s")
-
         try:
-            if realtime:
-                await ai.issue_events()
-                await ai.on_step(iteration)
-                await ai.after_step()
-            else:
-                await ai.issue_events()
-                await ai.on_step(iteration)
-                await ai.after_step()
-
+            await _execute_game_events_and_bot_logic(ai, iteration)
         except Exception as error:
             if isinstance(error, ProtocolError) and error.is_game_over_error:
                 if realtime:
