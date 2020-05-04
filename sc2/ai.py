@@ -1,9 +1,10 @@
 """
 Mother class for the bot_ai and observer_ai
 """
-from .units import Units
-from .game_state import Blip
 from typing import Set
+
+from .game_state import Blip
+from .units import Units
 
 
 class Ai:
@@ -26,6 +27,7 @@ class Ai:
         self.larva: Units = Units([], self)
         self.techlab_tags: Set[int] = set()
         self.reactor_tags: Set[int] = set()
+        self.blips: Set[Blip] = set()
         self.minerals: int = 0
         self.vespene: int = 0
         self.supply_army: float = 0
