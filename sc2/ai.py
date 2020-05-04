@@ -2,6 +2,8 @@
 Mother class for the bot_ai and observer_ai
 """
 from .units import Units
+from .game_state import Blip
+from typing import Set
 
 
 class Ai:
