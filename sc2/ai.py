@@ -5,6 +5,7 @@ from typing import Set
 
 from .game_state import Blip
 from .units import Units
+from .ids.upgrade_id import UpgradeId
 
 
 class Ai:
@@ -35,6 +36,7 @@ class Ai:
         self.supply_cap: float = 0
         self.supply_used: float = 0
         self.supply_left: float = 0
+        self._previous_upgrades: Set[UpgradeId] = set()
 
     def _prepare_units(self):
         self.blips: Set[Blip] = set()

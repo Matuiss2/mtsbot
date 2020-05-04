@@ -45,7 +45,6 @@ class ObserverAI(Ai, DistanceCalculation):
         self._unit_tags_seen_this_game: Set[int] = set()
         self._units_previous_map: Dict[int, Unit] = dict()
         self._structures_previous_map: Dict[int, Unit] = dict()
-        self._previous_upgrades: Set[UpgradeId] = set()
         self.unit_tags_received_action: Set[int] = set()
         self._client: Client = None
         self.player_id: int = None

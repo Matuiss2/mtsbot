@@ -74,7 +74,6 @@ class BotAI(Ai, DistanceCalculation):
         self._structures_previous_map: Dict[int, Unit] = dict()
         self._enemy_units_previous_map: Dict[int, Unit] = dict()
         self._enemy_structures_previous_map: Dict[int, Unit] = dict()
-        self._previous_upgrades: Set[UpgradeId] = set()
         self._time_before_step: float = None
         self._time_after_step: float = None
         self._min_step_time: float = math.inf
