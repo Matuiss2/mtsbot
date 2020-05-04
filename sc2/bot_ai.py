@@ -1462,12 +1462,6 @@ class BotAI(Ai, DistanceCalculation):
                 if previous_frame_unit.type_id != unit.type_id:
                     await self.on_unit_type_changed(unit, previous_frame_unit.type_id)
 
-    async def _issue_upgrade_events(self):
-        difference = self.state.upgrades - self._previous_upgrades
-        for upgrade_completed in difference:
-            await self.on_upgrade_complete(upgrade_completed)
-        self._previous_upgrades = self.state.upgrades
-
     async def _issue_building_events(self):
         for structure in self.structures:
             if structure.tag not in self._structures_previous_map:

@@ -54,3 +54,9 @@ class Ai:
         self.larva: Units = Units([], self)
         self.techlab_tags: Set[int] = set()
         self.reactor_tags: Set[int] = set()
+
+    async def _issue_upgrade_events(self):
+        difference = self.state.upgrades - self._previous_upgrades
+        for upgrade_completed in difference:
+            await self.on_upgrade_complete(upgrade_completed)
+        self._previous_upgrades = self.state.upgrades
