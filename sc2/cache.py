@@ -4,6 +4,16 @@ Groups different kinds of decorators for caches
 from functools import wraps
 
 
+def _update_cache_every_frame(self, function):
+    property_cache = "_cache_" + function.__name__
+    state_cache = "_frame_" + function.__name__
+    cache_updated = getattr(self, state_cache, -1) == self.state.game_loop
+    if not cache_updated:
+        setattr(self, property_cache, function(self))
+        setattr(self, state_cache, self.state.game_loop)
+    return getattr(self, property_cache)
+
+
 def property_cache_forever(function):
     """ This decorator caches the return value for the whole game, then clears after every game."""
 
@@ -27,14 +37,7 @@ def property_cache_once_per_frame(function):
 
     @wraps(function)
     def inner(self):
-        property_cache = "_cache_" + function.__name__
-        state_cache = "_frame_" + function.__name__
-        cache_updated = getattr(self, state_cache, -1) == self.state.game_loop
-        if not cache_updated:
-            setattr(self, property_cache, function(self))
-            setattr(self, state_cache, self.state.game_loop)
-
-        cache = getattr(self, property_cache)
+        cache = _update_cache_every_frame(self, function)
         should_copy = callable(getattr(cache, "copy", None))
         if should_copy:
             return cache.copy()
@@ -54,14 +57,7 @@ def property_cache_once_per_frame_no_copy(function):
 
     @wraps(function)
     def inner(self):
-        property_cache = "_cache_" + function.__name__
-        state_cache = "_frame_" + function.__name__
-        cache_updated = getattr(self, state_cache, -1) == self.state.game_loop
-        if not cache_updated:
-            setattr(self, property_cache, function(self))
-            setattr(self, state_cache, self.state.game_loop)
-
-        cache = getattr(self, property_cache)
+        cache = _update_cache_every_frame(self, function)
         return cache
 
     return property(inner)

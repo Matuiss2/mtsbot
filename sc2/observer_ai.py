@@ -20,6 +20,7 @@ from sc2.ids.upgrade_id import UpgradeId
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
+from .ai import Ai
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,36 +30,12 @@ if TYPE_CHECKING:
     from sc2.unit_command import UnitCommand
 
 
-class ObserverAI(DistanceCalculation):
+class ObserverAI(Ai, DistanceCalculation):
     """Base class for Observers."""
 
     def __init__(self):
-        super().__init__()
-        self.opponent_id: int = None
-        self.realtime: bool = False
-        self.all_units: Units = Units([], self)
-        self.units: Units = Units([], self)
-        self.workers: Units = Units([], self)
-        self.townhalls: Units = Units([], self)
-        self.structures: Units = Units([], self)
-        self.gas_buildings: Units = Units([], self)
-        self.enemy_units: Units = Units([], self)
-        self.enemy_structures: Units = Units([], self)
-        self.resources: Units = Units([], self)
-        self.destructible: Units = Units([], self)
-        self.watchtowers: Units = Units([], self)
-        self.mineral_field: Units = Units([], self)
-        self.vespene_geyser: Units = Units([], self)
-        self.larva: Units = Units([], self)
-        self.techlab_tags: Set[int] = set()
-        self.reactor_tags: Set[int] = set()
-        self.minerals: int = None
-        self.vespene: int = None
-        self.supply_army: Union[float, int] = None
-        self.supply_workers: Union[float, int] = None
-        self.supply_cap: Union[float, int] = None
-        self.supply_used: Union[float, int] = None
-        self.supply_left: Union[float, int] = None
+        DistanceCalculation.__init__(self)
+        Ai.__init__(self)
         self.idle_worker_count: int = None
         self.army_count: int = None
         self.warp_gate_count: int = None
@@ -68,7 +45,6 @@ class ObserverAI(DistanceCalculation):
         self._unit_tags_seen_this_game: Set[int] = set()
         self._units_previous_map: Dict[int, Unit] = dict()
         self._structures_previous_map: Dict[int, Unit] = dict()
-        self._previous_upgrades: Set[UpgradeId] = set()
         self.unit_tags_received_action: Set[int] = set()
         self._client: Client = None
         self.player_id: int = None
@@ -221,25 +197,6 @@ class ObserverAI(DistanceCalculation):
 
         self._prepare_units()
 
-    def _prepare_units(self):
-        self.blips: Set[Blip] = set()
-        self.units: Units = Units([], self)
-        self.structures: Units = Units([], self)
-        self.enemy_units: Units = Units([], self)
-        self.enemy_structures: Units = Units([], self)
-        self.mineral_field: Units = Units([], self)
-        self.vespene_geyser: Units = Units([], self)
-        self.resources: Units = Units([], self)
-        self.destructible: Units = Units([], self)
-        self.watchtowers: Units = Units([], self)
-        self.all_units: Units = Units([], self)
-        self.workers: Units = Units([], self)
-        self.townhalls: Units = Units([], self)
-        self.gas_buildings: Units = Units([], self)
-        self.larva: Units = Units([], self)
-        self.techlab_tags: Set[int] = set()
-        self.reactor_tags: Set[int] = set()
-
         for unit in self.state.observation_raw.units:
             if unit.is_blip:
                 self.blips.add(Blip(unit))
@@ -251,7 +208,6 @@ class ObserverAI(DistanceCalculation):
         """ Executed by main.py after each on_step function. """
         self.unit_tags_received_action.clear()
         # Commit debug queries
-        await self._client.send_debug()
         return self.state.game_loop
 
     async def issue_events(self):
@@ -272,12 +228,6 @@ class ObserverAI(DistanceCalculation):
             if unit.tag not in self._units_previous_map and unit.tag not in self._unit_tags_seen_this_game:
                 self._unit_tags_seen_this_game.add(unit.tag)
                 await self.on_unit_created(unit)
-
-    async def _issue_upgrade_events(self):
-        difference = self.state.upgrades - self._previous_upgrades
-        for upgrade_completed in difference:
-            await self.on_upgrade_complete(upgrade_completed)
-        self._previous_upgrades = self.state.upgrades
 
     async def _issue_building_events(self):
         for structure in self.structures:

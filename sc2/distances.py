@@ -28,6 +28,18 @@ class DistanceCalculation:
         self.distance_squared_unit_to_unit = None
         self._get_index_of_two_units = None
         self.calculate_distances = None
+        self.positions_array = None
+
+    def _check_frame_then_store_positions(self):
+        if self._generated_frame2 != self.state.game_loop:
+            flat_positions = (coord for unit in self.all_units for coord in unit.position_tuple)
+            self.positions_array: np.ndarray = np.fromiter(
+                flat_positions, dtype=np.float, count=2 * self._units_count
+            ).reshape((self._units_count, 2))
+            if len(self.positions_array) != self._units_count:
+                raise AssertionError()
+            self._generated_frame2 = self.state.game_loop
+            return True
 
     @property
     def _units_count(self) -> int:
@@ -63,29 +75,14 @@ class DistanceCalculation:
 
     def _calculate_distances_method1(self) -> np.ndarray:
         """ Use scipy's pdist condensed matrix (1d array) """
-        if self._generated_frame2 != self.state.game_loop:
-            flat_positions = (coord for unit in self.all_units for coord in unit.position_tuple)
-            positions_array: np.ndarray = np.fromiter(
-                flat_positions, dtype=np.float, count=2 * self._units_count
-            ).reshape((self._units_count, 2))
-            if len(positions_array) != self._units_count:
-                raise AssertionError()
-            self._generated_frame2 = self.state.game_loop
-            self._cached_pdist = pdist(positions_array, "sqeuclidean")
+        if self._check_frame_then_store_positions():
+            self._cached_pdist = pdist(self.positions_array, "sqeuclidean")
         return self._cached_pdist
 
     def _calculate_distances_method2(self) -> np.ndarray:
         """ Use scipy's cdist square matrix (2d array) """
-        if self._generated_frame2 != self.state.game_loop:
-            flat_positions = (coord for unit in self.all_units for coord in unit.position_tuple)
-            positions_array: np.ndarray = np.fromiter(
-                flat_positions, dtype=np.float, count=2 * self._units_count
-            ).reshape((self._units_count, 2))
-            if len(positions_array) != self._units_count:
-                raise AssertionError()
-            self._generated_frame2 = self.state.game_loop
-            self._cached_cdist = cdist(positions_array, positions_array, "sqeuclidean")
-
+        if self._check_frame_then_store_positions():
+            self._cached_cdist = cdist(self.positions_array, self.positions_array, "sqeuclidean")
         return self._cached_cdist
 
     def _calculate_distances_method3(self) -> np.ndarray:

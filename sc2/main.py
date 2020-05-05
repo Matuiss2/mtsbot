@@ -84,7 +84,29 @@ async def _initialize_information_and_ai(client, player_id, ai, game_state, real
     ai.prepare_step(game_state, proto_game_info)
 
 
-async def _handle_and_informs_untreated_errors(ai, error):
+async def _handle_ending_errors_and_inform_game_result(ai, client, player_id):
+    if client.game_result:
+        try:
+            await ai.on_end(client.game_result[player_id])
+        except TypeError:
+            return True
+        return True
+    return False
+
+
+async def _handle_and_inform_initialization_errors(ai):
+    try:
+        ai.prepare_first_step()
+        await ai.on_start()
+    except Exception as error:
+        LOGGER.exception(f"AI on_start threw an error - {error.__traceback__}")
+        LOGGER.error(f"resigning due to previous error")
+        await ai.on_end(RESULT.Defeat)
+        return True
+    return False
+
+
+async def _handle_and_inform_untreated_errors(ai, error):
     LOGGER.exception(f"AI step threw an error")  # DO NOT EDIT!
     LOGGER.error(f"Error: {error}")
     LOGGER.error(f"Resigning due to previous error")
@@ -93,6 +115,16 @@ async def _handle_and_informs_untreated_errors(ai, error):
     except TypeError:
         return True
     return True
+
+
+async def _select_observation_state_by_mode(client, realtime, game_state):
+    return await client.observation(game_state.game_loop + client.game_step) if realtime else await client.observation()
+
+
+async def _execute_game_events_and_bot_logic(ai, iteration):
+    await ai.issue_events()
+    await ai.on_step(iteration)
+    await ai.after_step()
 
 
 async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_time_limit):
@@ -135,53 +167,32 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     game_state = GameState(state.observation)
     await _initialize_information_and_ai(client, player_id, ai, game_state, realtime)
     await ai.on_before_start()
-    ai.prepare_first_step()
-    try:
-        await ai.on_start()
-    except Exception as error:
-        LOGGER.exception(f"AI on_start threw an error - {error.__traceback__}")
-        LOGGER.error(f"resigning due to previous error")
-        await ai.on_end(RESULT.Defeat)
+    if await _handle_and_inform_initialization_errors(ai):
         return RESULT.Defeat
 
     iteration = 0
     while True:
         if iteration:
-            if realtime:
-                state = await client.observation(game_state.game_loop + client.game_step)
-            else:
-                state = await client.observation()
-            if client.game_result:
-                try:
-                    await ai.on_end(client.game_result[player_id])
-                except TypeError:
-                    return client.game_result[player_id]
+            state = await _select_observation_state_by_mode(client, realtime, game_state)
+            if await _handle_ending_errors_and_inform_game_result(ai, client, player_id):
                 return client.game_result[player_id]
             game_state = GameState(state.observation)
-            LOGGER.debug(f"Score: {game_state.score.score}")
-
             if game_time_limit and (game_state.game_loop * 0.725 * (1 / 16)) > game_time_limit:
                 await ai.on_end(RESULT.Tie)
                 return RESULT.Tie
             proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
             ai.prepare_step(game_state, proto_game_info)
 
-        LOGGER.debug(f"Running AI step, it={iteration} {game_state.game_loop * 0.725 * (1 / 16):.2f}s")
-
         try:
             if realtime:
-                await ai.issue_events()
-                await ai.on_step(iteration)
-                await ai.after_step()
+                await _execute_game_events_and_bot_logic(ai, iteration)
             else:
                 if time_penalty_cooldown > 0:
                     time_penalty_cooldown -= 1
                     LOGGER.warning(f"Running AI step: penalty cooldown: {time_penalty_cooldown}")
                     iteration -= 1
                 elif time_limit is None:
-                    await ai.issue_events()
-                    await ai.on_step(iteration)
-                    await ai.after_step()
+                    await _execute_game_events_and_bot_logic(ai, iteration)
                 else:
                     out_of_budget = False
                     budget = time_limit - time_window.available
@@ -227,7 +238,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                     raise
                 await ai.on_end(result)
                 return result
-            if await _handle_and_informs_untreated_errors(ai, error):
+            if await _handle_and_inform_untreated_errors(ai, error):
                 return RESULT.Defeat
 
         LOGGER.debug(f"Running AI step: done")
@@ -265,53 +276,28 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     state = await client.observation()
     game_state = GameState(state.observation)
     await _initialize_information_and_ai(client, player_id, ai, game_state, realtime, single_step=True)
-    ai.prepare_first_step()
-    try:
-        await ai.on_start()
-    except Exception as error:
-        LOGGER.exception(f"AI on_start threw an error - {error.__traceback__}")
-        LOGGER.error(f"resigning due to previous error")
-        await ai.on_end(RESULT.Defeat)
+    if await _handle_and_inform_initialization_errors(ai):
         return RESULT.Defeat
 
     iteration = 0
     while True:
         if iteration:
-            if realtime:
-                state = await client.observation(game_state.game_loop + client.game_step)
-            else:
-                state = await client.observation()
-            if client.game_result:
-                try:
-                    await ai.on_end(client.game_result[player_id])
-                except TypeError:
-                    return client.game_result[player_id]
+            state = await _select_observation_state_by_mode(client, realtime, game_state)
+            if await _handle_ending_errors_and_inform_game_result(ai, client, player_id):
                 return client.game_result[player_id]
             game_state = GameState(state.observation)
-            LOGGER.debug(f"Score: {game_state.score.score}")
-
             proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
             ai.prepare_step(game_state, proto_game_info)
 
-        LOGGER.debug(f"Running AI step, it={iteration} {game_state.game_loop * 0.725 * (1 / 16):.2f}s")
-
         try:
-            if realtime:
-                await ai.issue_events()
-                await ai.on_step(iteration)
-                await ai.after_step()
-            else:
-                await ai.issue_events()
-                await ai.on_step(iteration)
-                await ai.after_step()
-
+            await _execute_game_events_and_bot_logic(ai, iteration)
         except Exception as error:
             if isinstance(error, ProtocolError) and error.is_game_over_error:
                 if realtime:
                     return None
                 await ai.on_end(RESULT.Victory)
                 return None
-            if await _handle_and_informs_untreated_errors(ai, error):
+            if await _handle_and_inform_untreated_errors(ai, error):
                 return RESULT.Defeat
 
         LOGGER.debug(f"Running AI step: done")
@@ -338,6 +324,13 @@ async def _setup_host_game(server, map_settings, players, realtime, random_seed=
     return Client(server.web_server)
 
 
+async def _get_client_and_set_raw_affects(server, map_settings, players, realtime, random_seed):
+    client = await _setup_host_game(server, map_settings, players, realtime, random_seed)
+    if not isinstance(players[0], Human) and getattr(players[0].ai, "raw_affects_selection", None) is not None:
+        client.raw_affects_selection = players[0].ai.raw_affects_selection
+    return client
+
+
 async def _host_game(
     map_settings,
     players,
@@ -362,9 +355,7 @@ async def _host_game(
     ) as server:
         await server.ping()
 
-        client = await _setup_host_game(server, map_settings, players, realtime, random_seed)
-        if not isinstance(players[0], Human) and getattr(players[0].ai, "raw_affects_selection", None) is not None:
-            client.raw_affects_selection = players[0].ai.raw_affects_selection
+        client = await _get_client_and_set_raw_affects(server, map_settings, players, realtime, random_seed)
 
         try:
             result = await play_game(
@@ -394,9 +385,7 @@ async def _host_game_aiter(
         while True:
             await server.ping()
 
-            client = await _setup_host_game(server, map_settings, players, realtime)
-            if not isinstance(players[0], Human) and getattr(players[0].ai, "raw_affects_selection", None) is not None:
-                client.raw_affects_selection = players[0].ai.raw_affects_selection
+            client = await _get_client_and_set_raw_affects(server, map_settings, players, realtime, random_seed)
 
             try:
                 result = await play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit)

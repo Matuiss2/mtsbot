@@ -46,6 +46,7 @@ from .position import Point2, Point3
 from .unit import Unit
 from .unit_command import UnitCommand
 from .units import Units
+from .ai import Ai
 
 LOGGER = logging.getLogger(__name__)
 
@@ -54,37 +55,13 @@ if TYPE_CHECKING:
     from .client import Client
 
 
-class BotAI(DistanceCalculation):
+class BotAI(Ai, DistanceCalculation):
     """Base class for bots."""
 
     def __init__(self):
-        super().__init__()
-        self.opponent_id: str = None
-        self.realtime: bool = False
-        self.all_units: Units = Units([], self)
-        self.units: Units = Units([], self)
-        self.workers: Units = Units([], self)
-        self.townhalls: Units = Units([], self)
-        self.structures: Units = Units([], self)
-        self.gas_buildings: Units = Units([], self)
-        self.enemy_units: Units = Units([], self)
-        self.enemy_structures: Units = Units([], self)
-        self.resources: Units = Units([], self)
-        self.destructible: Units = Units([], self)
-        self.watchtowers: Units = Units([], self)
-        self.mineral_field: Units = Units([], self)
-        self.vespene_geyser: Units = Units([], self)
-        self.larva: Units = Units([], self)
-        self.techlab_tags: Set[int] = set()
-        self.reactor_tags: Set[int] = set()
+        DistanceCalculation.__init__(self)
+        Ai.__init__(self)
         self.distance_calculation_method: int = 2
-        self.minerals: int = 0
-        self.vespene: int = 0
-        self.supply_army: float = 0
-        self.supply_workers: float = 0
-        self.supply_cap: float = 0
-        self.supply_used: float = 0
-        self.supply_left: float = 0
         self.idle_worker_count: int = None
         self.army_count: int = 0
         self.warp_gate_count: int = 0
@@ -97,7 +74,6 @@ class BotAI(DistanceCalculation):
         self._structures_previous_map: Dict[int, Unit] = dict()
         self._enemy_units_previous_map: Dict[int, Unit] = dict()
         self._enemy_structures_previous_map: Dict[int, Unit] = dict()
-        self._previous_upgrades: Set[UpgradeId] = set()
         self._time_before_step: float = None
         self._time_after_step: float = None
         self._min_step_time: float = math.inf
@@ -206,12 +182,12 @@ class BotAI(DistanceCalculation):
         Returns the spawn location of the bot, using the position of the first created townhall.
         This will be None if the bot is run on an arcade or custom map that does not feature townhalls at game start.
         """
-        return self._game_info.player_start_location
+        return self.game_info.player_start_location
 
     @property
     def enemy_start_locations(self) -> List[Point2]:
         """Possible start locations for enemies."""
-        return self._game_info.start_locations
+        return self.game_info.start_locations
 
     @property
     def main_base_ramp(self) -> Ramp:
@@ -275,7 +251,7 @@ class BotAI(DistanceCalculation):
             possible_points = (
                 point
                 for point in possible_points
-                if self._game_info.placement_grid[point.rounded] == 1
+                if self.game_info.placement_grid[point.rounded] == 1
                 and all(point.distance_to(resource) > (7 if resource in geysers else 6) for resource in resources)
             )
             result = min(possible_points, key=lambda point: sum(point.distance_to(resource) for resource in resources))
@@ -337,7 +313,7 @@ class BotAI(DistanceCalculation):
 
         :param units:
         :param ignore_resource_requirements: """
-        return await self._client.query_available_abilities(units, ignore_resource_requirements)
+        return await self.client.query_available_abilities(units, ignore_resource_requirements)
 
     async def expand_now(
         self, building: UnitTypeId = None, max_distance: float = 10, location: Optional[Point2] = None
@@ -379,8 +355,8 @@ class BotAI(DistanceCalculation):
             if any(taken_expansion):
                 continue
 
-            start_position = self._game_info.player_start_location
-            distance_to_starting_base = await self._client.query_pathway(start_position, expansion_location)
+            start_position = self.start_location
+            distance_to_starting_base = await self.client.query_pathway(start_position, expansion_location)
             if distance_to_starting_base is None:
                 continue
 
@@ -417,7 +393,7 @@ class BotAI(DistanceCalculation):
         :param unit_type: """
         if unit_type in {UnitTypeId.ZERGLING}:
             return 1
-        unit_supply_cost = self.game_data_local.units[unit_type.value].proto.food_required
+        unit_supply_cost = self.game_data.units[unit_type.value].proto.food_required
         if unit_supply_cost > 0 and unit_type in UNIT_TRAINED_FROM and len(UNIT_TRAINED_FROM[unit_type]) == 1:
             for producer in UNIT_TRAINED_FROM[unit_type]:
                 producer_unit_data = self.game_data.units[producer.value]
@@ -495,8 +471,8 @@ class BotAI(DistanceCalculation):
                     return Cost(50, 25)
                 if item_id == UnitTypeId.ARCHON:
                     return self.calculate_unit_value(UnitTypeId.ARCHON)
-            unit_data = self.game_data_local.units[item_id.value]
-            cost = self.game_data_local.calculate_ability_cost(unit_data.creation_ability)
+            unit_data = self.game_data.units[item_id.value]
+            cost = self.game_data.calculate_ability_cost(unit_data.creation_ability)
             unit_supply_cost = unit_data.proto.food_required
             if unit_supply_cost > 0 and item_id in UNIT_TRAINED_FROM and len(UNIT_TRAINED_FROM[item_id]) == 1:
                 for producer in UNIT_TRAINED_FROM[item_id]:
@@ -509,9 +485,9 @@ class BotAI(DistanceCalculation):
                         cost = cost - producer_cost
 
         elif isinstance(item_id, UpgradeId):
-            cost = self.game_data_local.upgrades[item_id.value].cost
+            cost = self.game_data.upgrades[item_id.value].cost
         else:
-            cost = self.game_data_local.calculate_ability_cost(item_id)
+            cost = self.game_data.calculate_ability_cost(item_id)
         return cost
 
     def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
@@ -578,8 +554,8 @@ class BotAI(DistanceCalculation):
         if ability_id in abilities:
             if only_check_energy_and_cooldown:
                 return True
-            cast_range = self.game_data_local.abilities[ability_id.value].proto.cast_range
-            ability_target = self.game_data_local.abilities[ability_id.value].proto.target
+            cast_range = self.game_data.abilities[ability_id.value].proto.cast_range
+            ability_target = self.game_data.abilities[ability_id.value].proto.target
             if (
                 ability_target == 1
                 or ability_target == TARGET.PointOrNone.value
@@ -647,11 +623,11 @@ class BotAI(DistanceCalculation):
         if building_type not in {AbilityData, AbilityId, UnitTypeId}:
             raise AssertionError()
         if building_type == UnitTypeId:
-            building = self.game_data_local.units[building.value].creation_ability
+            building = self.game_data.units[building.value].creation_ability
         elif building_type == AbilityId:
-            building = self.game_data_local.abilities[building.value]
+            building = self.game_data.abilities[building.value]
 
-        action_result = await self._client.query_building_placement(building, [position])
+        action_result = await self.client.query_building_placement(building, [position])
         return action_result[0] == ACTION_RESULT.Success
 
     async def find_placement(
@@ -682,9 +658,9 @@ class BotAI(DistanceCalculation):
             raise AssertionError(f"{near} is no Point2 object")
 
         if isinstance(building, UnitTypeId):
-            building = self.game_data_local.units[building.value].creation_ability
+            building = self.game_data.units[building.value].creation_ability
         else:
-            building = self.game_data_local.abilities[building.value]
+            building = self.game_data.abilities[building.value]
 
         if await self.can_place(building, near):
             return near
@@ -702,7 +678,7 @@ class BotAI(DistanceCalculation):
                     + [(distance, dy) for dy in range(-distance, distance + 1, placement_step)]
                 )
             ]
-            res = await self._client.query_building_placement(building, possible_positions)
+            res = await self.client.query_building_placement(building, possible_positions)
             possible = [p for r, p in zip(res, possible_positions) if r == ACTION_RESULT.Success]
             if not possible:
                 continue
@@ -731,7 +707,7 @@ class BotAI(DistanceCalculation):
             raise AssertionError(f"{upgrade_type} is no UpgradeId")
         if upgrade_type in self.state.upgrades:
             return 1
-        creation_ability_id = self.game_data_local.upgrades[upgrade_type.value].research_ability.exact_id
+        creation_ability_id = self.game_data.upgrades[upgrade_type.value].research_ability.exact_id
         for structure in self.structures.filter(lambda unit: unit.is_ready):
             for order in structure.orders:
                 if order.ability.exact_id == creation_ability_id:
@@ -751,7 +727,7 @@ class BotAI(DistanceCalculation):
                 if self.race != RACE.Terran or not unit.is_structure:
                     # If an SCV is constructing a building, already_pending would count this structure twice
                     # (once from the SCV order, and once from "not structure.is_ready")
-                    creation_ability: AbilityData = self.game_data_local.units[unit.type_id.value].creation_ability
+                    creation_ability: AbilityData = self.game_data.units[unit.type_id.value].creation_ability
                     abilities_amount[creation_ability] += 1
                     max_build_progress[creation_ability] = max(
                         max_build_progress.get(creation_ability, 0), unit.build_progress
@@ -798,7 +774,7 @@ class BotAI(DistanceCalculation):
         equiv_values: Set[int] = {structure_type_value} | {
             s_type.value for s_type in EQUIVALENTS_FOR_TECH_PROGRESS.get(structure_type, set())
         }
-        creation_ability: AbilityData = self.game_data_local.units[structure_type_value].creation_ability
+        creation_ability: AbilityData = self.game_data.units[structure_type_value].creation_ability
         max_value = max(
             [s.build_progress for s in self.structures if s.proto.unit_type in equiv_values]
             + [self._abilities_all_units[1].get(creation_ability, 0)]
@@ -859,7 +835,7 @@ class BotAI(DistanceCalculation):
         """
         if isinstance(unit_type, UpgradeId):
             return self.already_pending_upgrade(unit_type)
-        ability = self.game_data_local.units[unit_type.value].creation_ability
+        ability = self.game_data.units[unit_type.value].creation_ability
         return self._abilities_all_units[0][ability]
 
     @property_cache_once_per_frame_no_copy
@@ -890,7 +866,7 @@ class BotAI(DistanceCalculation):
         New function. Please report any bugs!
 
         :param unit_type: """
-        ability = self.game_data_local.units[unit_type.value].creation_ability
+        ability = self.game_data.units[unit_type.value].creation_ability
         return self._worker_orders[ability]
 
     async def build(
@@ -1148,7 +1124,7 @@ class BotAI(DistanceCalculation):
         if not isinstance(action, UnitCommand):
             raise AssertionError(f"Given unit command is not a command, but instead of type {type(action)}")
         if subtract_cost:
-            cost: Cost = self.game_data_local.calculate_ability_cost(action.ability)
+            cost: Cost = self.game_data.calculate_ability_cost(action.ability)
             if can_afford_check and not (self.minerals >= cost.minerals and self.vespene >= cost.vespene):
                 return False
             self.minerals -= cost.minerals
@@ -1174,9 +1150,9 @@ class BotAI(DistanceCalculation):
         if not self.can_afford(action.ability):
             LOGGER.warning(f"Cannot afford action {action}")
             return ACTION_RESULT.Error
-        action_request = await self._client.actions(action)
+        action_request = await self.client.actions(action)
         if not action_request:
-            cost = self.game_data_local.calculate_ability_cost(action.ability)
+            cost = self.game_data.calculate_ability_cost(action.ability)
             self.minerals -= cost.minerals
             self.vespene -= cost.vespene
             self.unit_tags_received_action.add(action.unit.tag)
@@ -1193,7 +1169,7 @@ class BotAI(DistanceCalculation):
             return None
         if prevent_double:
             actions = list(filter(self.prevent_double_actions, actions))
-        result = await self._client.actions(actions)
+        result = await self.client.actions(actions)
         return result
 
     @staticmethod
@@ -1225,18 +1201,18 @@ class BotAI(DistanceCalculation):
         :param message: """
         if not isinstance(message, str):
             raise AssertionError(f"{message} is not a string")
-        await self._client.chat_send(message, False)
+        await self.client.chat_send(message, False)
 
     def in_map_bounds(self, pos: Union[Point2, tuple]) -> bool:
         """ Tests if a 2 dimensional position is within the map boundaries of the pixelmaps.
         :param pos: """
         return (
-            self._game_info.playable_area.x
+            self.game_info.playable_area.x
             <= pos[0]
-            < self._game_info.playable_area.x + self.game_info.playable_area.width
-            and self._game_info.playable_area.y
+            < self.game_info.playable_area.x + self.game_info.playable_area.width
+            and self.game_info.playable_area.y
             <= pos[1]
-            < self._game_info.playable_area.y + self.game_info.playable_area.height
+            < self.game_info.playable_area.y + self.game_info.playable_area.height
         )
 
     # For the functions below, make sure you are inside the boundaries of the map size.
@@ -1248,7 +1224,7 @@ class BotAI(DistanceCalculation):
         if not isinstance(pos, (Point2, Point3, Unit)):
             raise AssertionError(f"pos is not of type Point2, Point3 or Unit")
         pos = pos.position.to2.rounded
-        return self._game_info.terrain_height[pos]
+        return self.game_info.terrain_height[pos]
 
     def get_terrain_z_height(self, pos: Union[Point2, Point3, Unit]) -> int:
         """ Returns terrain z-height at a position.
@@ -1257,7 +1233,7 @@ class BotAI(DistanceCalculation):
         if not isinstance(pos, (Point2, Point3, Unit)):
             raise AssertionError(f"pos is not of type Point2, Point3 or Unit")
         pos = pos.position.to2.rounded
-        return -16 + 32 * self._game_info.terrain_height[pos] / 255
+        return -16 + 32 * self.game_info.terrain_height[pos] / 255
 
     def in_placement_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if you can place something at a position.
@@ -1268,7 +1244,7 @@ class BotAI(DistanceCalculation):
         if not isinstance(pos, (Point2, Point3, Unit)):
             raise AssertionError(f"pos is not of type Point2, Point3 or Unit")
         pos = pos.position.to2.rounded
-        return self._game_info.placement_grid[pos] == 1
+        return self.game_info.placement_grid[pos] == 1
 
     def in_pathway_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if a ground unit can pass through a grid position.
@@ -1277,7 +1253,7 @@ class BotAI(DistanceCalculation):
         if not isinstance(pos, (Point2, Point3, Unit)):
             raise AssertionError(f"pos is not of type Point2, Point3 or Unit")
         pos = pos.position.to2.rounded
-        return self._game_info.pathway_grid[pos] == 1
+        return self.game_info.pathway_grid[pos] == 1
 
     def is_visible(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if you have vision on a grid position.
@@ -1313,19 +1289,19 @@ class BotAI(DistanceCalculation):
         self.game_data_local: GameData = game_data
         self.realtime: bool = realtime
 
-        self.race: RACE = RACE(self._game_info.player_races[self.player_id])
+        self.race: RACE = RACE(self.game_info.player_races[self.player_id])
 
-        if len(self._game_info.player_races) == 2:
-            self.enemy_race: RACE = RACE(self._game_info.player_races[3 - self.player_id])
+        if len(self.game_info.player_races) == 2:
+            self.enemy_race: RACE = RACE(self.game_info.player_races[3 - self.player_id])
 
         self._distances_override_functions(self.distance_calculation_method)
 
     def prepare_first_step(self):
         """First step extra preparations. Must not be called before prepare_step."""
         if self.townhalls:
-            self._game_info.player_start_location = self.townhalls[0].position
+            self.game_info.player_start_location = self.townhalls[0].position
             _ = self.expansion_locations
-        self._game_info.map_ramps, self._game_info.vision_blockers = self._game_info.find_ramps_and_vision_blockers()
+        self.game_info.map_ramps, self.game_info.vision_blockers = self.game_info.find_ramps_and_vision_blockers()
         self._time_before_step: float = time.perf_counter()
 
     def prepare_step(self, state, proto_game_info):
@@ -1334,7 +1310,7 @@ class BotAI(DistanceCalculation):
         :param proto_game_info:
         """
         self.state: GameState = state  # See game_state.py
-        self._game_info.pathway_grid = PixelMap(
+        self.game_info.pathway_grid = PixelMap(
             proto_game_info.game_info.start_raw.pathing_grid, in_bits=True, mirrored=False
         )
         self._units_previous_map: Dict = {unit.tag: unit for unit in self.units}
@@ -1359,25 +1335,6 @@ class BotAI(DistanceCalculation):
         self.idle_worker_count: int = state.common.idle_worker_count
         self.army_count: int = state.common.army_count
         self._time_before_step: float = time.perf_counter()
-
-    def _prepare_units(self):
-        self.blips: Set[Blip] = set()
-        self.units: Units = Units([], self)
-        self.structures: Units = Units([], self)
-        self.enemy_units: Units = Units([], self)
-        self.enemy_structures: Units = Units([], self)
-        self.mineral_field: Units = Units([], self)
-        self.vespene_geyser: Units = Units([], self)
-        self.resources: Units = Units([], self)
-        self.destructible: Units = Units([], self)
-        self.watchtowers: Units = Units([], self)
-        self.all_units: Units = Units([], self)
-        self.workers: Units = Units([], self)
-        self.townhalls: Units = Units([], self)
-        self.gas_buildings: Units = Units([], self)
-        self.larva: Units = Units([], self)
-        self.techlab_tags: Set[int] = set()
-        self.reactor_tags: Set[int] = set()
 
         for unit in self.state.observation_raw.units:
             if unit.is_blip:
@@ -1461,7 +1418,6 @@ class BotAI(DistanceCalculation):
             await self._do_actions(self.actions)
             self.actions.clear()
         self.unit_tags_received_action.clear()
-        await self._client.send_debug()
 
         return self.state.game_loop
 
@@ -1504,12 +1460,6 @@ class BotAI(DistanceCalculation):
                     await self.on_unit_took_damage(unit, damage_amount)
                 if previous_frame_unit.type_id != unit.type_id:
                     await self.on_unit_type_changed(unit, previous_frame_unit.type_id)
-
-    async def _issue_upgrade_events(self):
-        difference = self.state.upgrades - self._previous_upgrades
-        for upgrade_completed in difference:
-            await self.on_upgrade_complete(upgrade_completed)
-        self._previous_upgrades = self.state.upgrades
 
     async def _issue_building_events(self):
         for structure in self.structures:

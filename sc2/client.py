@@ -37,13 +37,6 @@ class Client(Protocol):
         self.game_step = 8
         self._player_id = None
         self.game_result = None
-        self._debug_hash_tuple_last_iteration: Tuple[int, int, int, int] = (0, 0, 0, 0)
-        self._debug_draw_last_frame = False
-        self._debug_texts = []
-        self._debug_lines = []
-        self._debug_boxes = []
-        self._debug_spheres = []
-
         self._renderer = None
         self.raw_affects_selection = False
 
@@ -51,6 +44,15 @@ class Client(Protocol):
     def in_game(self):
         """ Returns True if it's in game or in replay"""
         return self._status in {STATUS.in_game, STATUS.in_replay}
+
+    @staticmethod
+    def _assert_type_and_choose_target(position):
+        if not isinstance(position, (Unit, Units, Point2, Point3)):
+            raise AssertionError()
+        if isinstance(position, Units):
+            return position.center
+        if isinstance(position, Unit):
+            return position.position
 
     async def join_game(self, name=None, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None):
         """ Logic to join the game with all the options for it, probably needs to be refactored since it's too big"""
@@ -417,12 +419,7 @@ class Client(Protocol):
 
     async def move_camera(self, position: Union[Unit, Units, Point2, Point3]):
         """ Moves camera to the target position """
-        if not isinstance(position, (Unit, Units, Point2, Point3)):
-            raise AssertionError()
-        if isinstance(position, Units):
-            position = position.center
-        if isinstance(position, Unit):
-            position = position.position
+        position = self._assert_type_and_choose_target(position)
         await self.execute(
             action=sc_pb.RequestAction(
                 actions=[
@@ -439,12 +436,7 @@ class Client(Protocol):
 
     async def obs_move_camera(self, position: Union[Unit, Units, Point2, Point3]):
         """ Moves observer camera to the target position """
-        if not isinstance(position, (Unit, Units, Point2, Point3)):
-            raise AssertionError()
-        if isinstance(position, Units):
-            position = position.center
-        if isinstance(position, Unit):
-            position = position.position
+        position = self._assert_type_and_choose_target(position)
         await self.execute(
             obs_action=sc_pb.RequestObserverAction(
                 actions=[
@@ -472,151 +464,6 @@ class Client(Protocol):
             )
         )
         await self.execute(action=sc_pb.RequestAction(actions=[action]))
-
-    def debug_text_simple(self, text: str):
-        """ Draws a text in the top left corner of the screen (up to a max of 6 messages fit there). """
-        self._debug_texts.append(DrawItemScreenText(text=text, color=None, start_point=Point2((0, 0)), font_size=8))
-
-    def debug_text_screen(
-        self,
-        text: str,
-        pos: Union[Point2, Point3, tuple, list],
-        color: Union[tuple, list, Point3] = None,
-        size: int = 8,
-    ):
-        """ Draws a text on the screen (monitor / game window) with coordinates 0 <= x, y <= 1. """
-        if len(pos) < 2:
-            raise AssertionError()
-        if not 0 <= pos[0] <= 1:
-            raise AssertionError()
-        if not 0 <= pos[1] <= 1:
-            raise AssertionError()
-        pos = Point2((pos[0], pos[1]))
-        self._debug_texts.append(DrawItemScreenText(text=text, color=color, start_point=pos, font_size=size))
-
-    def debug_text_2d(
-        self,
-        text: str,
-        pos: Union[Point2, Point3, tuple, list],
-        color: Union[tuple, list, Point3] = None,
-        size: int = 8,
-    ):
-        """Draw a text in 2d on the screen on the given position with given color and size"""
-        return self.debug_text_screen(text, pos, color, size)
-
-    def debug_text_world(
-        self, text: str, pos: Union[Unit, Point2, Point3], color: Union[tuple, list, Point3] = None, size: int = 8
-    ):
-        """ Draws a text at Point3 position in the game world. To grab a unit's 3d position, use unit.position3d
-        Usually the Z value of a Point3 is between 8 and 14 (except for flying units). Use self.get_terrain_z_height()
-        from bot_ai.py to get the Z value (height) of the terrain at a 2D position.
-        """
-        if isinstance(pos, Point2) and not isinstance(pos, Point3):  # a Point3 is also a Point2
-            pos = Point3((pos.x, pos.y, 0))
-        self._debug_texts.append(DrawItemWorldText(text=text, color=color, start_point=pos, font_size=size))
-
-    def debug_text_3d(
-        self, text: str, pos: Union[Unit, Point2, Point3], color: Union[tuple, list, Point3] = None, size: int = 8
-    ):
-        """Draw a text in 3d on the screen on the given position with given color and size"""
-        return self.debug_text_world(text, pos, color, size)
-
-    def debug_line_out(
-        self,
-        starting_point: Union[Unit, Point2, Point3],
-        ending_point: Union[Unit, Point2, Point3],
-        color: Union[tuple, list, Point3] = None,
-    ):
-        """ Draws a line from starting_point to ending_point. """
-        self._debug_lines.append(DrawItemLine(color=color, start_point=starting_point, end_point=ending_point))
-
-    def debug_box_out(
-        self,
-        p_min: Union[Unit, Point2, Point3],
-        p_max: Union[Unit, Point2, Point3],
-        color: Union[tuple, list, Point3] = None,
-    ):
-        """ Draws a box with p_min and p_max as corners of the box. """
-        self._debug_boxes.append(DrawItemBox(start_point=p_min, end_point=p_max, color=color))
-
-    def debug_box2_out(
-        self,
-        pos: Union[Unit, Point2, Point3],
-        half_vertex_length: float = 0.25,
-        color: Union[tuple, list, Point3] = None,
-    ):
-        """ Draws a box center at a position 'pos',
-        with box side lengths (vertices) of two times 'half_vertex_length'. """
-        if isinstance(pos, Unit):
-            pos = pos.position3d
-        elif not isinstance(pos, Point3):
-            pos = Point3((pos.x, pos.y, 0))
-        starting_point = pos + Point3((-half_vertex_length, -half_vertex_length, -half_vertex_length))
-        ending_point = pos + Point3((half_vertex_length, half_vertex_length, half_vertex_length))
-        self._debug_boxes.append(DrawItemBox(start_point=starting_point, end_point=ending_point, color=color))
-
-    def debug_sphere_out(
-        self,
-        middle_point: Union[Unit, Point2, Point3],
-        radius: Union[int, float],
-        color: Union[tuple, list, Point3] = None,
-    ):
-        """ Draws a sphere at position position with radius radius. """
-        self._debug_spheres.append(DrawItemSphere(start_point=middle_point, radius=radius, color=color))
-
-    async def send_debug(self):
-        """ Sends the debug draw execution. This is run by main.py now automatically, if there is any items in the
-        list. You do not need to run this manually any longer. Check examples/terran/ramp_wall.py for example
-        drawing. Each draw request needs to be sent again in every single on_step iteration.
-        """
-        debug_hash = (
-            sum(hash(item) for item in self._debug_texts),
-            sum(hash(item) for item in self._debug_lines),
-            sum(hash(item) for item in self._debug_boxes),
-            sum(hash(item) for item in self._debug_spheres),
-        )
-        if debug_hash != (0, 0, 0, 0):
-            if debug_hash != self._debug_hash_tuple_last_iteration:
-                # Something has changed, either more or less is to be drawn, or a position of a drawing changed
-                # (e.g. when drawing on a moving unit)
-                self._debug_hash_tuple_last_iteration = debug_hash
-                await self.execute(
-                    debug=sc_pb.RequestDebug(
-                        debug=[
-                            debug_pb.DebugCommand(
-                                draw=debug_pb.DebugDraw(
-                                    text=[text.to_proto() for text in self._debug_texts] if self._debug_texts else None,
-                                    lines=[line.to_proto() for line in self._debug_lines]
-                                    if self._debug_lines
-                                    else None,
-                                    boxes=[box.to_proto() for box in self._debug_boxes] if self._debug_boxes else None,
-                                    spheres=[sphere.to_proto() for sphere in self._debug_spheres]
-                                    if self._debug_spheres
-                                    else None,
-                                )
-                            )
-                        ]
-                    )
-                )
-            self._debug_draw_last_frame = True
-            self._debug_texts.clear()
-            self._debug_lines.clear()
-            self._debug_boxes.clear()
-            self._debug_spheres.clear()
-        elif self._debug_draw_last_frame:
-            self._debug_hash_tuple_last_iteration = (0, 0, 0, 0)
-            await self.execute(
-                debug=sc_pb.RequestDebug(
-                    debug=[
-                        debug_pb.DebugCommand(draw=debug_pb.DebugDraw(text=None, lines=None, boxes=None, spheres=None))
-                    ]
-                )
-            )
-            self._debug_draw_last_frame = False
-
-    async def debug_leave(self):
-        """Closes the debugger"""
-        await self.execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(end_game=debug_pb.DebugEndGame())]))
 
     async def debug_set_unit_value(self, unit_tags: Union[Iterable[int], Units, Unit], unit_value: int, value: float):
         """ Sets a "unit value" (Energy, Life or Shields) of the given units to the given value. Can't set the life
@@ -729,135 +576,3 @@ class Client(Protocol):
             - The bot step iteration counter will not reset
             - self.state.game_loop will be set to zero after the quick-load, and self.time is dependant on it """
         await self.execute(quick_load=sc_pb.RequestQuickLoad())
-
-
-class DrawItem:
-    """ Helpers for conversions: API types -> protocol types"""
-
-    @staticmethod
-    def to_debug_point(point: Union[Unit, Point2, Point3]) -> common_pb.Point:
-        """ Helper function for position conversion """
-        if isinstance(point, Unit):
-            point = point.position3d
-        return common_pb.Point(x=point.x, y=point.y, z=getattr(point, "z", 0))
-
-    @staticmethod
-    def to_debug_color(color: Union[tuple, Point3]):
-        """ Helper function for color conversion """
-        if color is None:
-            return debug_pb.Color(r=255, g=255, b=255)
-        if isinstance(color, (tuple, list)) and not isinstance(color, Point3) and len(color) == 3:
-            return debug_pb.Color(r=color[0], g=color[1], b=color[2])
-        red = getattr(color, "r", getattr(color, "x", 255))
-        green = getattr(color, "g", getattr(color, "y", 255))
-        blue = getattr(color, "b", getattr(color, "z", 255))
-        if max(red, green, blue) <= 1:
-            red *= 255
-            green *= 255
-            blue *= 255
-
-        return debug_pb.Color(r=int(red), g=int(green), b=int(blue))
-
-
-class DrawItemScreenText(DrawItem):
-    """ Extends DrawItem it does the same conversion but specify it to texts """
-
-    def __init__(self, start_point: Point2 = None, color: Point3 = None, text: str = "", font_size: int = 8):
-        self._start_point: Point2 = start_point
-        self._color: Point3 = color
-        self._text: str = text
-        self._font_size: int = font_size
-
-    def to_proto(self):
-        """ Convert API types to protocol types """
-        return debug_pb.DebugText(
-            color=self.to_debug_color(self._color),
-            text=self._text,
-            virtual_pos=self.to_debug_point(self._start_point),
-            world_pos=None,
-            size=self._font_size,
-        )
-
-    def __hash__(self):
-        """ Changes DrawItemScreenText hash value"""
-        return hash((self._start_point, self._color, self._text, self._font_size))
-
-
-class DrawItemWorldText(DrawItem):
-    """ Extends DrawItem it does the same conversion but specify it to world texts """
-
-    def __init__(self, start_point: Point3 = None, color: Point3 = None, text: str = "", font_size: int = 8):
-        self._start_point: Point3 = start_point
-        self._color: Point3 = color
-        self._text: str = text
-        self._font_size: int = font_size
-
-    def to_proto(self):
-        """ Convert API types to protocol types """
-        return debug_pb.DebugText(
-            color=self.to_debug_color(self._color),
-            text=self._text,
-            virtual_pos=None,
-            world_pos=self.to_debug_point(self._start_point),
-            size=self._font_size,
-        )
-
-    def __hash__(self):
-        return hash((self._start_point, self._text, self._font_size, self._color))
-
-
-class DrawItemLine(DrawItem):
-    """ Extends DrawItem it does the same conversion but specify it to lines """
-
-    def __init__(self, start_point: Point3 = None, end_point: Point3 = None, color: Point3 = None):
-        self._start_point: Point3 = start_point
-        self._end_point: Point3 = end_point
-        self._color: Point3 = color
-
-    def to_proto(self):
-        """ Convert API types to protocol types """
-        return debug_pb.DebugLine(
-            line=debug_pb.Line(p0=self.to_debug_point(self._start_point), p1=self.to_debug_point(self._end_point)),
-            color=self.to_debug_color(self._color),
-        )
-
-    def __hash__(self):
-        return hash((self._start_point, self._end_point, self._color))
-
-
-class DrawItemBox(DrawItem):
-    """ Extends DrawItem it does the same conversion but specify it to boxes """
-
-    def __init__(self, start_point: Point3 = None, end_point: Point3 = None, color: Point3 = None):
-        self._start_point: Point3 = start_point
-        self._end_point: Point3 = end_point
-        self._color: Point3 = color
-
-    def to_proto(self):
-        """ Convert API types to protocol types """
-        return debug_pb.DebugBox(
-            min=self.to_debug_point(self._start_point),
-            max=self.to_debug_point(self._end_point),
-            color=self.to_debug_color(self._color),
-        )
-
-    def __hash__(self):
-        return hash((self._start_point, self._end_point, self._color))
-
-
-class DrawItemSphere(DrawItem):
-    """ Extends DrawItem it does the same conversion but specify it to spheres """
-
-    def __init__(self, start_point: Point3 = None, radius: float = None, color: Point3 = None):
-        self._start_point: Point3 = start_point
-        self._radius: float = radius
-        self._color: Point3 = color
-
-    def to_proto(self):
-        """ Convert API types to protocol types """
-        return debug_pb.DebugSphere(
-            p=self.to_debug_point(self._start_point), r=self._radius, color=self.to_debug_color(self._color)
-        )
-
-    def __hash__(self):
-        return hash((self._start_point, self._radius, self._color))
