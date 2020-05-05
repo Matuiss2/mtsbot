@@ -3,8 +3,8 @@ Mother class for the bot_ai and observer_ai
 """
 from typing import Set
 
-from .ids.upgrade_id import UpgradeId
 from sc2.units_to_prepare import UnitsToPrepare
+from .ids.upgrade_id import UpgradeId
 
 
 class Ai(UnitsToPrepare):
@@ -14,11 +14,11 @@ class Ai(UnitsToPrepare):
         self.realtime: bool = False
         self.minerals: int = 0
         self.vespene: int = 0
-        self.supply_army: float = 0
-        self.supply_workers: float = 0
-        self.supply_cap: float = 0
-        self.supply_used: float = 0
-        self.supply_left: float = 0
+        self.supply_army: int = 0
+        self.supply_workers: int = 0
+        self.supply_cap: int = 0
+        self.supply_used: int = 0
+        self.supply_left: int = 0
         self._previous_upgrades: Set[UpgradeId] = set()
 
     def _prepare_units(self):
