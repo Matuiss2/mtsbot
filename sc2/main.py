@@ -96,6 +96,7 @@ async def _handle_ending_errors_and_inform_game_result(ai, client, player_id):
 
 async def _handle_and_inform_initialization_errors(ai):
     try:
+        ai.prepare_first_step()
         await ai.on_start()
     except Exception as error:
         LOGGER.exception(f"AI on_start threw an error - {error.__traceback__}")
@@ -166,7 +167,6 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     game_state = GameState(state.observation)
     await _initialize_information_and_ai(client, player_id, ai, game_state, realtime)
     await ai.on_before_start()
-    ai.prepare_first_step()
     if await _handle_and_inform_initialization_errors(ai):
         return RESULT.Defeat
 
@@ -177,8 +177,6 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
             if await _handle_ending_errors_and_inform_game_result(ai, client, player_id):
                 return client.game_result[player_id]
             game_state = GameState(state.observation)
-            LOGGER.debug(f"Score: {game_state.score.score}")
-
             if game_time_limit and (game_state.game_loop * 0.725 * (1 / 16)) > game_time_limit:
                 await ai.on_end(RESULT.Tie)
                 return RESULT.Tie
@@ -278,7 +276,6 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     state = await client.observation()
     game_state = GameState(state.observation)
     await _initialize_information_and_ai(client, player_id, ai, game_state, realtime, single_step=True)
-    ai.prepare_first_step()
     if await _handle_and_inform_initialization_errors(ai):
         return RESULT.Defeat
 
@@ -289,8 +286,6 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
             if await _handle_ending_errors_and_inform_game_result(ai, client, player_id):
                 return client.game_result[player_id]
             game_state = GameState(state.observation)
-            LOGGER.debug(f"Score: {game_state.score.score}")
-
             proto_game_info = await client.execute(game_info=sc_pb.RequestGameInfo())
             ai.prepare_step(game_state, proto_game_info)
 
