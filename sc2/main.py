@@ -331,6 +331,13 @@ async def _setup_host_game(server, map_settings, players, realtime, random_seed=
     return Client(server.web_server)
 
 
+async def _get_client_and_set_raw_affects(server, map_settings, players, realtime, random_seed):
+    client = await _setup_host_game(server, map_settings, players, realtime, random_seed)
+    if not isinstance(players[0], Human) and getattr(players[0].ai, "raw_affects_selection", None) is not None:
+        client.raw_affects_selection = players[0].ai.raw_affects_selection
+    return client
+
+
 async def _host_game(
     map_settings,
     players,
@@ -355,9 +362,7 @@ async def _host_game(
     ) as server:
         await server.ping()
 
-        client = await _setup_host_game(server, map_settings, players, realtime, random_seed)
-        if not isinstance(players[0], Human) and getattr(players[0].ai, "raw_affects_selection", None) is not None:
-            client.raw_affects_selection = players[0].ai.raw_affects_selection
+        client = await _get_client_and_set_raw_affects(server, map_settings, players, realtime, random_seed)
 
         try:
             result = await play_game(
@@ -387,9 +392,7 @@ async def _host_game_aiter(
         while True:
             await server.ping()
 
-            client = await _setup_host_game(server, map_settings, players, realtime)
-            if not isinstance(players[0], Human) and getattr(players[0].ai, "raw_affects_selection", None) is not None:
-                client.raw_affects_selection = players[0].ai.raw_affects_selection
+            client = await _get_client_and_set_raw_affects(server, map_settings, players, realtime, random_seed)
 
             try:
                 result = await play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit)
