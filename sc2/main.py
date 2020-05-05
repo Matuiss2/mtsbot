@@ -116,6 +116,10 @@ async def _handle_and_inform_untreated_errors(ai, error):
     return True
 
 
+async def _select_observation_state_by_mode(client, realtime, game_state):
+    return await client.observation(game_state.game_loop + client.game_step) if realtime else await client.observation()
+
+
 async def _execute_game_events_and_bot_logic(ai, iteration):
     await ai.issue_events()
     await ai.on_step(iteration)
@@ -169,10 +173,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     iteration = 0
     while True:
         if iteration:
-            if realtime:
-                state = await client.observation(game_state.game_loop + client.game_step)
-            else:
-                state = await client.observation()
+            state = await _select_observation_state_by_mode(client, realtime, game_state)
             if await _handle_ending_errors_and_inform_game_result(ai, client, player_id):
                 return client.game_result[player_id]
             game_state = GameState(state.observation)
@@ -284,10 +285,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     iteration = 0
     while True:
         if iteration:
-            if realtime:
-                state = await client.observation(game_state.game_loop + client.game_step)
-            else:
-                state = await client.observation()
+            state = await _select_observation_state_by_mode(client, realtime, game_state)
             if await _handle_ending_errors_and_inform_game_result(ai, client, player_id):
                 return client.game_result[player_id]
             game_state = GameState(state.observation)
