@@ -1,8 +1,9 @@
 """ Group all parts of the bot
-0.01 - first proper version (it only 12-pool now)
-0.02 - fix a bug on the ignored units implementation
-0.03 - update testing logic to allow every difficulty and style(except cheater difficulties for now) - (‭4896‬-352-2)
+0.01 - First proper version (it only 12-pool now)
+0.02 - Fix a bug on the ignored units implementation
+0.03 - Update testing logic to allow every difficulty and style(except cheater difficulties for now) - (‭4896‬-352-2)
 0.04 - Create logic to connect to the SC2AI ladder
+0.05 - Several non-functional changes to improve readability
 """
 from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
