@@ -68,7 +68,11 @@ class Mtsbot(BotAI):
         """Train overlord logic
         - improvements possible -> make amount pending scale with base amount,
          make supply left constraint scale with larva amount"""
-        if self.supply_left < 3 and not self.already_pending(UnitTypeId.OVERLORD):
+        if (
+            self.supply_left < 5
+            and not self.already_pending(UnitTypeId.OVERLORD)
+            and self.structures(UnitTypeId.SPAWNINGPOOL)
+        ):
             self.train(UnitTypeId.OVERLORD)
 
     async def train_zergling(self):
