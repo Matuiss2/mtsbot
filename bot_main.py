@@ -4,6 +4,7 @@
 0.03 - Update testing logic to allow every difficulty and style(except cheater difficulties for now) - (‭4896‬-352-2)
 0.04 - Create logic to connect to the SC2AI ladder
 0.05 - Several non-functional changes to improve readability
+0.06 - Make the first overlord after the pool being placed
 """
 from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
