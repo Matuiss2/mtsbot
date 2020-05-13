@@ -5,6 +5,7 @@
 0.04 - Create logic to connect to the SC2AI ladder
 0.05 - Several non-functional changes to improve readability
 0.06 - Make the first overlord after the pool being placed
+0.07 - Lock zergling production based on amount of supply left remaining
 """
 from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
