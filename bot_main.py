@@ -4,6 +4,9 @@
 0.03 - Update testing logic to allow every difficulty and style(except cheater difficulties for now) - (‭4896‬-352-2)
 0.04 - Create logic to connect to the SC2AI ladder
 0.05 - Several non-functional changes to improve readability
+0.06 - Make the first overlord after the pool being placed
+0.07 - Lock zergling production based on amount of supply_left
+0.08 - Tweak zergling lock based on supply_left to 3 down from 5
 """
 from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
@@ -68,13 +71,19 @@ class Mtsbot(BotAI):
         """Train overlord logic
         - improvements possible -> make amount pending scale with base amount,
          make supply left constraint scale with larva amount"""
-        if self.supply_left < 3 and not self.already_pending(UnitTypeId.OVERLORD):
+        if (
+            self.supply_left < 5
+            and not self.already_pending(UnitTypeId.OVERLORD)
+            and self.structures(UnitTypeId.SPAWNINGPOOL)
+        ):
             self.train(UnitTypeId.OVERLORD)
 
     async def train_zergling(self):
         """Train zergling logic
         - improvements possible -> create constraints when other units starts to be built based on other unit amounts"""
-        if self.structures(UnitTypeId.SPAWNINGPOOL).ready:
+        if self.structures(UnitTypeId.SPAWNINGPOOL).ready and (
+            self.supply_left >= 3 or self.already_pending(UnitTypeId.OVERLORD)
+        ):
             self.train(UnitTypeId.ZERGLING)
 
     async def train_queen(self):
