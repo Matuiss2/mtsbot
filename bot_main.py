@@ -6,7 +6,7 @@
 0.05 - Several non-functional changes to improve readability
 0.06 - Make the first overlord after the pool being placed
 0.07 - Lock zergling production based on amount of supply_left
-0.08 - Tweak zergling lock based on supply_left to 3 down form 5
+0.08 - Tweak zergling lock based on supply_left to 3 down from 5
 """
 from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
