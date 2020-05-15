@@ -81,7 +81,7 @@ class Mtsbot(BotAI):
         """Train zergling logic
         - improvements possible -> create constraints when other units starts to be built based on other unit amounts"""
         if self.structures(UnitTypeId.SPAWNINGPOOL).ready and (
-            self.supply_left >= 5 or self.already_pending(UnitTypeId.OVERLORD)
+            self.supply_left >= 3 or self.already_pending(UnitTypeId.OVERLORD)
         ):
             self.train(UnitTypeId.ZERGLING)
 
