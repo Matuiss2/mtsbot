@@ -57,15 +57,14 @@ class Mtsbot(BotAI):
         - improvements possible -> Add new units(later), add retreat logic(other function),
         keep adding ignored targets add micro and probably much more"""
         enemy_units = self.enemy_units.exclude_type({UnitTypeId.LARVA, UnitTypeId.EGG})
-        if len(self.units(UnitTypeId.ZERGLING)) >= 6:
-            for zergling in self.units(UnitTypeId.ZERGLING):
-                if enemy_units.not_flying:
-                    self.do(zergling.attack(enemy_units.not_flying.closest_to(zergling)))
-                    continue
-                if self.enemy_structures.not_flying:
-                    self.do(zergling.attack(self.enemy_structures.not_flying.closest_to(zergling)))
-                    continue
-                self.do(zergling.attack(self.enemy_start_locations[0]))
+        for zergling in self.units(UnitTypeId.ZERGLING):
+            if enemy_units.not_flying:
+                self.do(zergling.attack(enemy_units.not_flying.closest_to(zergling)))
+                continue
+            if self.enemy_structures.not_flying:
+                self.do(zergling.attack(self.enemy_structures.not_flying.closest_to(zergling)))
+                continue
+            self.do(zergling.attack(self.enemy_start_locations[0]))
 
     async def train_overlord(self):
         """Train overlord logic
