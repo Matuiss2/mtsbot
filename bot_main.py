@@ -21,6 +21,11 @@ class Mtsbot(BotAI):
     async def on_end(self, game_result):
         print(game_result)
 
+    async def split_workers_on_beginning(self):
+        """ Improvements possible -> Prevent more than 2 drones going on the same mineral patch """
+        for drone in self.workers:
+            self.do(drone.gather(self.mineral_field.closest_to(drone)))
+
     async def build_pool(self):
         """ Build pool logic
         - improvements possible -> placement can be improved """
@@ -121,6 +126,8 @@ class Mtsbot(BotAI):
                 self.do(drone.gather(self.mineral_field.closer_than(10, drone).closest_to(drone)))
 
     async def on_step(self, iteration):
+        if not iteration:
+            await self.split_workers_on_beginning()
         # Build structures
         await self.build_extractor()
         await self.build_pool()
