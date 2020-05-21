@@ -64,12 +64,25 @@ class Mtsbot(BotAI):
         - improvements possible -> Add new units(later), add retreat logic(other function),
         keep adding ignored targets add micro and probably much more"""
         enemy_units = self.enemy_units.exclude_type({UnitTypeId.LARVA, UnitTypeId.EGG})
+        enemy_structures = self.enemy_structures.not_flying
+        enemy_static_defense_structures = enemy_structures.of_type(
+            {
+                UnitTypeId.BUNKER,
+                UnitTypeId.PLANETARYFORTRESS,
+                UnitTypeId.PHOTONCANNON,
+                UnitTypeId.SHIELDBATTERY,
+                UnitTypeId.SPINECRAWLER,
+            }
+        )
         for zergling in self.units(UnitTypeId.ZERGLING):
             if enemy_units.not_flying:
                 self.do(zergling.attack(enemy_units.not_flying.closest_to(zergling)))
                 continue
-            if self.enemy_structures.not_flying:
-                self.do(zergling.attack(self.enemy_structures.not_flying.closest_to(zergling)))
+            if enemy_static_defense_structures:
+                self.do(zergling.attack(enemy_static_defense_structures.closest_to(zergling)))
+                continue
+            if enemy_structures:
+                self.do(zergling.attack(enemy_structures.closest_to(zergling)))
                 continue
             self.do(zergling.attack(self.enemy_start_locations[0]))
 
