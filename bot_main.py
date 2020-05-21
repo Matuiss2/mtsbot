@@ -10,6 +10,7 @@
 0.09 - Make the zerglings attack without any constraint
 0.10 - Make the drones target the closest mineral patch on the beginning of the game
 0.11 - Prioritize static defense over other structures when attacking
+0.12 - Prioritize bases over non static defense structures
 """
 from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
