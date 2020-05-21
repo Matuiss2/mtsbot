@@ -75,12 +75,25 @@ class Mtsbot(BotAI):
                 UnitTypeId.SPINECRAWLER,
             }
         )
+        enemy_bases = enemy_structures.of_type(
+            {
+                UnitTypeId.COMMANDCENTER,
+                UnitTypeId.ORBITALCOMMAND,
+                UnitTypeId.NEXUS,
+                UnitTypeId.HATCHERY,
+                UnitTypeId.LAIR,
+                UnitTypeId.HIVE,
+            }
+        )
         for zergling in self.units(UnitTypeId.ZERGLING):
             if enemy_units.not_flying:
                 self.do(zergling.attack(enemy_units.not_flying.closest_to(zergling)))
                 continue
             if enemy_static_defense_structures:
                 self.do(zergling.attack(enemy_static_defense_structures.closest_to(zergling)))
+                continue
+            if enemy_bases:
+                self.do(zergling.attack(enemy_bases.closest_to(zergling)))
                 continue
             if enemy_structures:
                 self.do(zergling.attack(enemy_structures.closest_to(zergling)))
