@@ -64,7 +64,8 @@ class Mtsbot(BotAI):
     async def attacking_logic(self):
         """ Attacking logic
         - improvements possible -> Add new units(later), add retreat logic(other function),
-        keep adding ignored targets add micro and probably much more"""
+        keep adding ignored targets add micro and probably much more.
+        Also, if the hail mary requirement triggers(no more bases) rebuild the base instead of attacking if possible """
         enemy_units = self.enemy_units.exclude_type({UnitTypeId.LARVA, UnitTypeId.EGG})
         enemy_structures = self.enemy_structures.not_flying
         enemy_static_defense_structures = enemy_structures.of_type(
@@ -86,20 +87,24 @@ class Mtsbot(BotAI):
                 UnitTypeId.HIVE,
             }
         )
-        for zergling in self.units(UnitTypeId.ZERGLING):
-            if enemy_units.not_flying:
-                self.do(zergling.attack(enemy_units.not_flying.closest_to(zergling)))
-                continue
-            if enemy_static_defense_structures:
-                self.do(zergling.attack(enemy_static_defense_structures.closest_to(zergling)))
-                continue
-            if enemy_bases:
-                self.do(zergling.attack(enemy_bases.closest_to(zergling)))
-                continue
-            if enemy_structures:
-                self.do(zergling.attack(enemy_structures.closest_to(zergling)))
-                continue
-            self.do(zergling.attack(self.enemy_start_locations[0]))
+        if not self.townhalls and self.minerals < 300:
+            for unit in self.all_units:
+                self.do(unit.attack(self.enemy_start_locations[0]))
+        else:
+            for zergling in self.units(UnitTypeId.ZERGLING):
+                if enemy_units.not_flying:
+                    self.do(zergling.attack(enemy_units.not_flying.closest_to(zergling)))
+                    continue
+                if enemy_static_defense_structures:
+                    self.do(zergling.attack(enemy_static_defense_structures.closest_to(zergling)))
+                    continue
+                if enemy_bases:
+                    self.do(zergling.attack(enemy_bases.closest_to(zergling)))
+                    continue
+                if enemy_structures:
+                    self.do(zergling.attack(enemy_structures.closest_to(zergling)))
+                    continue
+                self.do(zergling.attack(self.enemy_start_locations[0]))
 
     async def train_overlord(self):
         """Train overlord logic
