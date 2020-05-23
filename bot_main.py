@@ -11,6 +11,7 @@
 0.10 - Make the drones target the closest mineral patch on the beginning of the game
 0.11 - Prioritize static defense over other structures when attacking
 0.12 - Prioritize bases over non static defense structures when attacking
+0.13 - Implement a hail-mary attack logic -> if no more bases remaining, attack with everything that is left
 """
 from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
@@ -87,7 +88,7 @@ class Mtsbot(BotAI):
                 UnitTypeId.HIVE,
             }
         )
-        if not self.townhalls and self.minerals < 300:
+        if not self.townhalls:
             for unit in self.all_units:
                 self.do(unit.attack(self.enemy_start_locations[0]))
         else:
