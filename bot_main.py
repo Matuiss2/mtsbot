@@ -89,7 +89,7 @@ class Mtsbot(BotAI):
             }
         )
         if not self.townhalls:
-            for unit in self.all_units:
+            for unit in self.units:
                 self.do(unit.attack(self.enemy_start_locations[0]))
         else:
             for zergling in self.units(UnitTypeId.ZERGLING):
