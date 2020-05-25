@@ -12,7 +12,7 @@
 0.11 - Prioritize static defense over other structures when attacking
 0.12 - Prioritize bases over non static defense structures when attacking
 0.13 - Implement a hail-mary attack logic -> if no more bases remaining, attack with everything that is left
-0.13.1 - Fix bug on the hail-mary 'all_units' went beyond the scope wanted, 'units' is the accurate scope
+0.13.1 - Fix bug on the hail-mary logic -> 'self.all_units' went beyond the scope wanted, exchange it with 'self.units'
 """
 from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
