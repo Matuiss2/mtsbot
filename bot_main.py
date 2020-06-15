@@ -14,7 +14,7 @@
 0.13 - Implement a hail-mary attack logic -> if no more bases remaining, attack with everything that is left
 0.13.1 - Fix bug on the hail-mary logic -> 'self.all_units' went beyond the scope wanted, exchange it with 'self.units'
 """
-from sc2.bot_ai import BotAI
+from sc2.bot_ai import BotAI, Units
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
@@ -22,6 +22,10 @@ from sc2.ids.upgrade_id import UpgradeId
 
 class Mtsbot(BotAI):
     """ mtsbot"""
+
+    def __init__(self):
+        super().__init__()
+        self.units_retreating = Units([], self)
 
     async def on_end(self, game_result):
         print(game_result)
@@ -63,10 +67,9 @@ class Mtsbot(BotAI):
         if not self.already_pending_upgrade(UpgradeId.ZERGLINGMOVEMENTSPEED):
             self.research(UpgradeId.ZERGLINGMOVEMENTSPEED)
 
-    async def attacking_logic(self):
+    async def controlling_army(self):
         """ Attacking logic
-        - improvements possible -> Add new units(later), add retreat logic(other function),
-        keep adding ignored targets add micro and probably much more.
+        - improvements possible -> Add new units(later), keep adding ignored targets add micro and probably much more.
         Also, if the hail mary requirement triggers(no more bases) rebuild the base instead of attacking if possible """
         enemy_units = self.enemy_units.exclude_type({UnitTypeId.LARVA, UnitTypeId.EGG})
         enemy_structures = self.enemy_structures.not_flying
@@ -94,6 +97,13 @@ class Mtsbot(BotAI):
                 self.do(unit.attack(self.enemy_start_locations[0]))
         else:
             for zergling in self.units(UnitTypeId.ZERGLING):
+                if zergling in self.units_retreating:
+                    if await self.empty_units_retreating_subgroup(zergling):
+                        continue
+                    await self.retreat_unit(zergling)
+                    continue
+                if await self.fill_units_retreating_subgroup(zergling):
+                    continue
                 if enemy_units.not_flying:
                     self.do(zergling.attack(enemy_units.not_flying.closest_to(zergling)))
                     continue
@@ -107,6 +117,35 @@ class Mtsbot(BotAI):
                     self.do(zergling.attack(enemy_structures.closest_to(zergling)))
                     continue
                 self.do(zergling.attack(self.enemy_start_locations[0]))
+
+    async def get_rally_point(self):
+        """ Improvements possible -> The path between the unit and the chosen rally point should be the one
+        with the least enemy units """
+        enemy_starting_base = self.enemy_start_locations[0]  # to save line breaks
+        return self.townhalls.closest_to(enemy_starting_base).position.towards(enemy_starting_base, 10)
+
+    async def fill_units_retreating_subgroup(self, fleeing_unit):
+        """ Improvements possible -> The condition for retreating could be improved significantly by making it
+         considerate only close ally units instead of all units like now.
+         Also this method is only good for zerglings so it's very specialized, try to make it more general
+         or make separated logic for different units """
+        bases = self.townhalls  # to save line breaks
+        workers = {UnitTypeId.DRONE, UnitTypeId.PROBE, UnitTypeId.SCV, UnitTypeId.MULE}  # to save line breaks
+        ground_enemy_army = self.enemy_units.not_flying.exclude_type(workers)  # to save line breaks
+        if not bases.closer_than(15, fleeing_unit) and len(ground_enemy_army) >= len(self.units(UnitTypeId.ZERGLING)):
+            if fleeing_unit.position.distance_to_point2(await self.get_rally_point()) > 5:
+                self.units_retreating.append(fleeing_unit)
+                return True
+
+    async def empty_units_retreating_subgroup(self, fled_unit):
+        """ Improvements possible -> The distance trigger could be different """
+        if self.townhalls.closer_than(10, fled_unit):
+            self.units_retreating.remove(fled_unit)
+            return True
+
+    async def retreat_unit(self, fleeing_unit):
+        """ Improvements possible -> None"""
+        self.do(fleeing_unit.move(await self.get_rally_point()))
 
     async def train_overlord(self):
         """Train overlord logic
@@ -174,7 +213,7 @@ class Mtsbot(BotAI):
         # Research upgrades
         await self.research_zergling_speed()
         # Control army units
-        await self.attacking_logic()
+        await self.controlling_army()
         await self.queen_injection_logic()
         # Control workers
         await self.send_drones_to_extractor()
