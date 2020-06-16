@@ -123,7 +123,7 @@ class Mtsbot(BotAI):
         """ Improvements possible -> The path between the unit and the chosen rally point should be the one
         with the least enemy units """
         enemy_starting_base = self.enemy_start_locations[0]  # to save line breaks
-        return self.townhalls.closest_to(enemy_starting_base).position.towards(enemy_starting_base, 10)
+        return self.townhalls.closest_to(enemy_starting_base).position.towards(enemy_starting_base, 9)
 
     async def fill_units_retreating_subgroup(self, fleeing_unit):
         """ Improvements possible -> The condition for retreating could be improved significantly by making it
