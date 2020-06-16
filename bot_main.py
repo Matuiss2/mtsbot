@@ -14,6 +14,8 @@
 0.13 - Implement a hail-mary attack logic -> if no more bases remaining, attack with everything that is left
 0.13.1 - Fix bug on the hail-mary logic -> 'self.all_units' went beyond the scope wanted, exchange it with 'self.units'
 0.14 - Implement the initial retreat logic, add the constructor and do some refactoring
+0.14.1 - Fix a bug on the retreat logic -> 1 zergling always stayed on the rally point due to a conflict on the distance
+triggers, exchange one of the trigger values from 10 to 9
 """
 from sc2.bot_ai import BotAI, Units
 from sc2.ids.ability_id import AbilityId
