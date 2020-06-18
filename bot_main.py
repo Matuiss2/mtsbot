@@ -16,6 +16,7 @@
 0.14 - Implement the initial retreat logic, add the constructor and do some refactoring
 0.14.1 - Fix a bug on the retreat logic -> 1 zergling always stayed on the rally point due to a conflict on the distance
 triggers, exchange one of the trigger values from 10 to 9
+0.15 - Block attacks if there is some unit retreating, to try to coordinate the units
 """
 from sc2.bot_ai import BotAI, Units
 from sc2.ids.ability_id import AbilityId
@@ -126,7 +127,7 @@ class Mtsbot(BotAI):
     @property
     async def block_attacks_while_retreating(self):
         """ Improvements possible -> This can be expanded, a lot more stuff can be used to block attacks,
-        like when transitioning or booming"""
+        like when transitioning or booming, also it should not be used to block defensive orders like now"""
         return bool(self.units_retreating)
 
     async def get_rally_point(self):
