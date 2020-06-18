@@ -321,7 +321,7 @@ async def _setup_host_game(server, map_settings, players, realtime, random_seed=
         LOGGER.critical(err)
         raise RuntimeError(err)
 
-    return Client(server.web_server)
+    return Client(server.web_socket)
 
 
 async def _get_client_and_set_raw_affects(server, map_settings, players, realtime, random_seed):

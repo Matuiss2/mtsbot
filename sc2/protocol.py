@@ -29,19 +29,19 @@ class ConnectionAlreadyClosed(ProtocolError):
 class Protocol:
     """ Handles the connection and the requests to the protocol"""
 
-    def __init__(self, web_server):
+    def __init__(self, web_socket):
         """
-        :param web_server:
+        :param web_socket:
         """
-        if not web_server:
+        if not web_socket:
             raise AssertionError()
-        self.web_server = web_server
+        self.web_socket = web_socket
         self._status = None
 
     async def __request(self, request):
         LOGGER.debug(f"Sending request: {request !r}")
         try:
-            await self.web_server.send_bytes(request.SerializeToString())
+            await self.web_socket.send_bytes(request.SerializeToString())
         except TypeError:
             LOGGER.exception("Cannot send: Connection already closed.")
             raise ConnectionAlreadyClosed("Connection already closed.")
@@ -49,13 +49,13 @@ class Protocol:
 
         response = sc_pb.Response()
         try:
-            response_bytes = await self.web_server.receive_bytes()
+            response_bytes = await self.web_socket.receive_bytes()
         except TypeError:
             LOGGER.info("Cannot receive: Connection already closed.")
             sys.exit(2)
         except asyncio.CancelledError:
             try:
-                await self.web_server.receive_bytes()
+                await self.web_socket.receive_bytes()
             except asyncio.CancelledError:
                 LOGGER.critical("Requests must not be cancelled multiple times")
                 sys.exit(2)
