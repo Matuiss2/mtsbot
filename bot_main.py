@@ -107,6 +107,8 @@ class Mtsbot(BotAI):
                     continue
                 if await self.fill_units_retreating_subgroup(zergling):
                     continue
+                if await self.block_attacks_while_retreating:
+                    continue
                 if enemy_units.not_flying:
                     self.do(zergling.attack(enemy_units.not_flying.closest_to(zergling)))
                     continue
@@ -120,6 +122,12 @@ class Mtsbot(BotAI):
                     self.do(zergling.attack(enemy_structures.closest_to(zergling)))
                     continue
                 self.do(zergling.attack(self.enemy_start_locations[0]))
+
+    @property
+    async def block_attacks_while_retreating(self):
+        """ Improvements possible -> This can be expanded, a lot more stuff can be used to block attacks,
+        like when transitioning or booming"""
+        return bool(self.units_retreating)
 
     async def get_rally_point(self):
         """ Improvements possible -> The path between the unit and the chosen rally point should be the one
