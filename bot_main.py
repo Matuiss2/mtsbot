@@ -39,6 +39,10 @@ class Mtsbot(BotAI):
         for drone in self.workers:
             self.do(drone.gather(self.mineral_field.closest_to(drone)))
 
+    async def set_hatchery_rally_point(self):
+        """ Improvements possible -> This should be called every time a new base is created and not only on the start"""
+        self.do(self.townhalls[0](AbilityId.RALLY_HATCHERY_UNITS, await self.get_rally_point()))
+
     async def build_pool(self):
         """ Build pool logic
         - improvements possible -> placement can be improved """
@@ -215,6 +219,7 @@ class Mtsbot(BotAI):
     async def on_step(self, iteration):
         if not iteration:
             await self.split_workers_on_beginning()
+            await self.set_hatchery_rally_point()
         # Build structures
         await self.build_extractor()
         await self.build_pool()
