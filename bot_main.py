@@ -17,6 +17,8 @@
 0.14.1 - Fix a bug on the retreat logic -> 1 zergling always stayed on the rally point due to a conflict on the distance
 triggers, exchange one of the trigger values from 10 to 9
 0.15 - Block attacks if there is any unit retreating, to try to coordinate the units better
+0.16 - Newly trained zerglings that can't attack go directly to the rally point, another small change to help coordinate
+units better
 """
 from sc2.bot_ai import BotAI, Units
 from sc2.ids.ability_id import AbilityId
