@@ -116,16 +116,16 @@ class Mtsbot(BotAI):
                     continue
                 if await self.block_attacks_while_retreating:
                     continue
-                if enemy_units.not_flying:
+                if enemy_units.not_flying.closer_than(15, zergling):
                     self.do(zergling.attack(enemy_units.not_flying.closest_to(zergling)))
                     continue
-                if enemy_static_defense_structures:
+                if enemy_static_defense_structures.closer_than(15, zergling):
                     self.do(zergling.attack(enemy_static_defense_structures.closest_to(zergling)))
                     continue
-                if enemy_bases:
+                if enemy_bases.closer_than(15, zergling):
                     self.do(zergling.attack(enemy_bases.closest_to(zergling)))
                     continue
-                if enemy_structures:
+                if enemy_structures.closer_than(15, zergling):
                     self.do(zergling.attack(enemy_structures.closest_to(zergling)))
                     continue
                 self.do(zergling.attack(self.enemy_start_locations[0]))

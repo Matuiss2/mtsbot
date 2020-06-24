@@ -1230,6 +1230,8 @@ class Unit:
         return self.tag
 
     def __eq__(self, other):
+        if type(other) == Point2:
+            return self.position == other
         return self.tag == other.tag
 
     def __call__(self, ability, target=None, queue: bool = False):
