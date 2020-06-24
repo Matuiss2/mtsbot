@@ -19,6 +19,9 @@ triggers, exchange one of the trigger values from 10 to 9
 0.15 - Block attacks if there is any unit retreating, to try to coordinate the units better
 0.16 - Newly trained zerglings that can't attack go directly to the rally point, another small change to help coordinate
 units better
+0.17 - Make the attacks trigger only within a small distance from the unit, to designate units better
+0.17.1 - Treat a bug on position.py and unit.py -> __eq__ was receiving the wrong type as a parameter on both files,
+standardize then by converting other and self to Point2 respectively
 """
 from sc2.bot_ai import BotAI, Units
 from sc2.ids.ability_id import AbilityId
