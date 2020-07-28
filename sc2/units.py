@@ -698,6 +698,11 @@ class Units(list):
         """ Sorts units based on if they are idle. Idle units come first. """
         return self.sorted(lambda unit: unit.is_idle, reverse=True)
 
+    @property
+    def prefer_healthy(self) -> Units:
+        """ Sorts units based on if they are healthy. Healthier units come first. """
+        return self.sorted(lambda unit: unit.health, reverse=True)
+
 
 class UnitSelection(Units):
     """ Not sure what it does"""

@@ -35,6 +35,9 @@ class Mtsbot(BotAI):
     def __init__(self):
         super().__init__()
         self.units_retreating = Units([], self)
+        self.drone_defense_squad = Units([], self)
+        self.close_enemy_workers = Units([], self)
+        self.drones_on_extractor_count = 0
 
     async def on_end(self, game_result):
         print(game_result)
@@ -195,31 +198,70 @@ class Mtsbot(BotAI):
             self.structures(UnitTypeId.SPAWNINGPOOL).ready
             and len(self.units(UnitTypeId.QUEEN)) < len(self.townhalls)
             and self.already_pending(UnitTypeId.QUEEN) < len(self.townhalls.ready)
+            and len(self.close_enemy_workers) <= 1
         ):
             self.train(UnitTypeId.QUEEN)
 
-    async def send_drones_to_extractor(self):
-        """ Send drones to extractor from minerals
-        - improvements possible -> Expand it, make it trigger when the vespene - mineral ratio is to high
-        (only check it when at least 2 bases are saturated)make the closer_than distance 8 instead of 10,
-        also change the constraints completely(separate it later - this constraints are for the zergling speed,
-        make it a separated method) make it more general"""
-        if self.vespene < 100 and not self.already_pending_upgrade(UpgradeId.ZERGLINGMOVEMENTSPEED):
-            for extractor in self.gas_buildings:
-                drones_needed_to_fill_extractor = extractor.ideal_harvesters - extractor.assigned_harvesters
-                if drones_needed_to_fill_extractor > 0:
-                    for drone in self.workers.closer_than(10, extractor).take(drones_needed_to_fill_extractor):
-                        self.do(drone.gather(extractor))
+    async def controlling_drones(self):
+        """ Improvements possible -> This can become a class, the variables and actions can be split and when multiple
+        bases get implemented drones will have to be split in several subgroups ->
+        one group for the base that it's assigned, also the function have different levels of abstraction,
+        refactor it"""
+        workers = {UnitTypeId.DRONE, UnitTypeId.PROBE, UnitTypeId.SCV}  # repeated
+        if self.townhalls:
+            self.close_enemy_workers = self.enemy_units.closer_than(6, self.townhalls[0]).of_type(workers)
+        for drone in self.workers:
+            if drone in self.drone_defense_squad:
+                if await self.empty_drone_rush_defense_squad(drone):
+                    continue
+                self.do(drone.attack(self.close_enemy_workers.closest_to(drone)))
+            if await self.fill_drone_rush_defense_squad(drone):
+                continue
+            if await self.send_drones_to_extractor(drone):
+                continue
+            if await self.send_drones_to_minerals(drone):
+                continue
 
-    async def send_drones_to_minerals(self):
-        """ Send drones from extractor to minerals
-        - improvements possible -> Expand it, make it trigger when the mineral - vespene ratio is to high
-        (only check it when at least 2 bases are saturated)make the closer_than distance 8 instead of 10,
+    async def send_drones_to_extractor(self, unit):
+        """ Improvements possible -> Expand it, make it trigger when the vespene - mineral ratio is to high
+        (only check it when at least 2 bases are saturated)make the distance_to value 8 instead of 10,
         also change the constraints completely(separate it later - this constraints are for the zergling speed,
-        make it a separated method) make it more general"""
+        make it a separated method) make it more general, also this drone_on_extractor_count solution is awful,
+        find a better way to make the right number of drones go collect on the same frame"""
+        if self.vespene < 100 and not self.already_pending_upgrade(UpgradeId.ZERGLINGMOVEMENTSPEED):
+            extractors = self.gas_buildings.ready
+            close_extractors = extractors.sorted_by_distance_to(unit)
+            if close_extractors:
+                closest_extractor = close_extractors[0]
+                if self.drones_on_extractor_count < 3 * len(extractors) and unit.distance_to(closest_extractor) < 10:
+                    self.drones_on_extractor_count += 1
+                    self.do(unit.gather(closest_extractor))
+                    return True
+
+    async def send_drones_to_minerals(self, unit):
+        """ Improvements possible -> Expand it, make it trigger when the mineral - vespene ratio is to high
+        (only check it when at least 2 bases are saturated), also change the constraints completely
+        (separate it later - this constraints are for the zergling speed, make it a separated method)
+        make it more general"""
         if self.vespene >= 100 or self.already_pending_upgrade(UpgradeId.ZERGLINGMOVEMENTSPEED):
-            for drone in self.workers.filter(lambda w: w.is_carrying_vespene):
-                self.do(drone.gather(self.mineral_field.closer_than(10, drone).closest_to(drone)))
+            if unit.is_carrying_vespene:
+                self.do(unit.gather(self.mineral_field.closest_to(unit)))
+                return True
+
+    async def fill_drone_rush_defense_squad(self, unit):
+        """ Improvements possible -> The variables and constraints/logic can be split"""
+        ideal_defense_force_size = int(len(self.close_enemy_workers) * 1.25)
+        drones_needed_to_fill_defense_squad = ideal_defense_force_size - len(self.drone_defense_squad)
+        if drones_needed_to_fill_defense_squad > 0 and unit not in self.drone_defense_squad:
+            self.drone_defense_squad.append(unit)
+            return True
+
+    async def empty_drone_rush_defense_squad(self, unit):
+        """ Improvements possible -> None that I can think of"""
+        if not self.close_enemy_workers:
+            self.drone_defense_squad.remove(unit)
+            self.do(unit.gather(self.mineral_field.closest_to(unit)))  # repeated
+            return True
 
     async def on_step(self, iteration):
         if not iteration:
@@ -238,5 +280,4 @@ class Mtsbot(BotAI):
         await self.controlling_army()
         await self.queen_injection_logic()
         # Control workers
-        await self.send_drones_to_extractor()
-        await self.send_drones_to_minerals()
+        await self.controlling_drones()
