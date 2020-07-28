@@ -22,6 +22,8 @@ units better
 0.17 - Make the attacks trigger only within a small distance from the unit, to designate units better
 0.17.1 - Treat a bug on position.py and unit.py -> __eq__ was getting the wrong type as a parameter on both files,
 standardize then by converting other and self to Point2 in their respective __eq__ methods.
+0.18 - Implement prefer_healthy method on the API and introduce separated testing logic directory
+0.19 - Implement worker rush defense (28 - 0 - 2 vs basic worker rush)
 """
 from sc2.bot_ai import BotAI, Units
 from sc2.ids.ability_id import AbilityId
