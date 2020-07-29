@@ -14,6 +14,7 @@ from bot_main import Mtsbot
 
 class WorkerRushBot(BotAI):
     """ Simplest worker rush bot possible"""
+
     async def on_step(self, iteration):
         if not iteration:
             for worker in self.workers:
