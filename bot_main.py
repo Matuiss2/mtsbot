@@ -244,9 +244,10 @@ class Mtsbot(BotAI):
         """ Improvements possible -> Expand it, make it trigger when the mineral - vespene ratio is to high
         (only check it when at least 2 bases are saturated), also change the constraints completely
         (separate it later - this constraints are for the zergling speed, make it a separated method)
-        make it more general"""
+        make it more general, also maybe the idle handling can be expanded to target vespene as well depending on the
+        situation, I'm not sure if it's ever needed, remove if not"""
         if self.vespene >= 100 or self.already_pending_upgrade(UpgradeId.ZERGLINGMOVEMENTSPEED):
-            if unit.is_carrying_vespene:
+            if unit.is_carrying_vespene or unit.is_idle:
                 self.do(unit.gather(self.mineral_field.closest_to(unit)))
                 return True
 
