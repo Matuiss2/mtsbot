@@ -24,7 +24,7 @@ units better
 standardize then by converting other and self to Point2 in their respective __eq__ methods.
 0.18 - Implement prefer_healthy method on the API and introduce separated testing logic directory
 0.19 - Implement worker rush defense (28 - 0 - 2 vs basic worker rush)
-0.20 - Make drones never go idle
+0.20 - Handle drones that go idle
 """
 from sc2.bot_ai import BotAI, Units
 from sc2.ids.ability_id import AbilityId
