@@ -57,7 +57,7 @@ class Mtsbot(BotAI):
     async def build_pool(self):
         """ Build pool logic
         - improvements possible -> placement can be improved """
-        pool = UnitTypeId.SPAWNINGPOOL  # to save line breaks
+        pool = UnitTypeId.SPAWNINGPOOL  # to prevent line breaks
         if not self.structures(pool).ready and not self.already_pending(pool):
             await self.build(pool, self.start_location.towards(self.game_info.map_center, distance=5))
 
@@ -148,7 +148,7 @@ class Mtsbot(BotAI):
     async def get_rally_point(self):
         """ Improvements possible -> The path between the unit and the chosen rally point should be the one
         with the least enemy units """
-        enemy_starting_base = self.enemy_start_locations[0]  # to save line breaks
+        enemy_starting_base = self.enemy_start_locations[0]  # to prevent line breaks
         return self.townhalls.closest_to(enemy_starting_base).position.towards(enemy_starting_base, 9)
 
     async def fill_units_retreating_subgroup(self, fleeing_unit):
@@ -157,8 +157,8 @@ class Mtsbot(BotAI):
          Also this method is only good for zerglings so it's very specialized, try to make it more general
          or make separated logic for different units """
         bases = self.townhalls  # to save line breaks
-        workers = {UnitTypeId.DRONE, UnitTypeId.PROBE, UnitTypeId.SCV, UnitTypeId.MULE}  # to save line breaks
-        ground_enemy_army = self.enemy_units.not_flying.exclude_type(workers)  # to save line breaks
+        workers = {UnitTypeId.DRONE, UnitTypeId.PROBE, UnitTypeId.SCV, UnitTypeId.MULE}  # to prevent line breaks
+        ground_enemy_army = self.enemy_units.not_flying.exclude_type(workers)  # to prevent line breaks
         if not bases.closer_than(15, fleeing_unit) and len(ground_enemy_army) >= len(self.units(UnitTypeId.ZERGLING)):
             if fleeing_unit.position.distance_to_point2(await self.get_rally_point()) > 5:
                 self.units_retreating.append(fleeing_unit)
