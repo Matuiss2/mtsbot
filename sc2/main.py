@@ -321,7 +321,7 @@ async def _setup_host_game(server, map_settings, players, realtime, random_seed=
         LOGGER.critical(err)
         raise RuntimeError(err)
 
-    return Client(server.web_server)
+    return Client(server.web_socket)
 
 
 async def _get_client_and_set_raw_affects(server, map_settings, players, realtime, random_seed):
@@ -417,7 +417,7 @@ async def _join_game(
     async with SC2Process(fullscreen=players[1].fullscreen) as server:
         await server.ping()
 
-        client = Client(server.ws)
+        client = Client(server.web_socket)
         if not isinstance(players[1], Human) and getattr(players[1].ai, "raw_affects_selection", None) is not None:
             client.raw_affects_selection = players[1].ai.raw_affects_selection
 
@@ -436,7 +436,7 @@ async def _join_game(
 
 async def _setup_replay(server, replay_path, realtime, observed_id):
     await server.start_replay(replay_path, realtime, observed_id)
-    return Client(server.ws)
+    return Client(server.web_socket)
 
 
 async def _host_replay(replay_path, ai, realtime, base_build, data_version, observed_id):

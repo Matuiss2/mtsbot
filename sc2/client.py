@@ -31,8 +31,8 @@ LOGGER = logging.getLogger(__name__)
 class Client(Protocol):
     """ Groups the requests to the client """
 
-    def __init__(self, web_server):
-        super().__init__(web_server)
+    def __init__(self, web_socket):
+        super().__init__(web_socket)
         # How many frames will be waited between iterations before the next one is called
         self.game_step = 8
         self._player_id = None

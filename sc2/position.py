@@ -155,7 +155,7 @@ class Pointlike(tuple):
         return Point2(self[:2])
 
     def __eq__(self, other):
-        return all(abs(a - b) <= EPSILON for a, b in itertools.zip_longest(self, other, fillvalue=0))
+        return all(abs(a - b) <= EPSILON for a, b in itertools.zip_longest(self, other.position, fillvalue=0))
 
     def __hash__(self):
         return hash(tuple(self))

@@ -14,8 +14,8 @@ LOGGER = logging.getLogger(__name__)
 class Controller(Protocol):
     """ Groups some leftovers requests to the client """
 
-    def __init__(self, web_server, process):
-        super().__init__(web_server)
+    def __init__(self, web_socket, process):
+        super().__init__(web_socket)
         self.__process = process
 
     @property
