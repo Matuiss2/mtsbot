@@ -1154,6 +1154,12 @@ class Unit:
         """
         return self(AbilityId.ATTACK, target=target, queue=queue)
 
+    async def attack_closest_if_any(self, target):
+        """ Check if there is an enemy unit of the given type close, if yes attack the closest """
+        if target.closer_than(15, self):
+            self.attack(target.closest_to(self))
+            return True
+
     def smart(self, target: Union[Unit, Point2, Point3], queue: bool = False) -> UnitCommand:
         """ Orders the smart command. Equivalent to a right-click order.
 

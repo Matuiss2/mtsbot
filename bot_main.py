@@ -40,10 +40,45 @@ class Mtsbot(BotAI):
         self.units_retreating = Units([], self)
         self.drone_defense_squad = Units([], self)
         self.close_enemy_workers = Units([], self)
+        self.bases = Units([], self)
+        self.main_base = None
+        self.overlords_in_queue = Units([], self)
+        self.pool_in_construction = Units([], self)
+        self.finished_pool = Units([], self)
+        self.queens = Units([], self)
+        self.zerglings = Units([], self)
+        self.enemy_starting_base = None
+        self.enemy_units = Units([], self)
+        self.ground_enemy_structures = Units([], self)
+        self.ground_enemy_units = Units([], self)
         self.drones_on_extractor_count = 0
+        self.extractor = UnitTypeId.EXTRACTOR
+        self.overlord = UnitTypeId.OVERLORD
+        self.pool = UnitTypeId.SPAWNINGPOOL
+        self.queen = UnitTypeId.QUEEN
+        self.worker_types = {UnitTypeId.DRONE, UnitTypeId.PROBE, UnitTypeId.SCV, UnitTypeId.MULE}
+        self.zergling = UnitTypeId.ZERGLING
+        self.zergling_speed = UpgradeId.ZERGLINGMOVEMENTSPEED
 
     async def on_end(self, game_result):
         print(game_result)
+
+    async def update_variables(self):
+        """ Improvements possible -> Could be a separated class and within that, separate by type(structures or units),
+        and possession """
+        self.enemy_units = self.enemy_units.exclude_type({UnitTypeId.LARVA, UnitTypeId.EGG})
+        self.ground_enemy_structures = self.enemy_structures.not_flying
+        self.ground_enemy_units = self.enemy_units.not_flying
+        self.enemy_starting_base = self.enemy_start_locations[0]
+        self.bases = self.townhalls
+        self.main_base = self.bases[0]
+        self.overlords_in_queue = self.already_pending(self.overlord)
+        self.pool_in_construction = self.already_pending(self.pool)
+        self.finished_pool = self.structures(self.pool).ready
+        self.queens = self.units(self.queen)
+        self.zerglings = self.units(self.zergling)
+        if self.bases:
+            self.close_enemy_workers = self.enemy_units.closer_than(6, self.main_base).of_type(self.worker_types)
 
     async def split_workers_on_beginning(self):
         """ Improvements possible -> Prevent more than 2 drones going on the same mineral patch """
@@ -52,47 +87,40 @@ class Mtsbot(BotAI):
 
     async def set_hatchery_rally_point(self):
         """ Improvements possible -> This should be called every time a new base is created and not only on the start"""
-        self.do(self.townhalls[0](AbilityId.RALLY_HATCHERY_UNITS, await self.get_rally_point()))
+        self.do(self.main_base(AbilityId.RALLY_HATCHERY_UNITS, await self.get_rally_point()))
 
     async def build_pool(self):
         """ Build pool logic
         - improvements possible -> placement can be improved """
-        pool = UnitTypeId.SPAWNINGPOOL  # to prevent line breaks
-        if not self.structures(pool).ready and not self.already_pending(pool):
-            await self.build(pool, self.start_location.towards(self.game_info.map_center, distance=5))
+        if not self.finished_pool and not self.pool_in_construction:
+            await self.build(self.pool, self.start_location.towards(self.game_info.map_center, distance=5))
 
     async def build_extractor(self):
         """ Build extractor logic
         - improvements possible -> Expand it, with this function it's only possible to build the first one
         make it build more later(the requirement logic and the placement parameter will have to be expanded)"""
-        if (
-            not self.gas_buildings
-            and self.already_pending(UnitTypeId.SPAWNINGPOOL)
-            and not self.already_pending(UnitTypeId.EXTRACTOR)
-        ):
-            await self.build(UnitTypeId.EXTRACTOR, self.vespene_geyser.closest_to(self.start_location))
+        if not self.gas_buildings and self.pool_in_construction and not self.already_pending(self.extractor):
+            await self.build(self.extractor, self.vespene_geyser.closest_to(self.start_location))
 
     async def queen_injection_logic(self):
         """ Make queen inject logic
         - improvements possible -> None that I can think of """
-        for queen in self.units(UnitTypeId.QUEEN):
+        for queen in self.queens:
             if not queen.is_idle or queen.energy < 25:
                 continue
-            self.do(queen(AbilityId.EFFECT_INJECTLARVA, self.townhalls.closest_to(queen.position)))
+            self.do(queen(AbilityId.EFFECT_INJECTLARVA, self.bases.closest_to(queen.position)))
 
     async def research_zergling_speed(self):
         """ Research zergling speed logic
         - improvements possible -> None that I can think of """
-        if not self.already_pending_upgrade(UpgradeId.ZERGLINGMOVEMENTSPEED):
-            self.research(UpgradeId.ZERGLINGMOVEMENTSPEED)
+        if not self.already_pending_upgrade(self.zergling_speed):
+            self.research(self.zergling_speed)
 
     async def controlling_army(self):
         """ Attacking logic
         - improvements possible -> Add new units(later), keep adding ignored targets add micro and probably much more.
         Also, if the hail mary requirement triggers(no more bases) rebuild the base instead of attacking if possible """
-        enemy_units = self.enemy_units.exclude_type({UnitTypeId.LARVA, UnitTypeId.EGG})
-        enemy_structures = self.enemy_structures.not_flying
-        enemy_static_defense_structures = enemy_structures.of_type(
+        enemy_static_defense = self.ground_enemy_structures.of_type(
             {
                 UnitTypeId.BUNKER,
                 UnitTypeId.PLANETARYFORTRESS,
@@ -101,7 +129,7 @@ class Mtsbot(BotAI):
                 UnitTypeId.SPINECRAWLER,
             }
         )
-        enemy_bases = enemy_structures.of_type(
+        enemy_bases = self.ground_enemy_structures.of_type(
             {
                 UnitTypeId.COMMANDCENTER,
                 UnitTypeId.ORBITALCOMMAND,
@@ -111,11 +139,11 @@ class Mtsbot(BotAI):
                 UnitTypeId.HIVE,
             }
         )
-        if not self.townhalls:
+        if not self.bases:
             for unit in self.units:
-                self.do(unit.attack(self.enemy_start_locations[0]))
+                self.do(unit.attack(self.enemy_starting_base))
         else:
-            for zergling in self.units(UnitTypeId.ZERGLING):
+            for zergling in self.zerglings:
                 if zergling in self.units_retreating:
                     if await self.empty_units_retreating_subgroup(zergling):
                         continue
@@ -125,19 +153,15 @@ class Mtsbot(BotAI):
                     continue
                 if await self.block_attacks_while_retreating:
                     continue
-                if enemy_units.not_flying.closer_than(15, zergling):
-                    self.do(zergling.attack(enemy_units.not_flying.closest_to(zergling)))
+                if await zergling.attack_closest_if_any(self.ground_enemy_units):
                     continue
-                if enemy_static_defense_structures.closer_than(15, zergling):
-                    self.do(zergling.attack(enemy_static_defense_structures.closest_to(zergling)))
+                if await zergling.attack_closest_if_any(enemy_static_defense):
                     continue
-                if enemy_bases.closer_than(15, zergling):
-                    self.do(zergling.attack(enemy_bases.closest_to(zergling)))
+                if await zergling.attack_closest_if_any(enemy_bases):
                     continue
-                if enemy_structures.closer_than(15, zergling):
-                    self.do(zergling.attack(enemy_structures.closest_to(zergling)))
+                if await zergling.attack_closest_if_any(self.ground_enemy_structures):
                     continue
-                self.do(zergling.attack(self.enemy_start_locations[0]))
+                self.do(zergling.attack(self.enemy_starting_base))
 
     @property
     async def block_attacks_while_retreating(self):
@@ -148,25 +172,22 @@ class Mtsbot(BotAI):
     async def get_rally_point(self):
         """ Improvements possible -> The path between the unit and the chosen rally point should be the one
         with the least enemy units """
-        enemy_starting_base = self.enemy_start_locations[0]  # to prevent line breaks
-        return self.townhalls.closest_to(enemy_starting_base).position.towards(enemy_starting_base, 9)
+        return self.bases.closest_to(self.enemy_starting_base).position.towards(self.enemy_starting_base, 9)
 
     async def fill_units_retreating_subgroup(self, fleeing_unit):
         """ Improvements possible -> The condition for retreating could be improved significantly by making it
          considerate only close ally units instead of all units like now.
          Also this method is only good for zerglings so it's very specialized, try to make it more general
          or make separated logic for different units """
-        bases = self.townhalls  # to save line breaks
-        workers = {UnitTypeId.DRONE, UnitTypeId.PROBE, UnitTypeId.SCV, UnitTypeId.MULE}  # to prevent line breaks
-        ground_enemy_army = self.enemy_units.not_flying.exclude_type(workers)  # to prevent line breaks
-        if not bases.closer_than(15, fleeing_unit) and len(ground_enemy_army) >= len(self.units(UnitTypeId.ZERGLING)):
+        ground_enemy_army_size = len(self.ground_enemy_units.exclude_type(self.worker_types))
+        if not self.bases.closer_than(15, fleeing_unit) and ground_enemy_army_size >= len(self.zerglings):
             if fleeing_unit.position.distance_to_point2(await self.get_rally_point()) > 5:
                 self.units_retreating.append(fleeing_unit)
                 return True
 
     async def empty_units_retreating_subgroup(self, fled_unit):
         """ Improvements possible -> The distance trigger could be different """
-        if self.townhalls.closer_than(10, fled_unit):
+        if self.bases.closer_than(10, fled_unit):
             self.units_retreating.remove(fled_unit)
             return True
 
@@ -178,41 +199,32 @@ class Mtsbot(BotAI):
         """Train overlord logic
         - improvements possible -> make amount pending scale with base amount,
          make supply left constraint scale with larva amount"""
-        if (
-            self.supply_left < 5
-            and not self.already_pending(UnitTypeId.OVERLORD)
-            and self.structures(UnitTypeId.SPAWNINGPOOL)
-        ):
-            self.train(UnitTypeId.OVERLORD)
+        if self.supply_left < 5 and not self.overlords_in_queue and self.structures(self.pool):
+            self.train(self.overlord)
 
     async def train_zergling(self):
-        """Train zergling logic
-        - improvements possible -> create constraints when other units starts to be built based on other unit amounts"""
-        if self.structures(UnitTypeId.SPAWNINGPOOL).ready and (
-            self.supply_left >= 3 or self.already_pending(UnitTypeId.OVERLORD)
-        ):
-            self.train(UnitTypeId.ZERGLING)
+        """ Improvements possible -> Create constraints when other units than zergling
+        starts to be built based on this other unit amount"""
+        if self.finished_pool and (self.supply_left >= 3 or self.overlords_in_queue):
+            self.train(self.zergling)
 
     async def train_queen(self):
         """Train queen logic
         - improvements possible -> Make the queen get created preferably on non-already-assigned bases
          and maybe create some extra for creep spread(don't limit it by bases)"""
         if (
-            self.structures(UnitTypeId.SPAWNINGPOOL).ready
-            and len(self.units(UnitTypeId.QUEEN)) < len(self.townhalls)
-            and self.already_pending(UnitTypeId.QUEEN) < len(self.townhalls.ready)
+            self.finished_pool
+            and len(self.queens) < len(self.bases)
+            and self.already_pending(self.queen) < len(self.bases.ready)
             and len(self.close_enemy_workers) <= 1
         ):
-            self.train(UnitTypeId.QUEEN)
+            self.train(self.queen)
 
     async def controlling_drones(self):
         """ Improvements possible -> This can become a class, the variables and actions can be split and when multiple
         bases get implemented drones will have to be split in several subgroups ->
         one group for the base that it's assigned, also the function have different levels of abstraction,
         refactor it"""
-        workers = {UnitTypeId.DRONE, UnitTypeId.PROBE, UnitTypeId.SCV}  # repeated
-        if self.townhalls:
-            self.close_enemy_workers = self.enemy_units.closer_than(6, self.townhalls[0]).of_type(workers)
         for drone in self.workers:
             if drone in self.drone_defense_squad:
                 if await self.empty_drone_rush_defense_squad(drone):
@@ -231,11 +243,10 @@ class Mtsbot(BotAI):
         also change the constraints completely(separate it later - this constraints are for the zergling speed,
         make it a separated method) make it more general, also this drone_on_extractor_count solution is awful,
         find a better way to make the right number of drones go collect on the same frame"""
-        if self.vespene < 100 and not self.already_pending_upgrade(UpgradeId.ZERGLINGMOVEMENTSPEED):
+        if self.vespene < 100 and not self.already_pending_upgrade(self.zergling_speed):
             extractors = self.gas_buildings.ready
-            close_extractors = extractors.sorted_by_distance_to(unit)
-            if close_extractors:
-                closest_extractor = close_extractors[0]
+            if extractors:
+                closest_extractor = extractors.sorted_by_distance_to(unit)[0]
                 if self.drones_on_extractor_count < 3 * len(extractors) and unit.distance_to(closest_extractor) < 10:
                     self.drones_on_extractor_count += 1
                     self.do(unit.gather(closest_extractor))
@@ -247,13 +258,13 @@ class Mtsbot(BotAI):
         (separate it later - this constraints are for the zergling speed, make it a separated method)
         make it more general, also maybe the idle handling can be expanded to target vespene as well depending on the
         situation, I'm not sure if it's ever needed, remove if not"""
-        if self.vespene >= 100 or self.already_pending_upgrade(UpgradeId.ZERGLINGMOVEMENTSPEED):
+        if self.vespene >= 100 or self.already_pending_upgrade(self.zergling_speed):
             if unit.is_carrying_vespene or unit.is_idle:
-                self.do(unit.gather(self.mineral_field.closest_to(unit)))
+                await self.gather_from_closest_mineral_patch(unit)
                 return True
 
     async def fill_drone_rush_defense_squad(self, unit):
-        """ Improvements possible -> The variables and constraints/logic can be split"""
+        """ Improvements possible -> None that I can think of"""
         ideal_defense_force_size = int(len(self.close_enemy_workers) * 1.25)
         drones_needed_to_fill_defense_squad = ideal_defense_force_size - len(self.drone_defense_squad)
         if drones_needed_to_fill_defense_squad > 0 and unit not in self.drone_defense_squad:
@@ -264,10 +275,15 @@ class Mtsbot(BotAI):
         """ Improvements possible -> None that I can think of"""
         if not self.close_enemy_workers:
             self.drone_defense_squad.remove(unit)
-            self.do(unit.gather(self.mineral_field.closest_to(unit)))  # repeated
+            await self.gather_from_closest_mineral_patch(unit)
             return True
 
+    async def gather_from_closest_mineral_patch(self, unit):
+        """ Improvements possible -> None"""
+        self.do(unit.gather(self.mineral_field.closest_to(unit)))
+
     async def on_step(self, iteration):
+        await self.update_variables()
         if not iteration:
             await self.split_workers_on_beginning()
             await self.set_hatchery_rally_point()
