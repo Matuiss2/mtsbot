@@ -4,7 +4,7 @@ Groups the requests to the client or protocol and also houses debugger functions
 from __future__ import annotations
 
 import logging
-from typing import Iterable, List, Optional, Set, Tuple, Union
+from typing import Iterable, List, Optional, Set, Union
 
 from s2clientprotocol import common_pb2 as common_pb
 from s2clientprotocol import debug_pb2 as debug_pb
