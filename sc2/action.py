@@ -2,8 +2,9 @@
 Houses combine_actions, can maybe be absorbed by client.py
 """
 from __future__ import annotations
-from typing import Union, TYPE_CHECKING
+
 from itertools import groupby
+from typing import TYPE_CHECKING, Union
 
 from s2clientprotocol import common_pb2 as common_pb
 from s2clientprotocol import raw_pb2 as raw_pb
@@ -12,8 +13,8 @@ from .position import Point2
 from .unit import Unit
 
 if TYPE_CHECKING:
-    from .unit_command import UnitCommand
     from .ids.ability_id import AbilityId
+    from .unit_command import UnitCommand
 
 
 def combine_actions(action_iter):

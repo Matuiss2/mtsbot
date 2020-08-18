@@ -4,6 +4,7 @@ Mother class for the bot_ai and observer_ai
 from typing import Set
 
 from sc2.units_to_prepare import UnitsToPrepare
+
 from .ids.upgrade_id import UpgradeId
 
 

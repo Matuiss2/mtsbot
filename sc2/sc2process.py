@@ -15,9 +15,9 @@ from typing import Any, List, Optional
 
 import aiohttp
 import portpicker
-
 from sc2 import paths
 from sc2.versions import VERSIONS
+
 from .controller import Controller
 from .paths import Paths
 

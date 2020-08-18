@@ -10,22 +10,23 @@ import random
 import time
 from collections import Counter
 from contextlib import suppress
-from typing import Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple, Union
 
 from s2clientprotocol import sc2api_pb2 as sc_pb
 
+from .ai import Ai
 from .cache import property_cache_forever, property_cache_once_per_frame_no_copy
 from .constants import (
+    ALL_GAS,
+    EQUIVALENTS_FOR_TECH_PROGRESS,
+    PROTOSS_TECH_REQUIREMENT,
+    TERRAN_STRUCTURES_REQUIRE_SCV,
+    TERRAN_TECH_REQUIREMENT,
+    ZERG_TECH_REQUIREMENT,
     FakeEffectID,
     abilityid_to_unittypeid,
     geyser_ids,
     mineral_ids,
-    TERRAN_TECH_REQUIREMENT,
-    PROTOSS_TECH_REQUIREMENT,
-    ZERG_TECH_REQUIREMENT,
-    ALL_GAS,
-    EQUIVALENTS_FOR_TECH_PROGRESS,
-    TERRAN_STRUCTURES_REQUIRE_SCV,
 )
 from .data import ACTION_RESULT, ALERT, RACE, RESULT, TARGET, race_townhalls, race_worker
 from .dicts.unit_research_abilities import RESEARCH_INFO
@@ -33,8 +34,7 @@ from .dicts.unit_train_build_abilities import TRAIN_INFO
 from .dicts.unit_trained_from import UNIT_TRAINED_FROM
 from .dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
 from .distances import DistanceCalculation
-from .game_data import AbilityData, GameData
-from .game_data import Cost
+from .game_data import AbilityData, Cost, GameData
 
 # Imports for mypy and pycharm autocomplete as well as sphinx auto-documentation
 from .game_state import Blip, EffectData, GameState
@@ -46,13 +46,12 @@ from .position import Point2, Point3
 from .unit import Unit
 from .unit_command import UnitCommand
 from .units import Units
-from .ai import Ai
 
 LOGGER = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from .game_info import GameInfo, Ramp
     from .client import Client
+    from .game_info import GameInfo, Ramp
 
 
 class BotAI(Ai, DistanceCalculation):

@@ -4,8 +4,7 @@ in short all possible unit commands, I'm not sure a new file for this is needed
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 from . import unit as unit_module
 from .constants import COMBINABLE_ABILITIES

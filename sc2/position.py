@@ -6,7 +6,7 @@ from __future__ import annotations
 import itertools
 import math
 import random
-from typing import List, Set, Tuple, Union, Iterable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable, List, Set, Tuple, Union
 
 if TYPE_CHECKING:
     from .unit import Unit

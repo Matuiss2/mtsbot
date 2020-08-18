@@ -3,14 +3,13 @@ Groups 4 distance calculation methods and it's helpers
 """
 import logging
 import math
-from typing import Dict, Tuple, Iterable, Generator
+from typing import Dict, Generator, Iterable, Tuple
 
 import numpy as np
-from scipy.spatial.distance import pdist, cdist
-
 from sc2.game_state import GameState
 from sc2.unit import Unit
 from sc2.units import Units
+from scipy.spatial.distance import cdist, pdist
 
 LOGGER = logging.getLogger(__name__)
 

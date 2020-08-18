@@ -1,5 +1,6 @@
-from .units import Units
 from typing import Set
+
+from .units import Units
 
 
 class UnitsToPrepare:

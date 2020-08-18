@@ -5,11 +5,10 @@ import asyncio
 import logging
 
 import aiohttp
-
 import sc2
 from sc2.client import Client
-from sc2.protocol import ConnectionAlreadyClosed
 from sc2.portconfig import Portconfig
+from sc2.protocol import ConnectionAlreadyClosed
 
 
 def run_ladder_game(bot):

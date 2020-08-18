@@ -4,12 +4,11 @@ Test if the bot hold simple worker rushes
 
 import random
 
+from bot_main import Mtsbot
 from sc2 import maps
 from sc2.bot_ai import BotAI
 from sc2.main import run_game
-from sc2.player import Bot, RACE
-
-from bot_main import Mtsbot
+from sc2.player import RACE, Bot
 
 
 class WorkerRushBot(BotAI):

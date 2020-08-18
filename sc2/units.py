@@ -6,7 +6,7 @@ from __future__ import annotations
 import random
 import warnings
 from itertools import chain
-from typing import Any, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
 

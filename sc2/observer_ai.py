@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import logging
 from collections import Counter
-from typing import Dict, List, Set, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Set, Union
 
 from sc2.cache import property_cache_once_per_frame
 from sc2.data import ALERT, RACE, RESULT
@@ -20,13 +20,14 @@ from sc2.ids.upgrade_id import UpgradeId
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
+
 from .ai import Ai
 
 LOGGER = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from sc2.game_info import GameInfo
     from sc2.client import Client
+    from sc2.game_info import GameInfo
     from sc2.unit_command import UnitCommand
 
 

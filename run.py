@@ -2,12 +2,11 @@
 import random
 import sys
 
+from __init__ import run_ladder_game
+from bot_main import Mtsbot
 from sc2 import maps
 from sc2.main import run_game
-from sc2.player import AI_BUILD, Bot, Computer, DIFFICULTY, RACE
-
-from bot_main import Mtsbot
-from __init__ import run_ladder_game
+from sc2.player import AI_BUILD, DIFFICULTY, RACE, Bot, Computer
 
 if __name__ == "__main__":
     BOT = Bot(RACE.Zerg, Mtsbot(), name="Mtsbot")
