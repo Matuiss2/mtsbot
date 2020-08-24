@@ -158,8 +158,8 @@ class Client(Protocol):
         return result
 
     async def step(self, step_size: int = None):
-        """ EXPERIMENTAL: Change self._client.game_step during the step function to increase or decrease steps per
-        second """
+        """EXPERIMENTAL: Change self._client.game_step during the step function to increase or decrease steps per
+        second"""
         step_size = step_size or self.game_step
         return await self.execute(step=sc_pb.RequestStep(count=step_size))
 
@@ -211,11 +211,11 @@ class Client(Protocol):
     async def query_pathway(
         self, start: Union[Unit, Point2, Point3], end: Union[Point2, Point3]
     ) -> Optional[Union[int, float]]:
-        """ Caution: returns "None" when path not found
+        """Caution: returns "None" when path not found
         Try to combine queries with the function below because the pathway query is generally slow.
 
         :param start:
-        :param end: """
+        :param end:"""
         if not isinstance(start, (Point2, Unit)):
             raise AssertionError()
         if not isinstance(end, Point2):
@@ -245,7 +245,7 @@ class Client(Protocol):
         return distance
 
     async def query_pathways(self, zipped_list: List[List[Union[Unit, Point2, Point3]]]) -> List[Union[float, int]]:
-        """ Usage: await self.query_pathways([[unit1, target2], [unit2, target2]])
+        """Usage: await self.query_pathways([[unit1, target2], [unit2, target2]])
         -> returns [distance1, distance2]
         Caution: returns 0 when path not found
 
@@ -337,10 +337,10 @@ class Client(Protocol):
         )
 
     async def toggle_auto_cast(self, units: Union[List[Unit], Units], ability: AbilityId):
-        """ Toggle auto cast of all specified units
+        """Toggle auto cast of all specified units
 
         :param units:
-        :param ability: """
+        :param ability:"""
         if not units:
             raise AssertionError()
         if not isinstance(units, list):
@@ -365,10 +365,10 @@ class Client(Protocol):
         )
 
     async def debug_create_unit(self, unit_spawn_commands: List[List[Union[UnitTypeId, int, Point2, Point3]]]):
-        """ Usage example (will spawn 5 marines in the center of the map for player ID 1):
+        """Usage example (will spawn 5 marines in the center of the map for player ID 1):
         await self._client.debug_create_unit([[UnitTypeId.MARINE, 5, self._game_info.map_center, 1]])
 
-        :param unit_spawn_commands: """
+        :param unit_spawn_commands:"""
         if not isinstance(unit_spawn_commands, list):
             raise AssertionError()
         if not unit_spawn_commands:
@@ -450,9 +450,9 @@ class Client(Protocol):
         )
 
     async def move_camera_spatial(self, position: Union[Point2, Point3]):
-        """ Moves camera to the target position using the spatial action interface
+        """Moves camera to the target position using the spatial action interface
 
-        :param position: """
+        :param position:"""
 
         if not isinstance(position, (Point2, Point3)):
             raise AssertionError()
@@ -466,10 +466,10 @@ class Client(Protocol):
         await self.execute(action=sc_pb.RequestAction(actions=[action]))
 
     async def debug_set_unit_value(self, unit_tags: Union[Iterable[int], Units, Unit], unit_value: int, value: float):
-        """ Sets a "unit value" (Energy, Life or Shields) of the given units to the given value. Can't set the life
+        """Sets a "unit value" (Energy, Life or Shields) of the given units to the given value. Can't set the life
         of a unit to 0, use "debug_kill_unit" for that. Also can't set the life above the unit's maximum. The
         following example sets the health of all your workers to 1: await self.debug_set_unit_value(self.workers, 2,
-        value=1) """
+        value=1)"""
         if isinstance(unit_tags, Units):
             unit_tags = unit_tags.tags
         if isinstance(unit_tags, Unit):
@@ -517,8 +517,8 @@ class Client(Protocol):
         await self.execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=1)]))
 
     async def debug_control_enemy(self):
-        """ Allows control over enemy units and structures similar to team games control - does not allow the bot to
-        spend the opponent's resources. Using it a second time disables it again. """
+        """Allows control over enemy units and structures similar to team games control - does not allow the bot to
+        spend the opponent's resources. Using it a second time disables it again."""
         await self.execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=2)]))
 
     async def debug_food(self):
@@ -526,8 +526,8 @@ class Client(Protocol):
         await self.execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=3)]))
 
     async def debug_free(self):
-        """ Units, structures and upgrades are free of mineral and gas cost. Using it a second time disables it
-        again. """
+        """Units, structures and upgrades are free of mineral and gas cost. Using it a second time disables it
+        again."""
         await self.execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=4)]))
 
     async def debug_all_resources(self):
@@ -551,18 +551,18 @@ class Client(Protocol):
         await self.execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=9)]))
 
     async def debug_tech_tree(self):
-        """ Removes all tech requirements (e.g. can build a factory without having a barracks).
-        Using it a second time disables it again. """
+        """Removes all tech requirements (e.g. can build a factory without having a barracks).
+        Using it a second time disables it again."""
         await self.execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=10)]))
 
     async def debug_upgrade(self):
-        """ Researches all currently available upgrades. E.g. using it once unlocks combat shield, stimpack and 1-1.
-         Using it a second time unlocks 2-2 and all other upgrades stay researched. """
+        """Researches all currently available upgrades. E.g. using it once unlocks combat shield, stimpack and 1-1.
+        Using it a second time unlocks 2-2 and all other upgrades stay researched."""
         await self.execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=11)]))
 
     async def debug_fast_build(self):
-        """ Sets the build time of units and structures and upgrades to zero. Using it a second time disables it
-        again. """
+        """Sets the build time of units and structures and upgrades to zero. Using it a second time disables it
+        again."""
         await self.execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=12)]))
 
     async def quick_save(self):
@@ -570,9 +570,9 @@ class Client(Protocol):
         await self.execute(quick_save=sc_pb.RequestQuickSave())
 
     async def quick_load(self):
-        """ Loads the game state from the previously stored in-memory bookmark.
+        """Loads the game state from the previously stored in-memory bookmark.
         Caution:
             - The SC2 Client will crash if the game wasn't quick-saved
             - The bot step iteration counter will not reset
-            - self.state.game_loop will be set to zero after the quick-load, and self.time is dependant on it """
+            - self.state.game_loop will be set to zero after the quick-load, and self.time is dependant on it"""
         await self.execute(quick_load=sc_pb.RequestQuickLoad())

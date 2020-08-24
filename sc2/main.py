@@ -373,7 +373,13 @@ async def _host_game(
 
 
 async def _host_game_aiter(
-    map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None, game_time_limit=None,
+    map_settings,
+    players,
+    realtime,
+    portconfig=None,
+    save_replay_as=None,
+    step_time_limit=None,
+    game_time_limit=None,
 ):
     if not players:
         raise AssertionError("Can't create a game without players")
@@ -412,7 +418,12 @@ def _host_game_iter(*args, **kwargs):
 
 
 async def _join_game(
-    players, realtime, portconfig, save_replay_as=None, step_time_limit=None, game_time_limit=None,
+    players,
+    realtime,
+    portconfig,
+    save_replay_as=None,
+    step_time_limit=None,
+    game_time_limit=None,
 ):
     async with SC2Process(fullscreen=players[1].fullscreen) as server:
         await server.ping()

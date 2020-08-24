@@ -135,7 +135,7 @@ class ObserverAI(Ai, DistanceCalculation):
     async def get_available_abilities(
         self, units: Union[List[Unit], Units], ignore_resource_requirements: bool = False
     ) -> List[List[AbilityId]]:
-        """ Returns available abilities of one or more units.
+        """Returns available abilities of one or more units.
         Right now only checks cooldown, energy cost, and whether the ability has been researched.
 
         Examples::
@@ -147,13 +147,13 @@ class ObserverAI(Ai, DistanceCalculation):
             units_abilities = await self.get_available_abilities([self.units.random])
 
         :param units:
-        :param ignore_resource_requirements: """
+        :param ignore_resource_requirements:"""
         return await self._client.query_available_abilities(units, ignore_resource_requirements)
 
     @property_cache_once_per_frame
     def _abilities_all_units(self) -> Counter:
-        """ Cache for the already_pending function, includes protoss units warping in,
-        all units in production and all structures, and all morphs """
+        """Cache for the already_pending function, includes protoss units warping in,
+        all units in production and all structures, and all morphs"""
         abilities_amount = Counter()
         for unit in self.units + self.structures:
             for order in unit.orders:
@@ -212,7 +212,7 @@ class ObserverAI(Ai, DistanceCalculation):
         return self.state.game_loop
 
     async def issue_events(self):
-        """ This function will be automatically run from main.py and triggers the following functions:
+        """This function will be automatically run from main.py and triggers the following functions:
         - on_unit_created
         - on_unit_destroyed
         - on_building_construction_started
@@ -255,9 +255,9 @@ class ObserverAI(Ai, DistanceCalculation):
         """
 
     async def on_unit_created(self, unit: Unit):
-        """ Override this in your bot class. This function is called when a unit is created.
+        """Override this in your bot class. This function is called when a unit is created.
 
-        :param unit: """
+        :param unit:"""
 
     async def on_building_construction_started(self, unit: Unit):
         """
@@ -300,6 +300,6 @@ class ObserverAI(Ai, DistanceCalculation):
         raise NotImplementedError
 
     async def on_end(self, game_result: RESULT):
-        """ Override this in your bot class. This function is called at the end of a game.
+        """Override this in your bot class. This function is called at the end of a game.
 
-        :param game_result: """
+        :param game_result:"""

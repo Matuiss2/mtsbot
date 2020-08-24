@@ -32,7 +32,7 @@ def combine_actions(action_iter):
     resulting in one total train command I imagine the same thing would happen to certain other abilities:
     Battlecruiser yamato on same target, queen transfuse on same target, ghost snipe on same target,
     all build commands with the same unit type and also all morphs (zergling to banelings) However,
-    other abilities can and should be grouped, see constants.py 'COMBINABLE_ABILITIES' """
+    other abilities can and should be grouped, see constants.py 'COMBINABLE_ABILITIES'"""
     for key, items in groupby(action_iter, key=lambda a: a.combining_tuple):
         ability: AbilityId
         target: Union[None, Point2, Unit]

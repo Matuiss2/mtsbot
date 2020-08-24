@@ -65,8 +65,8 @@ class Ramp:
 
     @property_mutable_cache
     def upper2_for_ramp_wall(self) -> Set[Point2]:
-        """ Returns the 2 upper ramp points of the main base ramp required for the supply depot and barracks
-        placement properties used in this file. """
+        """Returns the 2 upper ramp points of the main base ramp required for the supply depot and barracks
+        placement properties used in this file."""
         if len(self.upper) > 5:
             return set()
 
@@ -131,9 +131,9 @@ class GameInfo:
         self.player_start_location: Point2 = None
 
     def find_ramps_and_vision_blockers(self) -> Tuple[List[Ramp], Set[Point2]]:
-        """ Calculate points that are passable but not buildable.
+        """Calculate points that are passable but not buildable.
         Then divide them into ramp points if not all points around the points are equal height
-        and into vision blockers if they are. """
+        and into vision blockers if they are."""
 
         def equal_height_around(tile):
             """Check if the sliced tiles are same weight"""

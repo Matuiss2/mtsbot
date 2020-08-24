@@ -30,10 +30,10 @@ def property_cache_forever(function):
 
 
 def property_cache_once_per_frame(function):
-    """ This decorator caches the return value for one game loop,
+    """This decorator caches the return value for one game loop,
     then clears it if it is accessed in a different game loop.
     Only works on properties of the bot object, because it requires
-    access to self.state.game_loop """
+    access to self.state.game_loop"""
 
     @wraps(function)
     def inner(self):
@@ -47,13 +47,13 @@ def property_cache_once_per_frame(function):
 
 
 def property_cache_once_per_frame_no_copy(function):
-    """ This decorator caches the return value for one game loop,
+    """This decorator caches the return value for one game loop,
     then clears it if it is accessed in a different game loop.
     Only works on properties of the bot object, because it requires
     access to self.state.game_loop
 
     This decorator compared to the above runs a little faster, however you should only use this decorator if you are
-    sure that you do not modify the mutable once it is calculated and cached. """
+    sure that you do not modify the mutable once it is calculated and cached."""
 
     @wraps(function)
     def inner(self):
@@ -64,8 +64,8 @@ def property_cache_once_per_frame_no_copy(function):
 
 
 def property_immutable_cache(function):
-    """ This cache should only be used on properties that return an immutable object
-    (bool, str, int, float, tuple, Unit, Point2, Point3) """
+    """This cache should only be used on properties that return an immutable object
+    (bool, str, int, float, tuple, Unit, Point2, Point3)"""
 
     @wraps(function)
     def inner(self):

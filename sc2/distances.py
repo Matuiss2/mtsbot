@@ -47,8 +47,8 @@ class DistanceCalculation:
 
     @property
     def _unit_index_dict(self) -> Dict[int, int]:
-        """ As property, so it will be recalculated each time it is called, or return from cache if it is called
-        multiple times in teh same game_loop. """
+        """As property, so it will be recalculated each time it is called, or return from cache if it is called
+        multiple times in teh same game_loop."""
         if self._generated_frame != self.state.game_loop:
             if self._generated_frame != self.state.game_loop:
                 self._cached_unit_index_dict = {unit.tag: index for index, unit in enumerate(self.all_units)}
@@ -58,16 +58,16 @@ class DistanceCalculation:
 
     @property
     def _pdist(self) -> np.ndarray:
-        """ As property, so it will be recalculated each time it is called, or return from cache if it is called
-        multiple times in teh same game_loop. """
+        """As property, so it will be recalculated each time it is called, or return from cache if it is called
+        multiple times in teh same game_loop."""
         if self._generated_frame2 != self.state.game_loop:
             return self.calculate_distances()
         return self._cached_pdist
 
     @property
     def _cdist(self) -> np.ndarray:
-        """ As property, so it will be recalculated each time it is called, or return from cache if it is called
-        multiple times in teh same game_loop. """
+        """As property, so it will be recalculated each time it is called, or return from cache if it is called
+        multiple times in teh same game_loop."""
         if self._generated_frame2 != self.state.game_loop:
             return self.calculate_distances()
         return self._cached_cdist
@@ -157,8 +157,8 @@ class DistanceCalculation:
 
     @staticmethod
     def distance_math_dist(start_point: Tuple[float, float], destiny: Tuple[float, float]):
-        """ math.dist(), its about the same speed as math.hypot but it's cleaner, also there is no need for slices
-         in this method which makes it considerably faster than the hypot alternative for big amounts"""
+        """math.dist(), its about the same speed as math.hypot but it's cleaner, also there is no need for slices
+        in this method which makes it considerably faster than the hypot alternative for big amounts"""
         return math.dist(start_point, destiny)
 
     @staticmethod
@@ -201,14 +201,14 @@ class DistanceCalculation:
         return (self.distance_math_dist(p, pos) for p in points)
 
     def _distances_override_functions(self, method: int = 0):
-        """ Overrides the internal distance calculation functions at game start in bot_ai.py self.prepare_start()
+        """Overrides the internal distance calculation functions at game start in bot_ai.py self.prepare_start()
         function method 0: Use python's math.dist The following methods calculate the distances between all units
         once:
         method 1: Use scipy's pdist condensed matrix (1d array)
         method 2: Use scipy's cdist square matrix (2d
         array)
         method 3: Use scipy's cdist square matrix (2d array) without asserts (careful: very weird error
-        messages, but maybe slightly faster) """
+        messages, but maybe slightly faster)"""
         if not 0 <= method <= 3:
             raise AssertionError(f"Selected method was: {method}")
         if not method:

@@ -30,59 +30,59 @@ class Pointlike(tuple):
     def distance_to(self, target: Union[Unit, Point2]) -> float:
         """Calculate a single distance from a position or unit to another position or unit
 
-        :param target: """
+        :param target:"""
         position_x, position_y = target.position
         return math.hypot(self[0] - position_x, self[1] - position_y)
 
     def distance_to_point2(self, target_position: Union[Point2, Tuple[float, float]]) -> Union[int, float]:
-        """ Same as the function above, but should be a bit faster because of the dropped asserts
+        """Same as the function above, but should be a bit faster because of the dropped asserts
         and conversion.
 
-        :param target_position: """
+        :param target_position:"""
         return math.hypot(self[0] - target_position[0], self[1] - target_position[1])
 
     def _distance_squared(self, point: Point2) -> Union[int, float]:
-        """ Function used to not take the square root as the distances will stay proportionally the same.
+        """Function used to not take the square root as the distances will stay proportionally the same.
         This is to speed up the sorting process.
 
-        :param point: """
+        :param point:"""
         return (self[0] - point[0]) ** 2 + (self[1] - point[1]) ** 2
 
     def is_closer_than(self, distance: Union[int, float], target: Union[Unit, Point2]) -> bool:
-        """ Check if another position (or unit) is closer than the given distance.
+        """Check if another position (or unit) is closer than the given distance.
 
         :param distance:
-        :param target: """
+        :param target:"""
         target = target.position
         return self.distance_to_point2(target) < distance
 
     def is_further_than(self, distance: Union[int, float], target: Union[Unit, Point2]) -> bool:
-        """ Check if another position (or unit) is further than the given distance.
+        """Check if another position (or unit) is further than the given distance.
 
         :param distance:
-        :param target: """
+        :param target:"""
         target = target.position
         return self.distance_to_point2(target) > distance
 
     def sort_by_distance(self, positions: Union[Units, Iterable[Point2]]) -> List[Point2]:
-        """ This returns the target points sorted as list.
+        """This returns the target points sorted as list.
         You should not pass a set or dict since those are not sortable.
         If you want to sort your units towards a position, use 'units.sorted_by_distance_to(position)' instead.
 
-        :param positions: """
+        :param positions:"""
         return sorted(positions, key=lambda p: self.distance_to_point2(p.position))
 
     def closest(self, positions: Union[Units, Iterable[Point2]]) -> Union[Unit, Point2]:
-        """ This function assumes the 2d distance is meant
+        """This function assumes the 2d distance is meant
 
-        :param positions: """
+        :param positions:"""
         if not positions:
             raise AssertionError(f"ps is empty")
         return min(positions, key=self.distance_to)
 
     def distance_to_closest(self, positions: Union[Units, Iterable[Point2]]) -> Union[int, float]:
-        """ This function assumes the 2d distance is meant
-        :param positions: """
+        """This function assumes the 2d distance is meant
+        :param positions:"""
         if not positions:
             raise AssertionError(f"ps is empty")
         closest_distance = math.inf
@@ -94,17 +94,17 @@ class Pointlike(tuple):
         return closest_distance
 
     def furthest(self, positions: Union[Units, Iterable[Point2]]) -> Union[Unit, Pointlike]:
-        """ This function assumes the 2d distance is meant
+        """This function assumes the 2d distance is meant
 
-        :param positions: Units object, or iterable of Unit or Point2 """
+        :param positions: Units object, or iterable of Unit or Point2"""
         if not positions:
             raise AssertionError(f"ps is empty")
         return max(positions, key=self.distance_to)
 
     def distance_to_furthest(self, positions: Union[Units, Iterable[Point2]]) -> Union[int, float]:
-        """ This function assumes the 2d distance is meant
+        """This function assumes the 2d distance is meant
 
-        :param positions: """
+        :param positions:"""
         if not positions:
             raise AssertionError(f"ps is empty")
         furthest_distance = -math.inf
@@ -231,11 +231,11 @@ class Point2(Pointlike):
         return Point2((self.x + math.cos(angle) * distance, self.y + math.sin(angle) * distance))
 
     def circle_intersection(self, center: Point2, radius: Union[int, float]) -> Set[Point2]:
-        """ self is point1, position is point2, radius is the radius for circles originating in both points
+        """self is point1, position is point2, radius is the radius for circles originating in both points
         Used in ramp finding
 
         :param center:
-        :param radius: """
+        :param radius:"""
         if self == center:
             raise AssertionError(f"self is equal to position")
         distance_between_points = self.distance_to(center)
@@ -313,8 +313,8 @@ class Point2(Pointlike):
         return self.distance_to_point2(other) <= dist
 
     def direction_vector(self, other: Point2) -> Point2:
-        """ Converts a vector to a direction that can face vertically, horizontally or diagonal or be zero,
-        e.g. (0, 0), (1, -1), (1, 0) """
+        """Converts a vector to a direction that can face vertically, horizontally or diagonal or be zero,
+        e.g. (0, 0), (1, -1), (1, 0)"""
         return self.__class__((_sign(other.x - self.x), _sign(other.y - self.y)))
 
     def manhattan_distance(self, other: Point2) -> Union[int, float]:
@@ -325,7 +325,7 @@ class Point2(Pointlike):
 
     @staticmethod
     def center(units_or_points: Iterable[Point2]) -> Point2:
-        """ Returns the central position for points in list
+        """Returns the central position for points in list
 
         :param units_or_points:"""
         sum_of_points = Point2((0, 0))

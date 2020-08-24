@@ -65,8 +65,8 @@ class Mtsbot(BotAI):
         print(game_result)
 
     async def update_variables(self):
-        """ Improvements possible -> Could be a separated class and within that, separate by type(structures or units),
-        and possession """
+        """Improvements possible -> Could be a separated class and within that, separate by type(structures or units),
+        and possession"""
         self.enemy_units = self.enemy_units.exclude_type({UnitTypeId.LARVA, UnitTypeId.EGG})
         self.ground_enemy_structures = self.enemy_structures.not_flying
         self.ground_enemy_units = self.enemy_units.not_flying
@@ -91,36 +91,36 @@ class Mtsbot(BotAI):
         self.do(self.main_base(AbilityId.RALLY_HATCHERY_UNITS, await self.get_rally_point()))
 
     async def build_pool(self):
-        """ Build pool logic
-        - improvements possible -> placement can be improved """
+        """Build pool logic
+        - improvements possible -> placement can be improved"""
         if not self.finished_pool and not self.pool_in_construction:
             await self.build(self.pool, self.start_location.towards(self.game_info.map_center, distance=5))
 
     async def build_extractor(self):
-        """ Build extractor logic
+        """Build extractor logic
         - improvements possible -> Expand it, with this function it's only possible to build the first one
         make it build more later(the requirement logic and the placement parameter will have to be expanded)"""
         if not self.gas_buildings and self.pool_in_construction and not self.already_pending(self.extractor):
             await self.build(self.extractor, self.vespene_geyser.closest_to(self.start_location))
 
     async def queen_injection_logic(self):
-        """ Make queen inject logic
-        - improvements possible -> None that I can think of """
+        """Make queen inject logic
+        - improvements possible -> None that I can think of"""
         for queen in self.queens:
             if not queen.is_idle or queen.energy < 25:
                 continue
             self.do(queen(AbilityId.EFFECT_INJECTLARVA, self.bases.closest_to(queen.position)))
 
     async def research_zergling_speed(self):
-        """ Research zergling speed logic
-        - improvements possible -> None that I can think of """
+        """Research zergling speed logic
+        - improvements possible -> None that I can think of"""
         if not self.already_pending_upgrade(self.zergling_speed):
             self.research(self.zergling_speed)
 
     async def controlling_army(self):
-        """ Attacking logic
+        """Attacking logic
         - improvements possible -> Add new units(later), keep adding ignored targets add micro and probably much more.
-        Also, if the hail mary requirement triggers(no more bases) rebuild the base instead of attacking if possible """
+        Also, if the hail mary requirement triggers(no more bases) rebuild the base instead of attacking if possible"""
         enemy_static_defense = self.ground_enemy_structures.of_type(
             {
                 UnitTypeId.BUNKER,
@@ -166,20 +166,20 @@ class Mtsbot(BotAI):
 
     @property
     async def block_attacks_while_retreating(self):
-        """ Improvements possible -> This can be expanded, a lot more stuff can be used to block attacks,
+        """Improvements possible -> This can be expanded, a lot more stuff can be used to block attacks,
         like when transitioning or booming, also it should not be used to block defensive orders like now"""
         return bool(self.units_retreating)
 
     async def get_rally_point(self):
-        """ Improvements possible -> The path between the unit and the chosen rally point should be the one
-        with the least enemy units """
+        """Improvements possible -> The path between the unit and the chosen rally point should be the one
+        with the least enemy units"""
         return self.bases.closest_to(self.enemy_starting_base).position.towards(self.enemy_starting_base, 9)
 
     async def fill_units_retreating_subgroup(self, fleeing_unit):
-        """ Improvements possible -> The condition for retreating could be improved significantly by making it
-         considerate only close ally units instead of all units like now.
-         Also this method is only good for zerglings so it's very specialized, try to make it more general
-         or make separated logic for different units """
+        """Improvements possible -> The condition for retreating could be improved significantly by making it
+        considerate only close ally units instead of all units like now.
+        Also this method is only good for zerglings so it's very specialized, try to make it more general
+        or make separated logic for different units"""
         ground_enemy_army_size = len(self.ground_enemy_units.exclude_type(self.worker_types))
         if not self.bases.closer_than(15, fleeing_unit) and ground_enemy_army_size >= len(self.zerglings):
             if fleeing_unit.position.distance_to_point2(await self.get_rally_point()) > 5:
@@ -204,7 +204,7 @@ class Mtsbot(BotAI):
             self.train(self.overlord)
 
     async def train_zergling(self):
-        """ Improvements possible -> Create constraints when other units than zergling
+        """Improvements possible -> Create constraints when other units than zergling
         starts to be built based on this other unit amount"""
         if self.finished_pool and (self.supply_left >= 3 or self.overlords_in_queue):
             self.train(self.zergling)
@@ -222,7 +222,7 @@ class Mtsbot(BotAI):
             self.train(self.queen)
 
     async def controlling_drones(self):
-        """ Improvements possible -> This can become a class, the variables and actions can be split and when multiple
+        """Improvements possible -> This can become a class, the variables and actions can be split and when multiple
         bases get implemented drones will have to be split in several subgroups ->
         one group for the base that it's assigned, also the function have different levels of abstraction,
         refactor it"""
@@ -239,7 +239,7 @@ class Mtsbot(BotAI):
                 continue
 
     async def send_drones_to_extractor(self, unit):
-        """ Improvements possible -> Expand it, make it trigger when the vespene - mineral ratio is to high
+        """Improvements possible -> Expand it, make it trigger when the vespene - mineral ratio is to high
         (only check it when at least 2 bases are saturated)make the distance_to value 8 instead of 10,
         also change the constraints completely(separate it later - this constraints are for the zergling speed,
         make it a separated method) make it more general, also this drone_on_extractor_count solution is awful,
@@ -254,7 +254,7 @@ class Mtsbot(BotAI):
                     return True
 
     async def send_drones_to_minerals(self, unit):
-        """ Improvements possible -> Expand it, make it trigger when the mineral - vespene ratio is to high
+        """Improvements possible -> Expand it, make it trigger when the mineral - vespene ratio is to high
         (only check it when at least 2 bases are saturated), also change the constraints completely
         (separate it later - this constraints are for the zergling speed, make it a separated method)
         make it more general, also maybe the idle handling can be expanded to target vespene as well depending on the
