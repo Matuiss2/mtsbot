@@ -114,7 +114,7 @@ class Mtsbot(BotAI):
     async def research_zergling_speed(self):
         """Research zergling speed logic
         - improvements possible -> None that I can think of"""
-        if not self.already_pending_upgrade(self.zergling_speed):
+        if not self.already_pending(self.zergling_speed):
             self.research(self.zergling_speed)
 
     async def controlling_army(self):
@@ -244,7 +244,7 @@ class Mtsbot(BotAI):
         also change the constraints completely(separate it later - this constraints are for the zergling speed,
         make it a separated method) make it more general, also this drone_on_extractor_count solution is awful,
         find a better way to make the right number of drones go collect on the same frame"""
-        if self.vespene < 100 and not self.already_pending_upgrade(self.zergling_speed):
+        if self.vespene < 100 and not self.already_pending(self.zergling_speed):
             extractors = self.gas_buildings.ready
             if extractors:
                 closest_extractor = extractors.sorted_by_distance_to(unit)[0]
@@ -259,7 +259,7 @@ class Mtsbot(BotAI):
         (separate it later - this constraints are for the zergling speed, make it a separated method)
         make it more general, also maybe the idle handling can be expanded to target vespene as well depending on the
         situation, I'm not sure if it's ever needed, remove if not"""
-        if self.vespene >= 100 or self.already_pending_upgrade(self.zergling_speed):
+        if self.vespene >= 100 or self.already_pending(self.zergling_speed):
             if unit.is_carrying_vespene or unit.is_idle:
                 await self.gather_from_closest_mineral_patch(unit)
                 return True
