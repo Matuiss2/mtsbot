@@ -143,21 +143,21 @@ class Renderer:
 
     def _on_mouse_press(self, x, y, button):
         if button != 1:  # 1: mouse.LEFT
-            return
+            return None
         if x > self._minimap_size[0] or y > self._minimap_size[1]:
-            return
+            return None
         self._mouse_x, self._mouse_y = x, y
 
     def _on_mouse_release(self, x, y, button):
         if button != 1:  # 1: mouse.LEFT
-            return
+            return None
         if x > self._minimap_size[0] or y > self._minimap_size[1]:
-            return
+            return None
         self._mouse_x, self._mouse_y = x, y
 
     def _on_mouse_drag(self, x, y, buttons):
         if not buttons & 1:  # 1: mouse.LEFT
-            return
+            return None
         if x > self._minimap_size[0] or y > self._minimap_size[1]:
-            return
+            return None
         self._mouse_x, self._mouse_y = x, y
