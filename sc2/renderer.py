@@ -123,7 +123,7 @@ class Renderer:
 
         if self._client.in_game and (not observation.player_result) and self._mouse_x and self._mouse_y:
             await self._client.move_camera_spatial(Point2((self._mouse_x, self._minimap_size[0] - self._mouse_y)))
-            self._mouse_x, self._mouse_y = None, None
+            self._mouse_x = self._mouse_y = None
 
     async def _update_window(self):
         self._window.switch_to()
@@ -142,22 +142,16 @@ class Renderer:
         self._window.flip()
 
     def _on_mouse_press(self, x, y, button):
-        if button != 1:  # 1: mouse.LEFT
-            return None
-        if x > self._minimap_size[0] or y > self._minimap_size[1]:
+        if button != 1 or x > self._minimap_size[0] or y > self._minimap_size[1]:  # 1: mouse.LEFT
             return None
         self._mouse_x, self._mouse_y = x, y
 
     def _on_mouse_release(self, x, y, button):
-        if button != 1:  # 1: mouse.LEFT
-            return None
-        if x > self._minimap_size[0] or y > self._minimap_size[1]:
+        if button != 1 or x > self._minimap_size[0] or y > self._minimap_size[1]:  # 1: mouse.LEFT
             return None
         self._mouse_x, self._mouse_y = x, y
 
     def _on_mouse_drag(self, x, y, buttons):
-        if not buttons & 1:  # 1: mouse.LEFT
-            return None
-        if x > self._minimap_size[0] or y > self._minimap_size[1]:
+        if not buttons & 1 or x > self._minimap_size[0] or y > self._minimap_size[1]:  # 1: mouse.LEFT
             return None
         self._mouse_x, self._mouse_y = x, y

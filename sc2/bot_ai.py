@@ -391,7 +391,7 @@ class BotAI(Ai, DistanceCalculation):
 
         :param unit_type:"""
         if unit_type in {UnitTypeId.ZERGLING}:
-            return 1
+            return 1.0
         unit_supply_cost = self.game_data.units[unit_type.value].proto.food_required
         if unit_supply_cost > 0 and unit_type in UNIT_TRAINED_FROM and len(UNIT_TRAINED_FROM[unit_type]) == 1:
             for producer in UNIT_TRAINED_FROM[unit_type]:
@@ -705,13 +705,13 @@ class BotAI(Ai, DistanceCalculation):
         if not isinstance(upgrade_type, UpgradeId):
             raise AssertionError(f"{upgrade_type} is no UpgradeId")
         if upgrade_type in self.state.upgrades:
-            return 1
+            return 1.0
         creation_ability_id = self.game_data.upgrades[upgrade_type.value].research_ability.exact_id
         for structure in self.structures.filter(lambda unit: unit.is_ready):
             for order in structure.orders:
                 if order.ability.exact_id == creation_ability_id:
                     return order.progress
-        return 0
+        return 0.0
 
     @property_cache_once_per_frame_no_copy
     def _abilities_all_units(self) -> Tuple[Counter, Dict[UnitTypeId, float]]:
@@ -811,7 +811,7 @@ class BotAI(Ai, DistanceCalculation):
         unit_info_id = race_dict[self.race][structure_type]
         unit_info_id_value = unit_info_id.value
         if not unit_info_id_value:
-            return 1
+            return 1.0
         progresses: List[int] = [self.structure_type_build_progress(unit_info_id_value)]
         for equiv_structure in EQUIVALENTS_FOR_TECH_PROGRESS.get(unit_info_id, []):
             progresses.append(self.structure_type_build_progress(equiv_structure.value))

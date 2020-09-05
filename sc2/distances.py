@@ -174,7 +174,7 @@ class DistanceCalculation:
         """If checked on units if they have the same tag, return distance 0 as these are not in the 1 dimensional
         pdist array - would result in an error otherwise"""
         if unit1.tag == unit2.tag:
-            return 0
+            return 0.0
         condensed_index = self._get_index_of_two_units(unit1, unit2)
         if condensed_index >= len(self._cached_pdist):
             raise AssertionError(

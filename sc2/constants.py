@@ -279,7 +279,7 @@ TERRAN_STRUCTURES_REQUIRE_SCV: Set[UnitTypeId] = {
 
 
 def return_not_an_unit():
-    """ It's need because defaultdict needs to have a callable key """
+    """ It's needed because defaultdict needs to have a callable key """
     return UnitTypeId.NOTAUNIT
 
 

@@ -29,19 +29,13 @@ class AbstractPlayer:
             self.ai_build = ai_build
 
         elif p_type == PLAYER_TYPE.Observer:
-            if race is not None:
-                raise AssertionError()
-            if difficulty is not None:
-                raise AssertionError()
-            if ai_build is not None:
+            if race is not None or difficulty is not None or ai_build is not None:
                 raise AssertionError()
 
         else:
             if not isinstance(race, RACE):
                 raise AssertionError(f"race is of type {type(race)}")
-            if difficulty is not None:
-                raise AssertionError()
-            if ai_build is not None:
+            if difficulty is not None or ai_build is not None:
                 raise AssertionError()
 
 

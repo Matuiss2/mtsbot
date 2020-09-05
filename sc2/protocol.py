@@ -85,8 +85,7 @@ class Protocol:
 
     async def ping(self):
         """ Request the ping from the protocol"""
-        result = await self.execute(ping=sc_pb.RequestPing())
-        return result
+        return await self.execute(ping=sc_pb.RequestPing())
 
     async def quit(self):
         """ Request to close the connection from the protocol"""

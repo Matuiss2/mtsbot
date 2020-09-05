@@ -21,7 +21,7 @@ def get(name=None):
                 maps.append(Map(map_directory))
 
     if name is None:
-        return maps
+        return maps[0]
 
     for chart in maps:
         if chart.matches(name):

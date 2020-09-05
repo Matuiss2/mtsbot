@@ -213,10 +213,10 @@ class Unit:
             weapon = next((weapon for weapon in list(self._weapons) if weapon.type in TARGET_GROUND), None)
             if weapon:
                 return (weapon.damage * weapon.attacks) / weapon.speed
-        return 0
+        return 0.0
 
     @property_immutable_cache
-    def ground_range(self) -> float:
+    def ground_range(self) -> int:
         """ Returns the range against ground units. Does not include upgrades. """
         if self.type_id == UNIT_ORACLE:
             return 4
@@ -244,10 +244,10 @@ class Unit:
             weapon = next((weapon for weapon in list(self._weapons) if weapon.type in TARGET_AIR), None)
             if weapon:
                 return (weapon.damage * weapon.attacks) / weapon.speed
-        return 0
+        return 0.0
 
     @property_immutable_cache
-    def air_range(self) -> float:
+    def air_range(self) -> int:
         """ Returns the range against air units. Does not include upgrades. """
         if self.type_id == UNIT_BATTLECRUISER:
             return 6
@@ -308,7 +308,7 @@ class Unit:
     def health_percentage(self) -> float:
         """ Returns the percentage of health the unit has. Does not include shields. """
         if not self.proto.health_max:
-            return 0
+            return 0.0
         return self.proto.health / self.proto.health_max
 
     @property
@@ -325,7 +325,7 @@ class Unit:
     def shield_percentage(self) -> float:
         """ Returns the percentage of shield points the unit has. Returns 0 for non-protoss units. """
         if not self.proto.shield_max:
-            return 0
+            return 0.0
         return self.proto.shield / self.proto.shield_max
 
     @property_immutable_cache
@@ -334,7 +334,7 @@ class Unit:
         Also takes build progress into account."""
         max_shield_plus_health = (self.proto.shield_max + self.proto.health_max) * self.build_progress
         if not max_shield_plus_health:
-            return 0
+            return 0.0
         return (self.proto.shield + self.proto.health) / max_shield_plus_health
 
     @property
@@ -351,7 +351,7 @@ class Unit:
     def energy_percentage(self) -> float:
         """ Returns the percentage of amount of energy the unit has. Returns 0 for units without energy. """
         if not self.proto.energy_max:
-            return 0
+            return 0.0
         return self.proto.energy / self.proto.energy_max
 
     @property
@@ -674,7 +674,7 @@ class Unit:
             target, ignore_armor, include_overkill_damage
         )
         if not calc_tuple[1]:
-            return 0
+            return 0.0
         return calc_tuple[0] / calc_tuple[1]
 
     @property
@@ -1052,7 +1052,7 @@ class Unit:
             self.do(unit.move(retreatPosition))"""
         if bool(self.can_attack):
             return self.proto.weapon_cooldown
-        return -1
+        return -1.0
 
     @property
     def engaged_target_tag(self) -> int:

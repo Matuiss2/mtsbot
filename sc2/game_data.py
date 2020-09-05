@@ -118,9 +118,7 @@ class AbilityData:
     @property
     def is_free_morph(self) -> bool:
         """ This returns True if the ability is in {"Lower", "Raise", "Land", "Lift", "Hold", "Harvest"}"""
-        if any(free in self.proto.link_name for free in FREE_ABILITIES):
-            return True
-        return False
+        return any(free in self.proto.link_name for free in FREE_ABILITIES)
 
     @property
     def cost(self) -> Cost:
@@ -161,11 +159,9 @@ class UnitTypeData:
     @property
     def creation_ability(self) -> Optional[AbilityData]:
         """ Returns the ability responsible to create the unit """
-        if not self.proto.ability_id:
-            return None
-        if self.proto.ability_id not in self._game_data.abilities:
-            return None
-        return self._game_data.abilities[self.proto.ability_id]
+        if self.proto.ability_id and self.proto.ability_id in self._game_data.abilities:
+            return self._game_data.abilities[self.proto.ability_id]
+        return None
 
     @property
     def attributes(self) -> List[ATTRIBUTE]:
@@ -196,11 +192,9 @@ class UnitTypeData:
     @property
     def tech_requirement(self) -> Optional[UnitTypeId]:
         """ Tech-building requirement of buildings - may work for units but unreliably """
-        if not self.proto.tech_requirement:
-            return None
-        if self.proto.tech_requirement not in self._game_data.units:
-            return None
-        return UnitTypeId(self.proto.tech_requirement)
+        if self.proto.tech_requirement and self.proto.tech_requirement in self._game_data.units:
+            return UnitTypeId(self.proto.tech_requirement)
+        return None
 
     @property
     def tech_alias(self) -> Optional[List[UnitTypeId]]:
@@ -216,12 +210,9 @@ class UnitTypeData:
     @property
     def unit_alias(self) -> Optional[UnitTypeId]:
         """ Building type equality, e.g. FlyingOrbitalCommand is the same as OrbitalCommand """
-        if not self.proto.unit_alias:
-            return None
-        if self.proto.unit_alias not in self._game_data.units:
-            return None
-        # For flying OrbitalCommand, this returns UnitTypeId.OrbitalCommand
-        return UnitTypeId(self.proto.unit_alias)
+        if self.proto.unit_alias and self.proto.unit_alias in self._game_data.units:
+            return UnitTypeId(self.proto.unit_alias)
+        return None
 
     @property
     def race(self) -> RACE:
@@ -280,11 +271,9 @@ class UpgradeData:
     @property
     def research_ability(self) -> Optional[AbilityData]:
         """ Returns the ability responsible to research the upgrade"""
-        if not self.proto.ability_id:
-            return None
-        if self.proto.ability_id not in self._game_data.abilities:
-            return None
-        return self._game_data.abilities[self.proto.ability_id]
+        if self.proto.ability_id and self.proto.ability_id in self._game_data.abilities:
+            return self._game_data.abilities[self.proto.ability_id]
+        return None
 
     @property
     def cost(self) -> Cost:
