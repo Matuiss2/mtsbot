@@ -17,7 +17,7 @@ class ControlGroup(set):
         return units.filter(lambda unit: unit.tag in self)
 
     def missing_unit_tags(self, units):
-        """Not sure what it does"""
+        """ Check if the given units are on the control group and then return the ones that aren't """
         return {t for t in self if units.find_by_tag(t) is None}
 
     def add_unit(self, unit):

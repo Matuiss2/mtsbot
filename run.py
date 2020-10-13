@@ -1,4 +1,4 @@
-"""Run the ladder or local game"""
+"""  Run the ladder or local game"""
 import random
 import sys
 

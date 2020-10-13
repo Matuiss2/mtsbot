@@ -31,7 +31,7 @@ def get(name=None):
 
 
 class Map:
-    """Gets some info about the selected map"""
+    """ Gets some info about the selected map"""
 
     def __init__(self, path):
         self.path = path
@@ -47,12 +47,12 @@ class Map:
 
     @property
     def name(self):
-        """Returns the name of the map"""
+        """ Returns the name of the map"""
         return self.path.stem
 
     @property
     def data(self):
-        """ not sure what it does"""
+        """ Not sure what it does"""
         with open(self.path, "rb") as data:
             return data.read()
 

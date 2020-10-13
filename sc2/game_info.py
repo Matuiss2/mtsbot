@@ -18,10 +18,6 @@ class Ramp:
     """ Groups useful data from the ramps"""
 
     def __init__(self, points: Set[Point2], game_info):
-        """
-        :param points:
-        :param game_info:
-        """
         self._points: Set[Point2] = points
         self.__game_info = game_info
         self.x_offset = 0.5
@@ -37,16 +33,16 @@ class Ramp:
 
     @property_immutable_cache
     def size(self) -> int:
-        """ returns the ramp size"""
+        """ Returns the ramp size"""
         return len(self._points)
 
     def height_at(self, position: Point2) -> int:
-        """ returns the ramp height at given position"""
+        """ Returns the ramp height at given position"""
         return self.__game_info.terrain_height[position]
 
     @property_mutable_cache
     def points(self) -> Set[Point2]:
-        """Returns all points of a ramp """
+        """ Returns all points of a ramp """
         return self._points.copy()
 
     @property_mutable_cache
@@ -65,8 +61,10 @@ class Ramp:
 
     @property_mutable_cache
     def upper2_for_ramp_wall(self) -> Set[Point2]:
-        """Returns the 2 upper ramp points of the main base ramp required for the supply depot and barracks
-        placement properties used in this file."""
+        """
+        Returns the 2 upper ramp points of the main base ramp required for the supply depot and barracks
+        placement properties used in this file.
+        """
         if len(self.upper) > 5:
             return set()
 
@@ -120,7 +118,7 @@ class GameInfo:
         self.pathway_grid: PixelMap = PixelMap(self.proto.start_raw.pathing_grid, in_bits=True, mirrored=False)
         # self.terrain_height[position]: returns the height in range of 0 to 255 at that position
         self.terrain_height: PixelMap = PixelMap(self.proto.start_raw.terrain_height, mirrored=False)
-        # self.placement_grid[position]: if 0, position is not buildable, if 1, position is passable
+        # self.placement_grid[position]: if 0, position is not buildable, if 1, position is buildable
         self.placement_grid: PixelMap = PixelMap(self.proto.start_raw.placement_grid, in_bits=True, mirrored=False)
         self.playable_area = Rect.from_proto(self.proto.start_raw.playable_area)
         self.map_center = self.playable_area.center
@@ -131,12 +129,14 @@ class GameInfo:
         self.player_start_location: Point2 = None
 
     def find_ramps_and_vision_blockers(self) -> Tuple[List[Ramp], Set[Point2]]:
-        """Calculate points that are passable but not buildable.
+        """
+        Calculate points that are passable but not buildable.
         Then divide them into ramp points if not all points around the points are equal height
-        and into vision blockers if they are."""
+        and into vision blockers if they are.
+        """
 
         def equal_height_around(tile):
-            """Check if the sliced tiles are same weight"""
+            """ Check if the sliced tiles are same weight"""
             sliced = self.terrain_height.data_numpy[tile[1] - 1 : tile[1] + 2, tile[0] - 1 : tile[0] + 2]
             return len(np.unique(sliced)) == 1
 

@@ -38,7 +38,7 @@ PF = os.environ.get("SC2PF", platform.system())
 
 
 def get_runner_args(cwd):
-    """Get it to work on linux"""
+    """ Get it to work on linux"""
     if "WINE" in os.environ:
         runner_dir = os.path.dirname(os.environ.get("WINE"))
         win_cwd = subprocess.run(
@@ -67,7 +67,7 @@ def latest_executable(versions_dir, base_build=None):
 
 
 class _MetaPaths(type):
-    """"Lazily loads paths to allow importing the library even if SC2 isn't installed."""
+    """ Lazily loads paths to allow importing the library even if SC2 isn't installed."""
 
     def __setup(cls):
         if PF not in BASEDIR:
@@ -107,4 +107,4 @@ class _MetaPaths(type):
 
 
 class Paths(metaclass=_MetaPaths):
-    """Paths for SC2 folders, lazily loaded using the above metaclass."""
+    """ Paths for SC2 folders, lazily loaded using the above metaclass."""

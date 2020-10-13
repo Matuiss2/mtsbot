@@ -15,16 +15,14 @@ from .score import ScoreDetails
 
 
 class Blip:
-    """
-    It detects the visibility, ownership etc  of an unit
-    """
+    """ It groups some data related to units detected by sensor towers  """
 
     def __init__(self, proto):
         self.proto = proto
 
     @property
     def is_blip(self) -> bool:
-        """Detected by sensor tower."""
+        """ Detected by sensor tower."""
         return self.proto.is_blip
 
     @property
@@ -39,7 +37,7 @@ class Blip:
 
 
 class Common:
-    """ It gets the common attributes"""
+    """ It groups the attributes that are common to all races"""
 
     ATTRIBUTES = [
         "player_id",
@@ -80,7 +78,7 @@ class EffectData:
 
     @property
     def positions(self) -> Set[Point2]:
-        """ Returns the center of each part of the effect"""
+        """ Returns the center of the effect"""
         if self.fake:
             return {Point2.from_proto(self.proto.pos)}
         return {Point2.from_proto(p) for p in self.proto.pos}
@@ -103,7 +101,7 @@ class EffectData:
         return self.proto.radius
 
     def __repr__(self) -> str:
-        """ Returns the representation of the effect showing it's id, radius and centers"""
+        """ Returns the representation of the effect showing it's id, radius and center"""
         return f"{self.id} with radius {self.radius} at {self.positions}"
 
 

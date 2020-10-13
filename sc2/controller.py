@@ -24,7 +24,7 @@ class Controller(Protocol):
         return self.__process.process is not None
 
     async def create_game(self, game_map, players, realtime, random_seed=None):
-        """ Send the request to the protocol to create the game with the players info """
+        """ Send the request to the client to create the game with the players info """
         if not isinstance(realtime, bool):
             raise AssertionError()
         req = sc_pb.RequestCreateGame(local_map=sc_pb.LocalMap(map_path=str(game_map.relative_path)), realtime=realtime)
@@ -41,18 +41,8 @@ class Controller(Protocol):
         request = await self.execute(create_game=req)
         return request
 
-    async def start_replay(self, replay_path, observed_id=0):  # Added
-        """
-        Play the replay that is on given path
-        Parameters
-        ----------
-        replay_path: Get the replay path
-        observed_id: Changes the id of the player1
-
-        Returns
-        -------
-        True if the request was successful
-        """
+    async def start_replay(self, replay_path, observed_id=0):
+        """ Play the replay that is on given path """
         interface_options = sc_pb.InterfaceOptions(
             raw=True, score=True, show_cloaked=True, raw_affects_selection=False, raw_crop_to_playable_area=False
         )

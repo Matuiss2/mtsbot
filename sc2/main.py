@@ -459,7 +459,7 @@ async def _host_replay(replay_path, ai, realtime, base_build, data_version, obse
 
 
 def get_replay_version(replay_path):
-    """ Get the Sc2 patch version where this replay game was played """
+    """ Get the Sc2 patch version where this game replay was played """
     with open(replay_path, "rb") as file:
         replay_data = file.read()
         replay_io = six.BytesIO()

@@ -19,9 +19,6 @@ class GameData:
     """ Calculates cost info for the abilities, units and upgrades"""
 
     def __init__(self, data):
-        """
-        :param data:
-        """
         ids = set(a.value for a in AbilityId if a.value)
         self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
@@ -29,7 +26,7 @@ class GameData:
         self.unit_types: Dict[int, UnitTypeId] = {}
 
     @lru_cache(maxsize=256)
-    def calculate_ability_cost(self, ability) -> Cost:
+    def calculate_action_cost(self, ability) -> Cost:
         """ Calculates cost info for the abilities, units and upgrades"""
         if isinstance(ability, AbilityId):
             ability = self.abilities[ability.value]
@@ -71,7 +68,7 @@ class AbilityData:
 
     @classmethod
     def id_exists(cls, ability_id):
-        """Check if the given AbilityID exists"""
+        """ Check if the given AbilityID exists"""
         if not isinstance(ability_id, int):
             raise AssertionError(f"Wrong type: {ability_id} is not int")
         if not ability_id:
@@ -90,7 +87,7 @@ class AbilityData:
 
     @property
     def id(self) -> AbilityId:
-        """ Returns the generic remap ID. See sc2/dicts/generic_redirect_abilities.py """
+        """ Returns the generic remap ID """
         if self.proto.remaps_to_ability_id:
             return AbilityId(self.proto.remaps_to_ability_id)
         return AbilityId(self.proto.ability_id)
@@ -122,18 +119,14 @@ class AbilityData:
 
     @property
     def cost(self) -> Cost:
-        """returns the ability cost"""
-        return self._game_data.calculate_ability_cost(self.id)
+        """ Returns the ability cost"""
+        return self._game_data.calculate_action_cost(self.id)
 
 
 class UnitTypeData:
     """ Some info about units"""
 
     def __init__(self, game_data: GameData, proto):
-        """
-        :param game_data:
-        :param proto:
-        """
         # The ability_id for lurkers is
         # LURKERASPECTMPFROMHYDRALISKBURROWED_LURKERMPFROMHYDRALISKBURROWED
         # instead of the correct MORPH_LURKER.
@@ -176,12 +169,12 @@ class UnitTypeData:
 
     @property
     def has_minerals(self) -> bool:
-        """ Returns True if the unit has minerals, only True for different types of mineral patches """
+        """ Returns True if the unit has minerals, only True for the different types of mineral patches """
         return self.proto.has_minerals
 
     @property
     def has_vespene(self) -> bool:
-        """ Returns True if the unit has vespene, only True for different types of geysers """
+        """ Returns True if the unit has vespene, only True for the different types of geysers """
         return self.proto.has_vespene
 
     @property
@@ -198,10 +191,12 @@ class UnitTypeData:
 
     @property
     def tech_alias(self) -> Optional[List[UnitTypeId]]:
-        """Building tech equality, e.g. OrbitalCommand is the same as CommandCenter
-        Building tech equality, e.g. Hive is the same as Lair and Hatchery
+        """
+        Building tech equality
+        e.g. OrbitalCommand is the same as CommandCenter - Hive is the same as Lair and Hatchery
         For Hive, this returns [UnitTypeId.Hatchery, UnitTypeId.Lair]
-        For SCV, this returns None"""
+        For SCV, this returns None
+        """
         return_list = [
             UnitTypeId(tech_alias) for tech_alias in self.proto.tech_alias if tech_alias in self._game_data.units
         ]
@@ -253,10 +248,6 @@ class UpgradeData:
     """ Some info about Upgrades"""
 
     def __init__(self, game_data: GameData, proto):
-        """
-        :param game_data:
-        :param proto:
-        """
         self._game_data = game_data
         self.proto = proto
 
@@ -282,7 +273,7 @@ class UpgradeData:
 
 
 class Cost:
-    """ Groups the cost of everything(vespene, minerals, and completion time) it misses the food cost tho"""
+    """ Groups the vespene, minerals, and completion time costs"""
 
     def __init__(self, minerals: int, vespene: int, time: float = None):
         self.minerals = minerals

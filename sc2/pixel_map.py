@@ -14,11 +14,6 @@ class PixelMap:
     """ Groups all info about the map"""
 
     def __init__(self, proto, in_bits: bool = False, mirrored: bool = False):
-        """
-        :param proto:
-        :param in_bits:
-        :param mirrored:
-        """
         self.proto = proto
         self._in_bits: bool = in_bits
         self._mirrored: bool = mirrored
@@ -34,22 +29,22 @@ class PixelMap:
 
     @property
     def width(self):
-        """Return the map width in pixels"""
+        """ Return the map width in pixels"""
         return self.proto.size.x
 
     @property
     def height(self):
-        """Return the map height in pixels"""
+        """ Return the map height in pixels"""
         return self.proto.size.y
 
     @property
     def bits_per_pixel(self):
-        """Return the amount of bits in 1 pixel"""
+        """ Return the amount of bits in 1 pixel"""
         return self.proto.bits_per_pixel
 
     @property
     def bytes_per_pixel(self):
-        """Return the amount of bytes in 1 pixel"""
+        """ Return the amount of bytes in 1 pixel"""
         return self.proto.bits_per_pixel // 8
 
     def __getitem__(self, pos):
@@ -73,11 +68,11 @@ class PixelMap:
         self.data_numpy[pos[1], pos[0]] = value
 
     def is_set(self, position):
-        """ Not sure what it does"""
+        """ Check if there anything at the given position"""
         return bool(self[position])
 
     def is_empty(self, position):
-        """ Not sure what it does"""
+        """ Check if there isn't anything at the given position"""
         return not self.is_set(position)
 
     def copy(self):

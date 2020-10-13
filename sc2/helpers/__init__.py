@@ -1,5 +1,5 @@
 """
-Not sure what this file does
+Sets what files will be imported when 'from helpers import *' gets called
 """
 from pathlib import Path
 

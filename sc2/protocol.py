@@ -14,11 +14,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 class ProtocolError(Exception):
-    """ Groups the errors that happens when 'talking' to thew protocol """
+    """ Groups the errors that happens when 'talking' to the protocol """
 
     @property
     def is_game_over_error(self) -> bool:
-        """If the game ended connecting to the protocol is not needed"""
+        """ If the game ended connecting to the protocol is not needed"""
         return self.args[0] in ["['Game has already ended']", "['Not supported if game has already ended']"]
 
 
@@ -30,9 +30,6 @@ class Protocol:
     """ Handles the connection and the requests to the protocol"""
 
     def __init__(self, web_socket):
-        """
-        :param web_socket:
-        """
         if not web_socket:
             raise AssertionError()
         self.web_socket = web_socket
@@ -66,7 +63,7 @@ class Protocol:
         return response
 
     async def execute(self, **kwargs):
-        """ Execute the request calls"""
+        """ Execute the requested calls"""
         if len(kwargs) != 1:
             raise AssertionError("Only one request allowed")
 

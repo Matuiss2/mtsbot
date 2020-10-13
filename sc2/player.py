@@ -57,10 +57,7 @@ class Bot(AbstractPlayer):
     """ Extends abstract player and specifies it for a bot player"""
 
     def __init__(self, race, ai, name=None, fullscreen=False):
-        """
-        AI can be None if this player object is just used to inform the
-        server about player types.
-        """
+        """ AI can be None if this player object is just used to inform the server about player types. """
         if not (isinstance(ai, BotAI) or ai is None):
             raise AssertionError(f"ai is of type {type(ai)}, inherit BotAI from bot_ai.py")
         super().__init__(PLAYER_TYPE.Participant, race, name=name, fullscreen=fullscreen)

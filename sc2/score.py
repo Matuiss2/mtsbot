@@ -4,9 +4,7 @@ Groups all scoring that can be done in SC2(the comments might be all wrong, sinc
 
 
 class ScoreDetails:
-    """Accessible in self.state.score during step function
-    For more information, see https://github.com/Blizzard/s2client-proto/blob/master/s2clientprotocol/score.proto
-    """
+    """ Accessible in self.state.score during step function """
 
     def __init__(self, proto):
         self._data = proto

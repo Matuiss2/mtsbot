@@ -1,4 +1,4 @@
-""" Groups all needed logic to connect with sc2AI ladder"""
+"""  Groups all needed logic to connect with sc2AI ladder"""
 
 import argparse
 import asyncio

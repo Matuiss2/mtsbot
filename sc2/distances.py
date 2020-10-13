@@ -3,7 +3,7 @@ Groups 4 distance calculation methods and it's helpers
 """
 import logging
 import math
-from typing import Dict, Generator, Iterable, Tuple
+from typing import Dict, Generator, Tuple
 
 import numpy as np
 from sc2.game_state import GameState
@@ -15,7 +15,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class DistanceCalculation:
-    """Groups 4 distance calculation methods and it's helpers """
+    """ Groups 4 distance calculation methods and it's helpers """
 
     def __init__(self):
         self.state: GameState = None
@@ -47,8 +47,10 @@ class DistanceCalculation:
 
     @property
     def _unit_index_dict(self) -> Dict[int, int]:
-        """As property, so it will be recalculated each time it is called, or return from cache if it is called
-        multiple times in teh same game_loop."""
+        """
+        As property, so it will be recalculated each time it is called, or return from cache if it is called
+        multiple times in the same game_loop.
+        """
         if self._generated_frame != self.state.game_loop:
             if self._generated_frame != self.state.game_loop:
                 self._cached_unit_index_dict = {unit.tag: index for index, unit in enumerate(self.all_units)}
@@ -58,16 +60,20 @@ class DistanceCalculation:
 
     @property
     def _pdist(self) -> np.ndarray:
-        """As property, so it will be recalculated each time it is called, or return from cache if it is called
-        multiple times in teh same game_loop."""
+        """
+        As property, so it will be recalculated each time it is called, or return from cache if it is called
+        multiple times in the same game_loop.
+        """
         if self._generated_frame2 != self.state.game_loop:
             return self.calculate_distances()
         return self._cached_pdist
 
     @property
     def _cdist(self) -> np.ndarray:
-        """As property, so it will be recalculated each time it is called, or return from cache if it is called
-        multiple times in teh same game_loop."""
+        """
+        As property, so it will be recalculated each time it is called, or return from cache if it is called
+        multiple times in the same game_loop.
+        """
         if self._generated_frame2 != self.state.game_loop:
             return self.calculate_distances()
         return self._cached_cdist
@@ -143,7 +149,7 @@ class DistanceCalculation:
     # Helper functions
 
     def square_to_condensed(self, i, j) -> int:
-        """Converts indices of a square matrix to condensed matrix"""
+        """ Converts indices of a square matrix to condensed matrix"""
         if i == j:
             raise AssertionError("No diagonal elements in condensed matrix! Diagonal elements are zero")
         if i < j:
@@ -157,8 +163,10 @@ class DistanceCalculation:
 
     @staticmethod
     def distance_math_dist(start_point: Tuple[float, float], destiny: Tuple[float, float]):
-        """math.dist(), its about the same speed as math.hypot but it's cleaner, also there is no need for slices
-        in this method which makes it considerably faster than the hypot alternative for big amounts"""
+        """
+        Uses math.dist(), its about the same speed as math.hypot but it's cleaner, also there is no need for slices
+        in this method which makes it considerably faster than the hypot alternative for big amounts
+        """
         return math.dist(start_point, destiny)
 
     @staticmethod
@@ -171,8 +179,10 @@ class DistanceCalculation:
         return self.distance_math_dist_squared(unit1.position_tuple, unit2.position_tuple)
 
     def _distance_squared_unit_to_unit_method1(self, unit1: Unit, unit2: Unit) -> float:
-        """If checked on units if they have the same tag, return distance 0 as these are not in the 1 dimensional
-        pdist array - would result in an error otherwise"""
+        """
+        If checked on units if they have the same tag, return distance 0 as these are not in the 1 dimensional
+        pdist array - would result in an error otherwise
+        """
         if unit1.tag == unit2.tag:
             return 0.0
         condensed_index = self._get_index_of_two_units(unit1, unit2)
@@ -193,22 +203,15 @@ class DistanceCalculation:
         """ This function does not scale well, if len(units) > 100 it gets fairly slow """
         return (self.distance_math_dist(u.position_tuple, pos) for u in units)
 
-    def _distance_unit_to_points(
-        self, unit: Unit, points: Iterable[Tuple[float, float]]
-    ) -> Generator[float, None, None]:
-        """ This function does not scale well, if len(points) > 100 it gets fairly slow """
-        pos = unit.position_tuple
-        return (self.distance_math_dist(p, pos) for p in points)
-
     def _distances_override_functions(self, method: int = 0):
-        """Overrides the internal distance calculation functions at game start in bot_ai.py self.prepare_start()
-        function method 0: Use python's math.dist The following methods calculate the distances between all units
-        once:
+        """
+        Overrides the internal distance calculation functions at game start in bot_ai.py self.prepare_start()
+        function method 0: Use python's math.dist The following methods calculate the distances between all units once:
         method 1: Use scipy's pdist condensed matrix (1d array)
-        method 2: Use scipy's cdist square matrix (2d
-        array)
+        method 2: Use scipy's cdist square matrix (2d array)
         method 3: Use scipy's cdist square matrix (2d array) without asserts (careful: very weird error
-        messages, but maybe slightly faster)"""
+        messages, but maybe slightly faster)
+        """
         if not 0 <= method <= 3:
             raise AssertionError(f"Selected method was: {method}")
         if not method:

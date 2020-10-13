@@ -19,12 +19,6 @@ class UnitCommand:
     """ Allows combining all possible abilities that every unit can do on every possible target"""
 
     def __init__(self, ability: AbilityId, unit: Unit, target: Union[Unit, Point2] = None, queue: bool = False):
-        """
-        :param ability:
-        :param unit:
-        :param target:
-        :param queue:
-        """
         if ability not in AbilityId:
             raise AssertionError(f"ability {ability} is not in AbilityId")
         if not isinstance(unit, unit_module.Unit):

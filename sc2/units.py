@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 
 class Units(list):
-    """A collection of Unit objects. Makes it easy to select units by selectors."""
+    """ A collection of Unit objects. Makes it easy to select units by selectors."""
 
     @classmethod
     def from_proto(cls, units, bot_object: BotAI):
@@ -29,10 +29,6 @@ class Units(list):
         return cls((Unit(u, bot_object=bot_object) for u in units))
 
     def __init__(self, units, bot_object: BotAI):
-        """
-        :param units:
-        :param bot_object:
-        """
         super().__init__(units)
         self.bot_object = bot_object
 
@@ -40,7 +36,7 @@ class Units(list):
         return UnitSelection(self, *args, **kwargs)
 
     def select(self, *args, **kwargs):
-        """Not sur what it does"""
+        """ Select the units group"""
         return UnitSelection(self, *args, **kwargs)
 
     def copy(self):
@@ -78,7 +74,7 @@ class Units(list):
         return hash(unit.tag for unit in self)
 
     def find_by_tag(self, tag) -> Optional[Unit]:
-        """ Find an unit by giving it's tag, if None is found return None"""
+        """ Find an unit by the given tag, if no such unit is found it returns None"""
         for unit in self:
             if unit.tag == tag:
                 return unit
@@ -92,13 +88,13 @@ class Units(list):
 
     @property
     def random_unit(self) -> Unit:
-        """ Take a random unit from self group"""
+        """ Take a random unit from the group object"""
         if not self:
             raise AssertionError("Units object is empty")
         return random.SystemRandom().choice(self)
 
     def random_unit_or(self, other: any) -> Unit:
-        """ Same as above, but instead of giving an error if self is empty returns the other parameter instead"""
+        """ Same as above, but instead of giving an error if object is empty returns the other parameter instead"""
         return self.random_unit() if self else other
 
     def random_group_of(self, n: int) -> Units:
@@ -113,7 +109,7 @@ class Units(list):
         """
         Filters units that are in attack range of the given unit. This uses the unit and target unit.radius when
         calculating the distance, so it should be accurate. Caution: This may not work well for static structures (
-        bunker, sieged tank, planetary fortress, photon cannon, spine and spore crawler) because it seems attack
+        bunker, sieged tank, planetary fortress, photon cannon, spine and spore crawler) because it the attack
         ranges differ for static / immovable units.
 
         Example::
@@ -131,8 +127,7 @@ class Units(list):
                 all_mutalisks_my_marauder_can_attack = enemy_mutalisks.in_attack_range_of(my_marauder)
                 # Is empty because mutalisk are flying and marauder cannot attack air
 
-        :param unit:
-        :param bonus_distance:"""
+        """
         return self.filter(lambda x: unit.target_in_range(x, bonus_distance=bonus_distance))
 
     def closest_distance_to(self, position: Union[Unit, Point2, Point3]) -> float:
@@ -148,7 +143,7 @@ class Units(list):
                 closest_zergling_distance = enemy_zerglings.closest_distance_to(my_marine)
             # Contains the distance between the marine and the closest zergling
 
-        :param position:"""
+        """
         if not self:
             raise AssertionError("Units object is empty")
         if isinstance(position, Unit):
@@ -168,7 +163,7 @@ class Units(list):
                 furthest_zergling_distance = enemy_zerglings.furthest_distance_to(my_marine)
                 # Contains the distance between the marine and the furthest away zergling
 
-        :param position:"""
+        """
         if not self:
             raise AssertionError("Units object is empty")
         if isinstance(position, Unit):
@@ -177,7 +172,7 @@ class Units(list):
 
     def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         """
-        Returns the closest unit (from this Units object) to the target unit or position.
+        Returns the closest unit from the object to the target unit or position.
 
         Example::
 
@@ -187,7 +182,7 @@ class Units(list):
                 closest_zergling = enemy_zerglings.closest_to(my_marine)
                 # Contains the zergling that is closest to the target marine
 
-        :param position:"""
+        """
         if not self:
             raise AssertionError("Units object is empty")
         if isinstance(position, Unit):
@@ -201,7 +196,7 @@ class Units(list):
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         """
-        Returns the furthest unit (from this Units object) to the target unit or position.
+        Returns the furthest unit from the object to the target unit or position.
 
         Example::
 
@@ -211,7 +206,7 @@ class Units(list):
                 furthest_zergling = enemy_zerglings.furthest_to(my_marine)
                 # Contains the zergling that is furthest away to the target marine
 
-        :param position:"""
+        """
         if not self:
             raise AssertionError("Units object is empty")
         if isinstance(position, Unit):
@@ -224,7 +219,7 @@ class Units(list):
 
     def closer_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> Units:
         """
-        Returns all units (from this Units object) that are closer than 'distance' away from target unit or position.
+        Returns all units from the object that are closer than the given distance from the target unit or position.
 
         Example::
 
@@ -233,8 +228,6 @@ class Units(list):
             my_marine) # Contains all zerglings that are distance 3 or less away from the marine (does not include
             unit radius in calculation)
 
-        :param distance:
-        :param position:
         """
         if not self:
             return self
@@ -250,7 +243,7 @@ class Units(list):
 
     def further_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> Units:
         """
-        Returns all units (from this Units object) that are further than 'distance' away from target unit or position.
+        Returns all units from the object that are further than the given distance from the target unit or position.
 
         Example::
 
@@ -260,8 +253,6 @@ class Units(list):
                 far_zerglings = enemy_zerglings.further_than(3, my_marine)
                 # Contains all zerglings that are distance 3 or more away from the marine (does not include unit radius)
 
-        :param distance:
-        :param position:
         """
         if not self:
             return self
@@ -276,10 +267,10 @@ class Units(list):
         return self.subgroup(unit for unit, dist in zip(self, distances) if distance < dist)
 
     def in_distance_between(
-        self, position: Union[Unit, Point2, Tuple[float, float]], distance1: float, distance2: float
+        self, position: Union[Unit, Point2, Tuple[float, float]], closest: float, furthest: float
     ) -> Units:
         """
-        Returns units that are further than distance1 and closer than distance2 to unit or position.
+        Returns units that are between the closest(parameter) and the furthest(parameter) to unit or position.
 
         Example::
 
@@ -289,26 +280,23 @@ class Units(list):
                 zerglings_filtered = enemy_zerglings.in_distance_between(my_marine, 3, 5)
                 # Contains all zerglings between distance 3 and 5 away from the marine (does not include unit radius)
 
-        :param position:
-        :param distance1:
-        :param distance2:
         """
         if not self:
             return self
         if isinstance(position, Unit):
-            distance1_squared = distance1 ** 2
-            distance2_squared = distance2 ** 2
+            distance1_squared = closest ** 2
+            distance2_squared = furthest ** 2
             return self.subgroup(
                 unit
                 for unit in self
                 if distance1_squared < self.bot_object.distance_squared_unit_to_unit(unit, position) < distance2_squared
             )
         distances = self.bot_object.distance_units_to_pos(self, position)
-        return self.subgroup(unit for unit, dist in zip(self, distances) if distance1 < dist < distance2)
+        return self.subgroup(unit for unit, dist in zip(self, distances) if closest < dist < furthest)
 
     def closest_n_units(self, position: Union[Unit, Point2], n: int) -> Units:
         """
-        Returns the n closest units in distance to position.
+        Returns the n closest units to the given position or unit.
 
         Example::
 
@@ -318,8 +306,6 @@ class Units(list):
                 zerglings_filtered = enemy_zerglings.closest_n_units(my_marine, 5)
                 # Contains 5 zerglings that are the closest to the marine
 
-        :param position:
-        :param n:
         """
         if not self:
             return self
@@ -327,7 +313,7 @@ class Units(list):
 
     def furthest_n_units(self, position: Union[Unit, Point2, np.ndarray], n: int) -> Units:
         """
-        Returns the n furthest units in distance to position.
+        Returns the n furthest units to the given position or unit.
 
         Example::
 
@@ -337,19 +323,13 @@ class Units(list):
                 zerglings_filtered = enemy_zerglings.furthest_n_units(my_marine, 5)
                 # Contains 5 zerglings that are the furthest to the marine
 
-        :param position:
-        :param n:
         """
         if not self:
             return self
         return self.subgroup(self._list_sorted_by_distance_to(position)[-n:])
 
     def in_distance_of_group(self, other_units: Units, distance: float) -> Units:
-        """Returns units that are closer than distance from any unit in the other units object.
-
-        :param other_units:
-        :param distance:
-        """
+        """ Returns units that are closer than the distance given from any unit in the other_units object."""
         if not self:
             raise AssertionError("Units object is empty")
         if not self:
@@ -374,12 +354,12 @@ class Units(list):
 
     def in_closest_distance_to_group(self, other_units: Units) -> Unit:
         """
-        Returns unit in shortest distance from any unit in self to any unit in group.
+        Returns unit in shortest distance from any unit in the object to any unit in other_units.
 
-        Loops over all units in self, then loops over all units in other_units and calculates the shortest distance.
+        Loops over all units in the object, then loops over all units in other_units
+        and calculates the shortest distance.
         Returns the units that is closest to any unit of 'other_units'.
-
-        :param other_units:"""
+        """
         if not self:
             raise AssertionError("Units object is empty")
         if not other_units:
@@ -404,10 +384,11 @@ class Units(list):
         return sorted(self, key=lambda unit2: abs(unit_dist_dict[unit2.tag] - distance), reverse=True)
 
     def n_closest_to_distance(self, position: Union[Point2, np.ndarray], distance: Union[int, float], n: int) -> Units:
-        """Returns n units that are the closest to distance away.
-        For example if the distance is set to 5 and you
-        want 3 units, from units with distance [3, 4, 5, 6, 7] to position, the units with distance [4, 5,
-        6] will be returned"""
+        """
+        Returns n units that are the closest to the given distance to the the given position.
+        For example if the distance is set to 5 and you want 3 units,
+        from units with distance [3, 4, 5, 6, 7] to position, the units with distance [4, 5, 6] will be returned
+        """
         return self.subgroup(self._list_sorted_closest_to_distance(position=position, distance=distance)[:n])
 
     def n_furthest_to_distance(self, position: Union[Point2, np.ndarray], distance: Union[int, float], n: int) -> Units:
@@ -415,10 +396,7 @@ class Units(list):
         return self.subgroup(self._list_sorted_closest_to_distance(position=position, distance=distance)[-n:])
 
     def subgroup(self, units):
-        """
-        Creates a new mutable Units object from Units or list object.
-
-        :param units:"""
+        """ Creates a new mutable Units object from Units or list object."""
         return Units(units, self.bot_object)
 
     def filter(self, pred: callable) -> Units:
@@ -434,10 +412,6 @@ class Units(list):
 
             queens_with_energy = self.units.filter(lambda u: u.type_id == UnitTypeId.QUEEN and u.energy >= 25)
 
-
-        See more unit properties in unit.py
-
-        :param pred:
         """
         if not callable(pred):
             raise AssertionError("Function is not callable")
@@ -473,7 +447,6 @@ class Units(list):
 
             my_inject_queens_slow = self.units(QUEEN).tags_in(self.queen_tags_assigned_to_do_injects)
 
-        :param other:
         """
         return self.filter(lambda unit: unit.tag in other)
 
@@ -490,7 +463,6 @@ class Units(list):
 
             my_non_inject_queens_slow = self.units(QUEEN).tags_not_in(self.queen_tags_assigned_to_do_injects)
 
-        :param other:
         """
         return self.filter(lambda unit: unit.tag not in other)
 
@@ -503,7 +475,7 @@ class Units(list):
             # Use a set instead of lists in the argument
             some_attack_units = self.units.of_type({ZERGLING, ROACH, HYDRALISK, BROODLORD})
 
-        :param other:"""
+        """
         if isinstance(other, UnitTypeId):
             other = {other}
         elif isinstance(other, list):
@@ -519,7 +491,7 @@ class Units(list):
             # Use a set instead of lists in the argument
             ignore_units = self.enemy_units.exclude_type({LARVA, EGG, OVERLORD})
 
-        :param other:"""
+        """
         if isinstance(other, UnitTypeId):
             other = {other}
         elif isinstance(other, list):
@@ -548,7 +520,6 @@ class Units(list):
             # This also works with multiple unit types
             zerg_townhalls_and_spires = self.structures.same_tech({UnitTypeId.HATCHERY, UnitTypeId.SPIRE})
 
-        :param other:
         """
         if not isinstance(other, set):
             raise AssertionError(
@@ -587,7 +558,6 @@ class Units(list):
             # This is useful because roach has a different type id when burrowed
             burrowed_roaches = self.units(UnitTypeId.ROACHBURROWED)
 
-        :param other:
         """
         if isinstance(other, UnitTypeId):
             other = {other}
@@ -615,7 +585,7 @@ class Units(list):
 
     @property
     def selected(self) -> Units:
-        """ Returns all units that are selected by the human player. """
+        """ Returns all units that are selected by the current player. """
         return self.filter(lambda unit: unit.is_selected)
 
     @property
@@ -625,29 +595,18 @@ class Units(list):
 
     @property
     def ready(self) -> Units:
-        """ Returns all structures that are ready (construction complete). """
+        """ Returns all structures that are constructed. """
         return self.filter(lambda unit: unit.is_ready)
 
     @property
     def not_ready(self) -> Units:
-        """ Returns all structures that are not ready (construction not complete). """
+        """ Returns all structures that are not constructed. """
         return self.filter(lambda unit: not unit.is_ready)
 
     @property
     def idle(self) -> Units:
-        """Returns all units or structures that are doing nothing
-        (unit is standing still, structure is doing nothing)."""
+        """ Returns all units or structures that are doing nothing"""
         return self.filter(lambda unit: unit.is_idle)
-
-    @property
-    def owned(self) -> Units:
-        """ Deprecated: All your units. """
-        return self.filter(lambda unit: unit.is_mine)
-
-    @property
-    def enemy(self) -> Units:
-        """ Deprecated: All enemy units."""
-        return self.filter(lambda unit: unit.is_enemy)
 
     @property
     def flying(self) -> Units:
@@ -656,27 +615,17 @@ class Units(list):
 
     @property
     def not_flying(self) -> Units:
-        """ Returns all units that not are flying. """
+        """ Returns all units that are not flying. """
         return self.filter(lambda unit: not unit.is_flying)
 
     @property
-    def structure(self) -> Units:
-        """ Deprecated: All structures. """
-        return self.filter(lambda unit: unit.is_structure)
-
-    @property
-    def not_structure(self) -> Units:
-        """ Deprecated: All units that are not structures. """
-        return self.filter(lambda unit: not unit.is_structure)
-
-    @property
     def gathering(self) -> Units:
-        """ Returns all workers that are mining minerals or vespene (gather command). """
+        """ Returns all workers that are mining (gather command). """
         return self.filter(lambda unit: unit.is_gathering)
 
     @property
     def returning(self) -> Units:
-        """ Returns all workers that are carrying minerals or vespene and are returning to a townhall. """
+        """ Returns all workers that are carrying resources and returning to a townhall. """
         return self.filter(lambda unit: unit.is_returning)
 
     @property

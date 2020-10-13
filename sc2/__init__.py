@@ -1,5 +1,5 @@
 """
-Not sure what this file does
+Sets what files will be imported when 'from sc2 import *' gets called
 """
 
 import logging

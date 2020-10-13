@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 
 class ObserverAI(Ai, DistanceCalculation):
-    """Base class for Observers."""
+    """ Base class for Observers."""
 
     def __init__(self):
         DistanceCalculation.__init__(self)
@@ -80,7 +80,7 @@ class ObserverAI(Ai, DistanceCalculation):
 
     def alert(self, alert_code: ALERT) -> bool:
         """
-        Check if alert is triggered in the current step.
+        Check if an alert is triggered in the current step.
 
         Example use:
 
@@ -113,7 +113,6 @@ class ObserverAI(Ai, DistanceCalculation):
             VespeneExhausted
             WarpInComplete
 
-        :param alert_code:
         """
         if not isinstance(alert_code, ALERT):
             raise AssertionError(f"alert_code {alert_code} is no Alert")
@@ -129,14 +128,15 @@ class ObserverAI(Ai, DistanceCalculation):
 
     @property
     def enemy_start_locations(self) -> List[Point2]:
-        """Possible start locations for enemies."""
+        """ Possible start locations for enemies."""
         return self._game_info.start_locations
 
     async def get_available_abilities(
         self, units: Union[List[Unit], Units], ignore_resource_requirements: bool = False
     ) -> List[List[AbilityId]]:
-        """Returns available abilities of one or more units.
-        Right now only checks cooldown, energy cost, and whether the ability has been researched.
+        """
+        Returns available abilities of one or more units.
+        It checks cooldown, energy cost, and whether the ability has been researched.
 
         Examples::
 
@@ -146,14 +146,15 @@ class ObserverAI(Ai, DistanceCalculation):
 
             units_abilities = await self.get_available_abilities([self.units.random])
 
-        :param units:
-        :param ignore_resource_requirements:"""
+        """
         return await self._client.query_available_abilities(units, ignore_resource_requirements)
 
     @property_cache_once_per_frame
     def _abilities_all_units(self) -> Counter:
-        """Cache for the already_pending function, includes protoss units warping in,
-        all units in production and all structures, and all morphs"""
+        """
+        Cache for the already_pending function, includes protoss units warping in,
+        all units in production and all structures, and all morphs
+        """
         abilities_amount = Counter()
         for unit in self.units + self.structures:
             for order in unit.orders:
@@ -167,15 +168,7 @@ class ObserverAI(Ai, DistanceCalculation):
         return abilities_amount
 
     def prepare_start(self, client, player_id, game_info, game_data, realtime: bool = False):
-        """
-        Ran until game start to set game and player data.
-
-        :param client:
-        :param player_id:
-        :param game_info:
-        :param game_data:
-        :param realtime:
-        """
+        """ Run until game start to set game and player data """
         self._client: Client = client
         self.player_id: int = player_id
         self._game_info: GameInfo = game_info
@@ -183,15 +176,13 @@ class ObserverAI(Ai, DistanceCalculation):
         self.realtime: bool = realtime
 
     def prepare_first_step(self):
-        """First step extra preparations. Must not be called before prepare_step."""
+        """ First step extra preparations. Must not be called before prepare_step."""
         if self.townhalls:
             self._game_info.player_start_location = self.townhalls[0].position
         self._game_info.map_ramps, self._game_info.vision_blockers = self._game_info.find_ramps_and_vision_blockers()
 
     def prepare_step(self, state):
-        """
-        :param state:
-        """
+        """ Prepare all game data before every step """
         self.state: GameState = state
         self._units_previous_map: Dict = {unit.tag: unit for unit in self.units}
         self._structures_previous_map: Dict = {structure.tag: structure for structure in self.structures}
@@ -208,11 +199,11 @@ class ObserverAI(Ai, DistanceCalculation):
     async def after_step(self) -> int:
         """ Executed by main.py after each on_step function. """
         self.unit_tags_received_action.clear()
-        # Commit debug queries
         return self.state.game_loop
 
     async def issue_events(self):
-        """This function will be automatically run from main.py and triggers the following functions:
+        """
+        This function will be automatically run from main.py and triggers the following functions:
         - on_unit_created
         - on_unit_destroyed
         - on_building_construction_started
@@ -250,37 +241,24 @@ class ObserverAI(Ai, DistanceCalculation):
         Override this in your bot class.
         Note that this function uses unit tags and not the unit objects
         because the unit does not exist any more.
-
-        :param unit_tag:
         """
 
     async def on_unit_created(self, unit: Unit):
-        """Override this in your bot class. This function is called when a unit is created.
-
-        :param unit:"""
+        """ Override this in your bot class. This function is called when a unit is created."""
 
     async def on_building_construction_started(self, unit: Unit):
         """
         Override this in your bot class.
         This function is called when a building construction has started.
-
-        :param unit:
         """
 
     async def on_building_construction_complete(self, unit: Unit):
-        """
-        Override this in your bot class. This function is called when a building
-        construction is completed.
-
-        :param unit:
-        """
+        """ Override this in your bot class. This function is called when a building construction is completed. """
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
         """
         Override this in your bot class. This function is called with the upgrade id of an upgrade that was not
         finished last step and is now.
-
-        :param upgrade:
         """
 
     async def on_start(self):
@@ -294,12 +272,8 @@ class ObserverAI(Ai, DistanceCalculation):
         You need to implement this function!
         Override this in your bot class.
         This function is called on every game step (looped in realtime mode).
-
-        :param iteration:
         """
         raise NotImplementedError
 
     async def on_end(self, game_result: RESULT):
-        """Override this in your bot class. This function is called at the end of a game.
-
-        :param game_result:"""
+        """ Override this in your bot class. This function is called at the end of a game."""
