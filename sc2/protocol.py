@@ -42,7 +42,7 @@ class Protocol:
         except TypeError:
             LOGGER.exception("Cannot send: Connection already closed.")
             raise ConnectionAlreadyClosed("Connection already closed.")
-        LOGGER.debug(f"Request sent")
+        LOGGER.debug("Request sent")
 
         response = sc_pb.Response()
         try:
@@ -59,7 +59,7 @@ class Protocol:
             raise
 
         response.ParseFromString(response_bytes)
-        LOGGER.debug(f"Response received")
+        LOGGER.debug("Response received")
         return response
 
     async def execute(self, **kwargs):

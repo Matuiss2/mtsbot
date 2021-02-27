@@ -100,16 +100,16 @@ async def _handle_and_inform_initialization_errors(ai):
         await ai.on_start()
     except Exception as error:
         LOGGER.exception(f"AI on_start threw an error - {error.__traceback__}")
-        LOGGER.error(f"resigning due to previous error")
+        LOGGER.error("resigning due to previous error")
         await ai.on_end(RESULT.Defeat)
         return True
     return False
 
 
 async def _handle_and_inform_untreated_errors(ai, error):
-    LOGGER.exception(f"AI step threw an error")  # DO NOT EDIT!
+    LOGGER.exception("AI step threw an error")  # DO NOT EDIT!
     LOGGER.error(f"Error: {error}")
-    LOGGER.error(f"Resigning due to previous error")
+    LOGGER.error("Resigning due to previous error")
     try:
         await ai.on_end(RESULT.Defeat)
     except TypeError:
@@ -200,7 +200,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                     ai.time_budget_available = budget
 
                     if budget < 0:
-                        LOGGER.warning(f"Running AI step: out of budget before step")
+                        LOGGER.warning("Running AI step: out of budget before step")
                         step_time = 0.0
                         out_of_budget = True
                     else:
@@ -212,7 +212,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                         except asyncio.TimeoutError:
                             step_time = time.monotonic() - step_start
                             LOGGER.warning(
-                                f"Running AI step: out of budget; "
+                                "Running AI step: out of budget; "
                                 + f"budget={budget:.2f}, steptime={step_time:.2f}, "
                                 + f"window={time_window.available_fmt}"
                             )
@@ -241,7 +241,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
             if await _handle_and_inform_untreated_errors(ai, error):
                 return RESULT.Defeat
 
-        LOGGER.debug(f"Running AI step: done")
+        LOGGER.debug("Running AI step: done")
 
         if not realtime:
             if not client.in_game:
@@ -300,7 +300,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
             if await _handle_and_inform_untreated_errors(ai, error):
                 return RESULT.Defeat
 
-        LOGGER.debug(f"Running AI step: done")
+        LOGGER.debug("Running AI step: done")
 
         if not realtime:
             if not client.in_game:
@@ -366,7 +366,7 @@ async def _host_game(
             await client.leave()
             await client.quit()
         except ConnectionAlreadyClosed:
-            logging.error(f"Connection was closed before the game ended")
+            logging.error("Connection was closed before the game ended")
             return None
 
         return result
@@ -400,7 +400,7 @@ async def _host_game_aiter(
                     await client.save_replay(save_replay_as)
                 await client.leave()
             except ConnectionAlreadyClosed:
-                logging.error(f"Connection was closed before the game ended")
+                logging.error("Connection was closed before the game ended")
                 return
 
             new_players = yield result
@@ -439,7 +439,7 @@ async def _join_game(
             await client.leave()
             await client.quit()
         except ConnectionAlreadyClosed:
-            logging.error(f"Connection was closed before the game ended")
+            logging.error("Connection was closed before the game ended")
             return None
 
         return result

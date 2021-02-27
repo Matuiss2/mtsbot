@@ -1087,8 +1087,8 @@ class Unit:
         if unit in {UnitTypeId.EXTRACTOR, UnitTypeId.ASSIMILATOR, UnitTypeId.REFINERY}:
             if not isinstance(position, Unit):
                 raise AssertionError(
-                    f"When building the gas structure, the target needs to be a unit"
-                    f" (the vespene geyser) not the position of the vespene geyser."
+                    "When building the gas structure, the target needs to be a unit"
+                    " (the vespene geyser) not the position of the vespene geyser."
                 )
         return self(self.bot_object.game_data_local.units[unit.value].creation_ability.id, target=position, queue=queue)
 
@@ -1104,8 +1104,8 @@ class Unit:
         gas_structure_type_id: UnitTypeId = race_gas[self.bot_object.race]
         if not isinstance(target_geyser, Unit):
             raise AssertionError(
-                f"When building the gas structure, the target needs to be a unit (the vespene geyser) "
-                f"not the position of the vespene geyser."
+                "When building the gas structure, the target needs to be a unit (the vespene geyser) "
+                "not the position of the vespene geyser."
             )
         return self(
             self.bot_object.game_data_local.units[gas_structure_type_id.value].creation_ability.id,

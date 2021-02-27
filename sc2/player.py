@@ -88,7 +88,7 @@ class Observer(AbstractPlayer):
         super().__init__(PLAYER_TYPE.Observer)
 
     def __str__(self):
-        return f"Observer"
+        return "Observer"
 
 
 class Player(AbstractPlayer):

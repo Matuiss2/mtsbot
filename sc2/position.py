@@ -61,13 +61,13 @@ class Pointlike(tuple):
     def closest(self, positions: Union[Units, Iterable[Point2]]) -> Union[Unit, Point2]:
         """ This function assumes the 2d distance is meant"""
         if not positions:
-            raise AssertionError(f"ps is empty")
+            raise AssertionError("ps is empty")
         return min(positions, key=self.distance_to)
 
     def distance_to_closest(self, positions: Union[Units, Iterable[Point2]]) -> Union[int, float]:
         """ This function assumes the 2d distance is meant"""
         if not positions:
-            raise AssertionError(f"ps is empty")
+            raise AssertionError("ps is empty")
         closest_distance = math.inf
         for pnt in positions:
             pnt = pnt.position
@@ -85,7 +85,7 @@ class Pointlike(tuple):
     def distance_to_furthest(self, positions: Union[Units, Iterable[Point2]]) -> Union[int, float]:
         """ This function assumes the 2d distance is meant"""
         if not positions:
-            raise AssertionError(f"ps is empty")
+            raise AssertionError("ps is empty")
         furthest_distance = -math.inf
         for position in positions:
             position = position.position
@@ -204,7 +204,7 @@ class Point2(Pointlike):
         finding
         """
         if self == center:
-            raise AssertionError(f"self is equal to position")
+            raise AssertionError("self is equal to position")
         distance_between_points = self.distance_to(center)
         if radius < distance_between_points / 2:
             raise AssertionError()

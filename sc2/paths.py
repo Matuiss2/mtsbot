@@ -61,7 +61,7 @@ def latest_executable(versions_dir, base_build=None):
     version, path = latest
 
     if version < 55958:
-        LOGGER.critical(f"Your SC2 binary is too old. Upgrade to 3.16.1 or newer.")
+        LOGGER.critical("Your SC2 binary is too old. Upgrade to 3.16.1 or newer.")
         sys.exit()
     return path / BINPATH[PF]
 

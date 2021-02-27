@@ -1137,14 +1137,14 @@ class BotAI(Ai, DistanceCalculation):
         Caution: terrain height is different from a unit's z-coordinate.
         """
         if not isinstance(pos, (Point2, Point3, Unit)):
-            raise AssertionError(f"pos is not of type Point2, Point3 or Unit")
+            raise AssertionError("pos is not of type Point2, Point3 or Unit")
         pos = pos.position.to2.rounded
         return self.game_info.terrain_height[pos]
 
     def get_terrain_z_height(self, pos: Union[Point2, Point3, Unit]) -> int:
         """ Returns terrain z-height at a position."""
         if not isinstance(pos, (Point2, Point3, Unit)):
-            raise AssertionError(f"pos is not of type Point2, Point3 or Unit")
+            raise AssertionError("pos is not of type Point2, Point3 or Unit")
         pos = pos.position.to2.rounded
         return -16 + 32 * self.game_info.terrain_height[pos] / 255
 
@@ -1155,28 +1155,28 @@ class BotAI(Ai, DistanceCalculation):
         Caution: some x and y offset might be required, see ramp code in game_info.py
         """
         if not isinstance(pos, (Point2, Point3, Unit)):
-            raise AssertionError(f"pos is not of type Point2, Point3 or Unit")
+            raise AssertionError("pos is not of type Point2, Point3 or Unit")
         pos = pos.position.to2.rounded
         return self.game_info.placement_grid[pos] == 1
 
     def in_pathway_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if a ground unit can pass through a grid position."""
         if not isinstance(pos, (Point2, Point3, Unit)):
-            raise AssertionError(f"pos is not of type Point2, Point3 or Unit")
+            raise AssertionError("pos is not of type Point2, Point3 or Unit")
         pos = pos.position.to2.rounded
         return self.game_info.pathway_grid[pos] == 1
 
     def is_visible(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if you have vision on a grid position."""
         if not isinstance(pos, (Point2, Point3, Unit)):
-            raise AssertionError(f"pos is not of type Point2, Point3 or Unit")
+            raise AssertionError("pos is not of type Point2, Point3 or Unit")
         pos = pos.position.to2.rounded
         return self.state.visibility[pos] == 2
 
     def has_creep(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if there is creep on the grid position."""
         if not isinstance(pos, (Point2, Point3, Unit)):
-            raise AssertionError(f"pos is not of type Point2, Point3 or Unit")
+            raise AssertionError("pos is not of type Point2, Point3 or Unit")
         pos = pos.position.to2.rounded
         return self.state.creep[pos] == 1
 

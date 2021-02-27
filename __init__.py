@@ -55,7 +55,7 @@ async def join_ladder_game(
         await client.leave()
         await client.quit()
     except ConnectionAlreadyClosed:
-        logging.error(f"Connection was closed before the game ended")
+        logging.error("Connection was closed before the game ended")
         return None
     finally:
         await ws_connection.close()

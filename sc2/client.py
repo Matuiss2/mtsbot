@@ -126,7 +126,7 @@ class Client(Protocol):
 
     async def save_replay(self, path):
         """ Save replay of the game on the given path"""
-        LOGGER.debug(f"Requesting replay from server")
+        LOGGER.debug("Requesting replay from server")
         result = await self.execute(save_replay=sc_pb.RequestSaveReplay())
         with open(path, "wb") as file:
             file.write(result.save_replay.data)
