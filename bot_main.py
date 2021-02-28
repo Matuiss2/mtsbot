@@ -62,6 +62,7 @@ class Mtsbot(BotAI):
         self.zergling_speed = UpgradeId.ZERGLINGMOVEMENTSPEED
 
     async def on_end(self, game_result):
+        """ Prints the game result when the game finishes"""
         print(game_result)
 
     async def update_variables(self):
@@ -314,6 +315,7 @@ class Mtsbot(BotAI):
         self.do(unit.gather(self.mineral_field.closest_to(unit)))
 
     async def on_step(self, iteration):
+        """ Executes the bot logic every step """
         await self.update_variables()
         if not iteration:
             await self.split_workers_on_beginning()

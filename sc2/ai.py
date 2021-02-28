@@ -9,6 +9,8 @@ from .ids.upgrade_id import UpgradeId
 
 
 class Ai(UnitsToPrepare):
+    """ Mother class to observer_ai and bot_ai"""
+
     def __init__(self):
         super().__init__()
         self.opponent_id: str = None

@@ -4,6 +4,8 @@ from .units import Units
 
 
 class UnitsToPrepare:
+    """ Groups all common ground units to the AI that are initialized every step"""
+
     def __init__(self):
         self.blips: Set[Blip] = set()
         self.units: Units = Units([], self)
