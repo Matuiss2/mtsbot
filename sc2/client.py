@@ -53,6 +53,7 @@ class Client(Protocol):
             return position.center
         if isinstance(position, Unit):
             return position.position
+        return position
 
     async def join_game(self, name=None, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None):
         """ Logic to join the game with all the options for it, probably needs to be refactored since it's too big"""

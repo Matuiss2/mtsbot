@@ -79,7 +79,7 @@ class Pointlike(tuple):
     def furthest(self, positions: Union[Units, Iterable[Point2]]) -> Union[Unit, Pointlike]:
         """ This function assumes the 2d distance is meant"""
         if not positions:
-            raise AssertionError(f"ps is empty")
+            raise AssertionError("ps is empty")
         return max(positions, key=self.distance_to)
 
     def distance_to_furthest(self, positions: Union[Units, Iterable[Point2]]) -> Union[int, float]:

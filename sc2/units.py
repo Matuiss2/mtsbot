@@ -524,7 +524,7 @@ class Units(list):
         if not isinstance(other, set):
             raise AssertionError(
                 (
-                    f"Please use a set as this filter function is already fairly slow. For example"
+                    "Please use a set as this filter function is already fairly slow. For example"
                     + " 'self.units.same_tech({UnitTypeId.LAIR})'"
                 )
             )
@@ -667,10 +667,10 @@ class UnitSelection(Units):
             super().__init__((unit for unit in parent if unit.type_id == selection), parent.bot_object)
         elif isinstance(selection, set):
             if not all(isinstance(t, UnitTypeId) for t in selection):
-                raise AssertionError(f"Not all ids in selection are of type UnitTypeId")
+                raise AssertionError("Not all ids in selection are of type UnitTypeId")
             super().__init__((unit for unit in parent if unit.type_id in selection), parent.bot_object)
         elif selection is None:
             super().__init__((unit for unit in parent), parent.bot_object)
         else:
             if not isinstance(selection, (UnitTypeId, set)):
-                raise AssertionError(f"selection is not None or of type UnitTypeId or Set[UnitTypeId]")
+                raise AssertionError("selection is not None or of type UnitTypeId or Set[UnitTypeId]")

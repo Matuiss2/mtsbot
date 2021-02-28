@@ -39,6 +39,7 @@ class DistanceCalculation:
                 raise AssertionError()
             self._generated_frame2 = self.state.game_loop
             return True
+        return False
 
     @property
     def _units_count(self) -> int:
