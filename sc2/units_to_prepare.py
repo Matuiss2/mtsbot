@@ -1,10 +1,13 @@
+"""
+Groups all units that are initialized on the beginning  of each step
+"""
 from typing import Set
 
 from .units import Units
 
 
 class UnitsToPrepare:
-    """ Groups all common ground units to the AI that are initialized every step"""
+    """ Groups all common-ground units to the AI that are initialized every step"""
 
     def __init__(self):
         self.blips: Set[Blip] = set()
