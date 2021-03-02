@@ -39,9 +39,9 @@ class Protocol:
         LOGGER.debug(f"Sending request: {request !r}")
         try:
             await self.web_socket.send_bytes(request.SerializeToString())
-        except TypeError:
+        except TypeError as type_not_compatible:
             LOGGER.exception("Cannot send: Connection already closed.")
-            raise ConnectionAlreadyClosed("Connection already closed.")
+            raise ConnectionAlreadyClosed("Connection already closed.") from type_not_compatible
         LOGGER.debug("Request sent")
 
         response = sc_pb.Response()
