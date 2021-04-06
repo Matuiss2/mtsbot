@@ -380,6 +380,7 @@ async def _host_game_aiter(
     save_replay_as=None,
     step_time_limit=None,
     game_time_limit=None,
+    random_seed=None,
 ):
     if not players:
         raise AssertionError("Can't create a game without players")

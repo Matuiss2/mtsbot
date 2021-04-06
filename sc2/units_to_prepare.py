@@ -10,7 +10,7 @@ class UnitsToPrepare:
     """ Groups all common-ground units to the AI that are initialized every step"""
 
     def __init__(self):
-        self.blips: Set[Blip] = set()
+        self.blips = set()
         self.units: Units = Units([], self)
         self.structures: Units = Units([], self)
         self.enemy_units: Units = Units([], self)
